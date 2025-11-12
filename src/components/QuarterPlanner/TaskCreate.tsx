@@ -2,29 +2,10 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import styled from "styled-components";
 import { QuarterKey, formatISODate, parseISODate } from "@/lib/quarter";
 import { TaskForm } from "./TaskForm";
 import { TaskFormState } from "./types";
-import theme from "@/styles/theme";
-
-const PageShell = styled.div`
-  width: min(720px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.stackGap};
-`;
-
-const HeadingGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.controlGap};
-`;
-
-const Subtitle = styled.p`
-  color: ${theme.colors.foregroundMuted};
-  max-width: 46ch;
-`;
+import { HeadingGroup, PageShell, Subtitle } from "./styles/taskPageStyles";
 
 type TaskCreateProps = {
   quarter: QuarterKey;

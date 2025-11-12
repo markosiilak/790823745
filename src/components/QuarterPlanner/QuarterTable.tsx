@@ -11,6 +11,8 @@ import {
   StickyBodyCell,
   TaskRow,
   TaskName,
+  ActionGroup,
+  EditButton,
   RemoveButton,
   WeekCell,
   EmptyCell,
@@ -18,6 +20,7 @@ import {
   ToggleButton,
 } from "./styles/quarterTableStyles";
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
+import { EditIcon } from "@/components/icons/EditIcon";
 import { Tooltip } from "@/components/Tooltip";
 
 const NAME_COLUMN_WIDTH = 260;
@@ -27,6 +30,7 @@ type QuarterTableProps = {
   structure: QuarterStructure;
   tasks: Task[];
   onRemoveTask: (taskId: string) => void;
+  onEditTask: (taskId: string) => void;
 };
 
 const weekFormatter = new Intl.DateTimeFormat("et-EE", {
@@ -40,7 +44,7 @@ const dateFormatter = new Intl.DateTimeFormat("et-EE", {
   year: "numeric",
 });
 
-export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTableProps) {
+export function QuarterTable({ structure, tasks, onRemoveTask, onEditTask }: QuarterTableProps) {
   const [isCompact, setIsCompact] = useState(false);
 
   return (
@@ -139,13 +143,22 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                     >
                       <TaskRow>
                         <TaskName>{task.name}</TaskName>
-                        <RemoveButton
-                          type="button"
-                          onClick={() => onRemoveTask(task.id)}
-                          aria-label={`Remove task ${task.name}`}
-                        >
-                          <RemoveIcon />
-                        </RemoveButton>
+                        <ActionGroup>
+                          <EditButton
+                            type="button"
+                            onClick={() => onEditTask(task.id)}
+                            aria-label={`Edit task ${task.name}`}
+                          >
+                            <EditIcon />
+                          </EditButton>
+                          <RemoveButton
+                            type="button"
+                            onClick={() => onRemoveTask(task.id)}
+                            aria-label={`Remove task ${task.name}`}
+                          >
+                            <RemoveIcon />
+                          </RemoveButton>
+                        </ActionGroup>
                       </TaskRow>
                     </StickyBodyCell>
                     <StickyBodyCell

@@ -141,6 +141,7 @@ type TaskFormProps = {
   error: string | null;
   taskCount?: number;
   maxTasks?: number;
+  title?: string;
   onNameChange: (value: string) => void;
   onStartChange: (value: string) => void;
   onEndChange: (value: string) => void;
@@ -158,6 +159,7 @@ export function TaskForm({
   error,
   taskCount = 0,
   maxTasks = Number.MAX_SAFE_INTEGER,
+  title = "Add a task",
   onNameChange,
   onStartChange,
   onEndChange,
@@ -175,7 +177,7 @@ export function TaskForm({
 
   return (
     <Card>
-      <h2>Add a task</h2>
+      <h2>{title}</h2>
       <Form onSubmit={onSubmit}>
         <FormRow>
           <Label>

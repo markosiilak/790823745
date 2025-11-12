@@ -79,4 +79,56 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const payload = (await request.json()) as StoredTask;
+    if (
+      typeof payload.id !== "string" ||
+      typeof payload.name !== "string" ||
+      typeof payload.start !== "string" ||
+      typeof payload.end !== "string"
+    ) {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+
+    const tasks = await readTasks();
+    const taskIndex = tasks.findIndex((task) => task.id === payload.id);
+
+    if (taskIndex === -1) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
+    const startISO = formatISODate(parseISODate(payload.start));
+    const endISO = formatISODate(parseISODate(payload.end));
+
+    const updatedTask: StoredTask = {
+      ...tasks[taskIndex],
+      id: payload.id,
+      name: payload.name.trim(),
+      start: startISO,
+      end: endISO,
+    };
+
+    const conflict = tasks.some(
+      (task, index) =>
+        index !== taskIndex &&
+        task.name === updatedTask.name &&
+        task.start === updatedTask.start &&
+        task.end === updatedTask.end,
+    );
+
+    if (conflict) {
+      return NextResponse.json({ error: "Another task already uses these details" }, { status: 409 });
+    }
+
+    tasks[taskIndex] = updatedTask;
+    await writeTasks(tasks);
+
+    return NextResponse.json(updatedTask);
+  } catch (error) {
+    console.error("Failed to update tasks.json", error);
+    return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
+  }
+}
+
 

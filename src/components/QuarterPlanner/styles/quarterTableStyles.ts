@@ -136,10 +136,15 @@ export const TaskName = styled.span`
   display: block;
 `;
 
-export const RemoveButton = styled.button`
+export const ActionGroup = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+`;
+
+const iconButtonStyles = css`
   border: none;
   background: transparent;
-  color: ${theme.colors.accentStrong};
   cursor: pointer;
   transition: ${theme.transitions.primary};
   display: inline-flex;
@@ -147,6 +152,26 @@ export const RemoveButton = styled.button`
   justify-content: center;
   padding: ${theme.spacing.iconPadding};
   border-radius: ${theme.radii.input};
+`;
+
+export const EditButton = styled.button`
+  ${iconButtonStyles};
+  color: ${theme.colors.foreground};
+
+  &:hover {
+    transform: scale(1.05);
+    color: ${theme.colors.accentStrong};
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px ${theme.colors.weekInset};
+  }
+`;
+
+export const RemoveButton = styled.button`
+  ${iconButtonStyles};
+  color: ${theme.colors.accentStrong};
 
   &:hover {
     transform: scale(1.05);

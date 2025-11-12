@@ -141,6 +141,15 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
     setTasks((previous) => previous.filter((task) => task.id !== taskId));
   }, []);
 
+  const handleEditTaskNavigate = useCallback(
+    (taskId: string) => {
+      router.push(
+        `/calendar/${currentQuarter.year}/${currentQuarter.quarter}/tasks/${taskId}/edit`,
+      );
+    },
+    [currentQuarter.quarter, currentQuarter.year, router],
+  );
+
   const handleAddTaskNavigate = useCallback(() => {
     router.push(`/calendar/${currentQuarter.year}/${currentQuarter.quarter}/tasks/new`);
   }, [currentQuarter.quarter, currentQuarter.year, router]);
@@ -159,7 +168,12 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
         }
       />
 
-      <QuarterTable structure={structure} tasks={tasks} onRemoveTask={handleRemoveTask} />
+      <QuarterTable
+        structure={structure}
+        tasks={tasks}
+        onRemoveTask={handleRemoveTask}
+        onEditTask={handleEditTaskNavigate}
+      />
     </PlannerShell>
   );
 }
