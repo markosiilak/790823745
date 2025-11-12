@@ -24,6 +24,37 @@ export const Subtitle = styled.p`
 
 export const TableWrapper = styled.div`
   overflow-x: auto;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: "";
+    position: sticky;
+    top: 0;
+    height: 100%;
+    width: 72px;
+    pointer-events: none;
+    z-index: 2;
+    border-radius: ${theme.radii.card};
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      ${theme.colors.backgroundAlt} 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      ${theme.colors.backgroundAlt} 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
 `;
 
 export const StyledTable = styled.table`
@@ -127,7 +158,31 @@ export const RemoveButton = styled.button`
   }
 `;
 
-export const WeekCell = styled.td<{ $active: boolean }>`
+export const MonthHeaderCell = styled.th<{ $isFocused: boolean }>`
+  text-align: center;
+  padding: ${theme.spacing.tableCellPadding};
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: ${theme.colors.tableHeaderText};
+  background: ${theme.colors.tableHeader};
+  border-bottom: 1px solid ${theme.colors.border};
+  opacity: ${({ $isFocused }) => ($isFocused ? 1 : 0.35)};
+  transition: ${theme.transitions.primary};
+`;
+
+export const WeekHeaderCell = styled.th<{ $isFocused: boolean }>`
+  text-align: center;
+  padding: 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: ${theme.colors.tableHeaderText};
+  background: ${theme.colors.tableHeader};
+  border-bottom: 1px solid ${theme.colors.border};
+  opacity: ${({ $isFocused }) => ($isFocused ? 1 : 0.3)};
+  transition: ${theme.transitions.primary};
+`;
+
+export const WeekCell = styled.td<{ $active: boolean; $dimmed: boolean }>`
   height: ${theme.sizes.weekCell};
   width: ${theme.sizes.weekCell};
   min-width: ${theme.sizes.weekCell};
@@ -141,6 +196,7 @@ export const WeekCell = styled.td<{ $active: boolean }>`
     $active ? `inset 0 0 0 2px ${theme.colors.weekInset}` : "none"};
   border-right-color: ${({ $active }) =>
     $active ? theme.colors.weekBorderActive : theme.colors.tableDivider};
+  opacity: ${({ $dimmed }) => ($dimmed ? 0.3 : 1)};
 
   &:last-child {
     border-right: none;

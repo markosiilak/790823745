@@ -13,6 +13,9 @@ import {
   RemoveButton,
   WeekCell,
   EmptyCell,
+  MonthHeaderCell,
+  WeekHeaderCell,
+  WeekRange,
 } from "./styles/quarterTableStyles";
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
 import { Tooltip } from "@/components/Tooltip";
@@ -38,6 +41,8 @@ const dateFormatter = new Intl.DateTimeFormat("et-EE", {
 });
 
 export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTableProps) {
+  const focusedMonthIndex = Math.floor(structure.months.length / 2);
+
   return (
     <Card>
       <TableHeader>
@@ -72,22 +77,28 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
               >
                 End date
               </StickyHeaderCell>
-              {structure.months.map((month) => (
-                <th key={month.month} colSpan={month.weeks.length} scope="colgroup">
+              {structure.months.map((month, index) => (
+                <MonthHeaderCell
+                  key={month.month}
+                  colSpan={month.weeks.length}
+                  scope="colgroup"
+                  $isFocused={index === focusedMonthIndex}
+                >
                   {month.name}
-                </th>
+                </MonthHeaderCell>
               ))}
             </tr>
             <tr>
-              {structure.months.flatMap((month) =>
+              {structure.months.flatMap((month, index) =>
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
                   const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
                   return (
                     <Tooltip key={`${month.month}-${weekStartKey}`} content={rangeLabel}>
-                      <th>
+                      <WeekHeaderCell $isFocused={index === focusedMonthIndex}>
                         W{week.isoWeek}
-                      </th>
+                        <WeekRange>{rangeLabel}</WeekRange>
+                      </WeekHeaderCell>
                     </Tooltip>
                   );
                 }),
@@ -97,7 +108,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
           <tbody>
             {tasks.length === 0 ? (
               <tr>
-                <EmptyCell colSpan={1 + structure.weeks.length}>
+                <EmptyCell colSpan={3 + structure.weeks.length}>
                   No tasks yet. Add one above to see it highlighted here.
                 </EmptyCell>
               </tr>
@@ -131,14 +142,14 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                     >
                       {dateFormatter.format(taskEnd)}
                     </StickyBodyCell>
-                    {structure.months.flatMap((month) =>
+                    {structure.months.flatMap((month, index) =>
                       month.weeks.map((week) => {
                         const weekStartKey = formatISODate(week.start);
                         const active = weekOverlapsRange(week, taskStart, taskEnd);
                         const rangeLabel = `${dateFormatter.format(week.start)} – ${dateFormatter.format(week.end)}`;
                         return (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
-                            <WeekCell $active={active} />
+                            <WeekCell $active={active} $dimmed={index !== focusedMonthIndex} />
                           </Tooltip>
                         );
                       }),
