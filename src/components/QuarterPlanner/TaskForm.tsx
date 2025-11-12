@@ -93,6 +93,13 @@ const buttonBase = css`
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
 `;
 
 const PrimaryButton = styled.button`
@@ -105,12 +112,6 @@ const PrimaryButton = styled.button`
     box-shadow: ${theme.shadows.primaryHover};
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-  }
 `;
 
 const SecondaryButton = styled.button`
@@ -149,6 +150,7 @@ type TaskFormProps = {
   secondaryLabel?: string;
   onSecondaryAction?: () => void;
   showLimitBadge?: boolean;
+  submitDisabled?: boolean;
 };
 
 export function TaskForm({
@@ -165,9 +167,11 @@ export function TaskForm({
   secondaryLabel = "Clear",
   onSecondaryAction,
   showLimitBadge = true,
+  submitDisabled = false,
 }: TaskFormProps) {
   const handleSecondary = onSecondaryAction ?? onReset;
   const isAtLimit = taskCount >= maxTasks;
+  const isSubmitDisabled = submitDisabled || isAtLimit;
 
   return (
     <Card>
@@ -206,10 +210,10 @@ export function TaskForm({
         </FormGrid>
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <FormActions>
-          <PrimaryButton type="submit" disabled={isAtLimit}>
+          <PrimaryButton type="submit" disabled={isSubmitDisabled}>
             {submitLabel}
           </PrimaryButton>
-          <SecondaryButton type="button" onClick={handleSecondary}>
+          <SecondaryButton type="button" onClick={handleSecondary} disabled={submitDisabled}>
             {secondaryLabel}
           </SecondaryButton>
           {showLimitBadge ? (

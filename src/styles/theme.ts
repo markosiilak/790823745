@@ -6,6 +6,7 @@ const theme = {
     foreground: "#1f2933",
     foregroundMuted: "#4a5a6a",
     accent: "#4361ee",
+    accentInverted: "#ffffff",
     accentMuted: "rgba(67, 97, 238, 0.15)",
     accentStrong: "#3046c5",
     border: "#d4dbe7",
@@ -41,12 +42,17 @@ const theme = {
     formGap: "1.25rem",
     fieldGap: "0.45rem",
     stackGap: "2rem",
+    controlPadding: "0.65rem 1.6rem",
   },
   sizes: {
     weekCell: "62px",
   },
   typography: {
     kickerLetterSpacing: "0.08em",
+    fontWeightBold: 600,
+  },
+  transitions: {
+    primary: "transform 0.18s ease, box-shadow 0.18s ease",
   },
 } as const;
 

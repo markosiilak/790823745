@@ -52,6 +52,7 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
     end: defaultEnd,
   }));
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = useCallback(
     (field: keyof TaskFormState) => (value: string) => {
@@ -73,7 +74,7 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
   }, [defaultEnd, defaultStart]);
 
   const handleSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       if (!form.name.trim()) {
@@ -94,17 +95,29 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
         return;
       }
 
-      const params = new URLSearchParams();
-      params.set(
-        "task",
-        JSON.stringify({
-          name: form.name.trim(),
-          start: formatISODate(startDate),
-          end: formatISODate(endDate),
-        }),
-      );
+      try {
+        setIsSaving(true);
+        const response = await fetch("/api/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: form.name.trim(),
+            start: formatISODate(startDate),
+            end: formatISODate(endDate),
+          }),
+        });
 
-      router.push(`/calendar/${quarter.year}/${quarter.quarter}?${params.toString()}`);
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(payload?.error ?? "Failed to save task.");
+        }
+
+        router.push(`/calendar/${quarter.year}/${quarter.quarter}`);
+      } catch (saveError) {
+        console.error("Failed to save task", saveError);
+        setError(saveError instanceof Error ? saveError.message : "Failed to save task.");
+        setIsSaving(false);
+      }
     },
     [form.end, form.name, form.start, quarter.quarter, quarter.year, router],
   );
@@ -137,6 +150,7 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
         secondaryLabel="Cancel"
         onSecondaryAction={handleCancel}
         showLimitBadge={false}
+        submitDisabled={isSaving}
       />
     </PageShell>
   );
