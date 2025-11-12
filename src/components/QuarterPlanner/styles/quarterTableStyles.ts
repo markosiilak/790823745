@@ -111,7 +111,9 @@ export const StickyHeaderCell = styled.th<{ $left: number; $width: number; $comp
   min-width: ${({ $width }) => `${$width}px`};
   padding: ${({ $compact }) =>
     $compact ? theme.spacing.tableCellPaddingCompact : theme.spacing.tableCellPadding};
-  text-align: left;
+  && {
+    text-align: left;
+  }
 `;
 
 export const StickyBodyCell = styled.td<{ $left: number; $width: number; $compact: boolean }>`
