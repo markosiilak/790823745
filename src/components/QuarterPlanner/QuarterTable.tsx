@@ -3,6 +3,7 @@ import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from
 import { Task } from "./types";
 import theme from "@/styles/theme";
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
+import { Tooltip } from "@/components/Tooltip";
 
 const Card = styled.section`
   background: ${theme.colors.backgroundAlt};
@@ -116,20 +117,20 @@ const RemoveButton = styled.button`
   background: transparent;
   color: ${theme.colors.accentStrong};
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: ${theme.transitions.primary};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: ${theme.spacing.controlPadding};
+  padding: ${theme.spacing.iconPadding};
   border-radius: ${theme.radii.input};
 
   &:hover {
-    opacity: 0.7;
+    transform: scale(1.05);
   }
 
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 4px ${theme.colors.accentMuted};
+    box-shadow: inset 0 0 0 2px ${theme.colors.weekInset};
   }
 `;
 
@@ -224,13 +225,14 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
               {structure.months.flatMap((month) =>
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
+                  const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
                   return (
-                    <th key={`${month.month}-${weekStartKey}`}>
-                      W{week.isoWeek}
-                      <WeekRange>
-                        {weekFormatter.format(week.start)} – {weekFormatter.format(week.end)}
-                      </WeekRange>
-                    </th>
+                    <Tooltip key={`${month.month}-${weekStartKey}`} content={rangeLabel}>
+                      <th>
+                        W{week.isoWeek}
+                        <WeekRange>{rangeLabel}</WeekRange>
+                      </th>
+                    </Tooltip>
                   );
                 }),
               )}
@@ -277,8 +279,11 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                       month.weeks.map((week) => {
                         const weekStartKey = formatISODate(week.start);
                         const active = weekOverlapsRange(week, taskStart, taskEnd);
+                        const rangeLabel = `${dateFormatter.format(week.start)} – ${dateFormatter.format(week.end)}`;
                         return (
-                          <WeekCell key={`${task.id}-${weekStartKey}`} $active={active} />
+                          <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
+                            <WeekCell $active={active} />
+                          </Tooltip>
                         );
                       }),
                     )}

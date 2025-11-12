@@ -28,11 +28,13 @@ const theme = {
     card: "0 12px 32px rgba(31, 41, 51, 0.12)",
     navHover: "0 6px 18px rgba(123, 63, 228, 0.18)",
     primaryHover: "0 8px 20px rgba(123, 63, 228, 0.28)",
+    tooltip: "0 10px 24px rgba(31, 41, 51, 0.18)",
   },
   radii: {
     card: "20px",
     pill: "999px",
     input: "12px",
+    tooltip: "8px",
   },
   spacing: {
     pagePaddingY: "3rem",
@@ -43,6 +45,7 @@ const theme = {
     fieldGap: "0.45rem",
     stackGap: "2rem",
     controlPadding: "0.65rem 1.6rem",
+    iconPadding: "0.5rem",
   },
   sizes: {
     weekCell: "62px",
@@ -53,6 +56,12 @@ const theme = {
   },
   transitions: {
     primary: "transform 0.18s ease, box-shadow 0.18s ease",
+  },
+  tooltip: {
+    background: "#1f1636",
+    color: "#ffffff",
+    padding: "0.35rem 0.6rem",
+    offset: 12,
   },
 } as const;
 
