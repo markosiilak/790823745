@@ -46,6 +46,7 @@ const theme = {
     stackGap: "2rem",
     controlPadding: "0.65rem 1.6rem",
     iconPadding: "0.5rem",
+    tableCellPadding: "1rem",
   },
   sizes: {
     weekCell: "62px",

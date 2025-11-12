@@ -80,8 +80,7 @@ export const StickyHeaderCell = styled.th<{ $left: number; $width: number }>`
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
-  padding: 1rem;
-  padding-left: 0;
+  padding: ${theme.spacing.tableCellPadding};
   text-align: left;
 `;
 
@@ -91,7 +90,7 @@ export const StickyBodyCell = styled.td<{ $left: number; $width: number }>`
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
-  padding: 1rem;
+  padding: ${theme.spacing.tableCellPadding};
 `;
 
 export const TaskRow = styled.div`
