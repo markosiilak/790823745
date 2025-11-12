@@ -255,8 +255,8 @@ export function DatePicker({ value, onChange, ariaLabel, ariaLabelledBy }: DateP
             </NavButton>
           </CalendarHeader>
           <CalendarGrid>
-            {weekdayLabels.map((label) => (
-              <WeekdayCell key={label}>{label}</WeekdayCell>
+            {weekdayLabels.map((label, index) => (
+              <WeekdayCell key={`${label}-${index}`}>{label}</WeekdayCell>
             ))}
             {days.map(({ date, isCurrentMonth }) => {
               const isSelected =
