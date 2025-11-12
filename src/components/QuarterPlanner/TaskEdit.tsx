@@ -37,10 +37,39 @@ export function TaskEdit({ quarter, taskId }: TaskEditProps) {
         }
 
         if (!cancelled) {
+          if (typeof task.name !== "string") {
+            throw new Error("Task is missing a name.");
+          }
+
+          const baseStart = (() => {
+            if (typeof task.start === "string") {
+              return formatISODate(parseISODate(task.start));
+            }
+            if (typeof task.durationDays === "number") {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return formatISODate(today);
+            }
+            throw new Error("Task is missing start information.");
+          })();
+
+          const baseEnd = (() => {
+            if (typeof task.end === "string") {
+              return formatISODate(parseISODate(task.end));
+            }
+            if (typeof task.durationDays === "number") {
+              const startDate = parseISODate(baseStart);
+              const endDate = new Date(startDate);
+              endDate.setDate(endDate.getDate() + Math.max(task.durationDays, 0));
+              return formatISODate(endDate);
+            }
+            return baseStart;
+          })();
+
           const normalised: TaskFormState = {
             name: task.name,
-            start: formatISODate(parseISODate(task.start)),
-            end: formatISODate(parseISODate(task.end)),
+            start: baseStart,
+            end: baseEnd,
           };
           setForm(normalised);
           setInitialForm(normalised);
