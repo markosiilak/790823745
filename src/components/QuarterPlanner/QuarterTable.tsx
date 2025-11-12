@@ -18,8 +18,6 @@ import {
   EmptyCell,
   TableActions,
   ViewControls,
-  ViewModeSelect,
-  WeekSelect,
   WeekHeaderContent,
   WeekHeaderLabel,
   AddWeekButton,
@@ -33,6 +31,7 @@ import {
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
 import { EditIcon } from "@/components/icons/EditIcon";
 import { Tooltip } from "@/components/Tooltip";
+import { Dropdown, DropdownOption } from "./Dropdown";
 
 const NAME_COLUMN_WIDTH = 260;
 const DATE_COLUMN_WIDTH = 140;
@@ -106,6 +105,24 @@ export function QuarterTable({
 
   const isCompact = viewMode === "compact";
 
+  const viewModeOptions = useMemo<DropdownOption[]>(
+    () => [
+      { value: "standard", label: "Full quarter · standard" },
+      { value: "compact", label: "Full quarter · compact" },
+      { value: "single-week", label: "Single week" },
+    ],
+    [],
+  );
+
+  const weekDropdownOptions = useMemo<DropdownOption[]>(
+    () =>
+      structure.weeks.map((week) => ({
+        value: week.start.toISOString(),
+        label: `W${week.isoWeek} · ${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`,
+      })),
+    [structure.weeks],
+  );
+
   const weeksToRender = useMemo(() => {
     if (viewMode === "single-week") {
       if (!effectiveSelectedWeekKey) {
@@ -143,11 +160,11 @@ export function QuarterTable({
         </div>
         <TableActions>
           <ViewControls>
-            <ViewModeSelect
+            <Dropdown
+              options={viewModeOptions}
               value={viewMode}
-              aria-label="Table view mode"
-              onChange={(event) => {
-                const nextMode = event.target.value as ViewMode;
+              onChange={(nextValue) => {
+                const nextMode = nextValue as ViewMode;
                 setViewMode(nextMode);
                 if (nextMode !== "single-week") {
                   return;
@@ -162,23 +179,19 @@ export function QuarterTable({
                   }
                 }
               }}
-            >
-              <option value="standard">Full quarter · standard</option>
-              <option value="compact">Full quarter · compact</option>
-              <option value="single-week">Single week</option>
-            </ViewModeSelect>
+              ariaLabel="Table view mode"
+              width="220px"
+            />
             {viewMode === "single-week" ? (
-              <WeekSelect
-                value={effectiveSelectedWeekKey ?? ""}
-                aria-label="Select week to display"
-                onChange={(event) => setSelectedWeekKey(event.target.value)}
-              >
-                {structure.weeks.map((week) => (
-                  <option key={week.start.toISOString()} value={week.start.toISOString()}>
-                    {`W${week.isoWeek} · ${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`}
-                  </option>
-                ))}
-              </WeekSelect>
+              <Dropdown
+                options={weekDropdownOptions}
+                value={effectiveSelectedWeekKey}
+                onChange={(nextValue) => setSelectedWeekKey(nextValue)}
+                ariaLabel="Select week to display"
+                width="260px"
+                disabled={weekDropdownOptions.length === 0}
+                placeholder="No weeks"
+              />
             ) : null}
           </ViewControls>
         </TableActions>
@@ -342,19 +355,7 @@ export function QuarterTable({
 
                         const hasContent = active || weekSubtasks.length > 0;
 
-                        if (!hasContent) {
-                          return (
-                            <WeekCell
-                              key={`${task.id}-${weekStartKey}`}
-                              $active={false}
-                              $compact={isCompact}
-                              $hasContent={false}
-                              aria-hidden="true"
-                            />
-                          );
-                        }
-
-                        return (
+                        return hasContent ? (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
                             <WeekCell $active={active} $compact={isCompact} $hasContent>
                               <AddSubtaskButton
@@ -381,6 +382,14 @@ export function QuarterTable({
                               ) : null}
                             </WeekCell>
                           </Tooltip>
+                        ) : (
+                          <WeekCell
+                            key={`${task.id}-${weekStartKey}`}
+                            $active={false}
+                            $compact={isCompact}
+                            $hasContent={false}
+                            aria-hidden="true"
+                          />
                         );
                       }),
                     )}
