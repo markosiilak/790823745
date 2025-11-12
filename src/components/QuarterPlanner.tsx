@@ -576,14 +576,18 @@ export function QuarterPlanner() {
               </tr>
               <tr>
                 {structure.months.flatMap((month) =>
-                  month.weeks.map((week) => (
-                    <th key={`${month.month}-${week.isoWeek}`}>
-                      W{week.isoWeek}
-                      <WeekRange>
-                        {formatISODate(week.start).slice(5)} – {formatISODate(week.end).slice(5)}
-                      </WeekRange>
-                    </th>
-                  )),
+                  month.weeks.map((week) => {
+                    const weekStartKey = formatISODate(week.start);
+                    const weekEndLabel = formatISODate(week.end);
+                    return (
+                      <th key={`${month.month}-${weekStartKey}`}>
+                        W{week.isoWeek}
+                        <WeekRange>
+                          {weekStartKey.slice(5)} – {weekEndLabel.slice(5)}
+                        </WeekRange>
+                      </th>
+                    );
+                  }),
                 )}
               </tr>
             </thead>
@@ -619,10 +623,11 @@ export function QuarterPlanner() {
                       </TaskRowHeader>
                       {structure.months.flatMap((month) =>
                         month.weeks.map((week) => {
+                          const weekStartKey = formatISODate(week.start);
                           const active = weekOverlapsRange(week, taskStart, taskEnd);
                           return (
                             <WeekCell
-                              key={`${task.id}-${month.month}-${week.isoWeek}`}
+                              key={`${task.id}-${weekStartKey}`}
                               $active={active}
                             />
                           );
