@@ -1,7 +1,13 @@
 [
   {
-    "id": "kickoff",
-    "name": "Product Discovery",
+    "id": "4b088252-2d2a-4d0e-a200-b12806239a27",
+    "name": "Default task",
     "durationDays": 14
+  },
+  {
+    "id": "2fe6e492-858b-4954-9e78-32318aa26f41",
+    "name": "Marko task adding test",
+    "start": "2025-11-12",
+    "end": "2025-11-19"
   }
 ]
