@@ -21,6 +21,7 @@ const theme = {
     weekGradientEnd: "rgba(67, 97, 238, 0.28)",
     weekBorderActive: "rgba(67, 97, 238, 0.45)",
     accentBadge: "rgba(67, 97, 238, 0.08)",
+    weekInset: "rgba(67, 97, 238, 0.25)",
   },
   shadows: {
     card: "0 12px 32px rgba(31, 41, 51, 0.12)",

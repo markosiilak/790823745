@@ -1,25 +1,26 @@
 import styled, { css } from "styled-components";
 import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
+import theme from "@/styles/theme";
 
 const Card = styled.section`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.radii.card};
+  background: ${theme.colors.backgroundAlt};
+  border-radius: ${theme.radii.card};
   border: 1px solid rgba(31, 41, 51, 0.08);
-  box-shadow: ${({ theme }) => theme.shadows.card};
+  box-shadow: ${theme.shadows.card};
   padding: 2rem;
 `;
 
 const TableHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.controlGap};
+  gap: ${theme.spacing.controlGap};
   align-items: flex-start;
   margin-bottom: 1.5rem;
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 
@@ -38,9 +39,9 @@ const StyledTable = styled.table`
     padding: 0.85rem;
     font-size: 0.9rem;
     font-weight: 600;
-    color: ${({ theme }) => theme.colors.tableHeaderText};
-    background: ${({ theme }) => theme.colors.tableHeader};
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+    color: ${theme.colors.tableHeaderText};
+    background: ${theme.colors.tableHeader};
+    border-bottom: 1px solid ${theme.colors.border};
   }
 
   thead tr:first-child th:first-child {
@@ -53,7 +54,7 @@ const StyledTable = styled.table`
 
   tbody th,
   tbody td {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.tableDivider};
+    border-bottom: 1px solid ${theme.colors.tableDivider};
   }
 
   tbody tr:last-child th,
@@ -65,14 +66,14 @@ const StyledTable = styled.table`
 const WeekRange = styled.span`
   display: block;
   font-size: 0.7rem;
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
   margin-top: 0.2rem;
 `;
 
 const stickyColumnStyles = css`
   position: sticky;
   left: 0;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${theme.colors.backgroundAlt};
   box-shadow: 1px 0 0 rgba(31, 41, 51, 0.08);
 `;
 
@@ -120,13 +121,13 @@ const TaskName = styled.span`
 
 const TaskDates = styled.span`
   font-size: 0.8rem;
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
 `;
 
 const RemoveButton = styled.button`
   border: none;
   background: transparent;
-  color: ${({ theme }) => theme.colors.accentStrong};
+  color: ${theme.colors.accentStrong};
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -138,18 +139,18 @@ const RemoveButton = styled.button`
 `;
 
 const WeekCell = styled.td<{ $active: boolean }>`
-  height: ${({ theme }) => theme.sizes.weekCell};
-  width: ${({ theme }) => theme.sizes.weekCell};
-  min-width: ${({ theme }) => theme.sizes.weekCell};
-  border-right: 1px solid ${({ theme }) => theme.colors.tableDivider};
+  height: ${theme.sizes.weekCell};
+  width: ${theme.sizes.weekCell};
+  min-width: ${theme.sizes.weekCell};
+  border-right: 1px solid ${theme.colors.tableDivider};
   position: relative;
-  background: ${({ $active, theme }) =>
+  background: ${({ $active }) =>
     $active
       ? `linear-gradient(135deg, ${theme.colors.weekGradientStart}, ${theme.colors.weekGradientEnd})`
       : theme.colors.tableCellBg};
-  box-shadow: ${({ $active, theme }) =>
-    $active ? `inset 0 0 0 2px ${theme.colors.accentMuted}` : "none"};
-  border-right-color: ${({ $active, theme }) =>
+  box-shadow: ${({ $active }) =>
+    $active ? `inset 0 0 0 2px ${theme.colors.weekInset}` : "none"};
+  border-right-color: ${({ $active }) =>
     $active ? theme.colors.weekBorderActive : theme.colors.tableDivider};
 
   &:last-child {
@@ -162,7 +163,7 @@ const EmptyCell = styled.td`
   z-index: 1;
   text-align: center;
   padding: 2.5rem 1rem;
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
   font-style: italic;
 `;
 

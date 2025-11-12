@@ -23,21 +23,21 @@ const TitleGroup = styled.div`
 
 const Kicker = styled.p`
   font-size: 0.85rem;
-  letter-spacing: ${({ theme }) => theme.typography.kickerLetterSpacing};
+  letter-spacing: ${theme.typography.kickerLetterSpacing};
   text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.accentStrong};
+  color: ${theme.colors.accentStrong};
   font-weight: 600;
   margin-bottom: 0.35rem;
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 
 const Controls = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.controlGap};
+  gap: ${theme.spacing.controlGap};
   align-items: center;
 
   @media (max-width: 900px) {
@@ -48,18 +48,18 @@ const Controls = styled.div`
 `;
 
 const NavButton = styled.button`
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.radii.pill};
+  border: 1px solid ${theme.colors.border};
+  background: ${theme.colors.backgroundAlt};
+  border-radius: ${theme.radii.pill};
   padding: 0.65rem 1.2rem;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.foreground};
+  color: ${theme.colors.foreground};
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.accent};
-    box-shadow: ${({ theme }) => theme.shadows.navHover};
+    border-color: ${theme.colors.accent};
+    box-shadow: ${theme.shadows.navHover};
     transform: translateY(-1px);
   }
 `;

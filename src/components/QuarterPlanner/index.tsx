@@ -7,6 +7,7 @@ import { QuarterKey, buildQuarterStructure, formatISODate, shiftQuarter } from "
 import { HeaderSection } from "./HeaderSection";
 import { QuarterTable } from "./QuarterTable";
 import { Task } from "./types";
+import theme from "@/styles/theme";
 
 const MAX_TASKS = 10;
 
@@ -14,7 +15,7 @@ const PlannerShell = styled.div`
   width: min(1200px, 100%);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sectionGap};
+  gap: ${theme.spacing.sectionGap};
 `;
 
 const plannerSubtitle =
@@ -35,18 +36,18 @@ function createDefaultTasks(): Task[] {
 }
 
 const AddTaskButton = styled.button`
-  border-radius: ${({ theme }) => theme.radii.pill};
+  border-radius: ${theme.radii.pill};
   border: none;
   padding: 0.65rem 1.6rem;
   font-weight: 600;
-  background: ${({ theme }) => theme.colors.accent};
+  background: ${theme.colors.accent};
   color: #ffffff;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: ${({ theme }) => theme.shadows.primaryHover};
+    box-shadow: ${theme.shadows.primaryHover};
   }
 `;
 

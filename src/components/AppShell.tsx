@@ -1,12 +1,12 @@
 'use client';
 
 import { PropsWithChildren } from "react";
-import { ThemeProvider, createGlobalStyle, styled } from "styled-components";
-import { theme } from "@/styles/theme";
+import { createGlobalStyle, styled } from "styled-components";
+import theme from "@/styles/theme";
 
 const GlobalStyle = createGlobalStyle`
   :root {
-    color-scheme: ${({ theme }) => theme.colorScheme};
+    color-scheme: ${theme.colorScheme};
   }
 
   *,
@@ -19,11 +19,11 @@ const GlobalStyle = createGlobalStyle`
   body {
     max-width: 100vw;
     overflow-x: hidden;
-    background: ${({ theme }) => theme.colors.background};
+    background: ${theme.colors.background};
   }
 
   body {
-    color: ${({ theme }) => theme.colors.foreground};
+    color: ${theme.colors.foreground};
     font-family: var(--font-geist-sans, "Inter", "Segoe UI", -apple-system, sans-serif);
     font-size: 16px;
     line-height: 1.6;
@@ -38,7 +38,7 @@ const GlobalStyle = createGlobalStyle`
   h5,
   h6 {
     font-weight: 600;
-    color: ${({ theme }) => theme.colors.foreground};
+    color: ${theme.colors.foreground};
   }
 
   button {
@@ -51,15 +51,15 @@ const LayoutContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: ${({ theme }) => `${theme.spacing.pagePaddingY} ${theme.spacing.pagePaddingX}`};
+  padding: ${theme.spacing.pagePaddingY} ${theme.spacing.pagePaddingX};
 `;
 
 export function AppShell({ children }: PropsWithChildren) {
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <GlobalStyle />
       <LayoutContainer>{children}</LayoutContainer>
-    </ThemeProvider>
+    </>
   );
 }
 

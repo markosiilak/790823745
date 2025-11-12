@@ -6,22 +6,23 @@ import styled from "styled-components";
 import { QuarterKey, formatISODate, parseISODate } from "@/lib/quarter";
 import { TaskForm } from "./TaskForm";
 import { TaskFormState } from "./types";
+import theme from "@/styles/theme";
 
 const PageShell = styled.div`
   width: min(720px, 100%);
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.stackGap};
+  gap: ${theme.spacing.stackGap};
 `;
 
 const HeadingGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.controlGap};
+  gap: ${theme.spacing.controlGap};
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.foregroundMuted};
+  color: ${theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 
