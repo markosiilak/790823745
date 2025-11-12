@@ -187,7 +187,7 @@ export const RemoveButton = styled.button`
 `;
 
 export const WeekCell = styled.td<{ $active: boolean; $compact: boolean }>`
-  height: ${({ $compact }) =>
+  min-height: ${({ $compact }) =>
     $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
   width: ${({ $compact }) =>
     $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
@@ -203,10 +203,84 @@ export const WeekCell = styled.td<{ $active: boolean; $compact: boolean }>`
     $active ? `inset 0 0 0 2px ${theme.colors.weekInset}` : "none"};
   border-right-color: ${({ $active }) =>
     $active ? theme.colors.weekBorderActive : theme.colors.tableDivider};
+  padding: 0.45rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: stretch;
+  overflow: hidden;
 
   &:last-child {
     border-right: none;
   }
+`;
+
+export const AddSubtaskButton = styled.button`
+  align-self: flex-end;
+  border: none;
+  background: rgba(255, 255, 255, 0.65);
+  color: ${theme.colors.accentStrong};
+  border-radius: ${theme.radii.input};
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: ${theme.typography.fontWeightBold};
+  cursor: pointer;
+  transition: ${theme.transitions.primary}, background-color 0.18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px ${theme.colors.weekInset};
+  }
+`;
+
+export const SubtaskList = styled.ul`
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+`;
+
+export const SubtaskItem = styled.li`
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: ${theme.radii.input};
+  padding: 0.35rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.06);
+`;
+
+export const SubtaskMeta = styled.span`
+  font-size: 0.65rem;
+  color: ${theme.colors.foregroundMuted};
+`;
+
+export const SubtaskTitle = styled.span`
+  font-size: 0.75rem;
+  font-weight: ${theme.typography.fontWeightBold};
+  color: ${theme.colors.foreground};
+  word-break: break-word;
+`;
+
+export const EmptySubtasks = styled.span`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: ${theme.colors.foregroundMuted};
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: ${theme.radii.input};
 `;
 
 export const EmptyCell = styled.td`

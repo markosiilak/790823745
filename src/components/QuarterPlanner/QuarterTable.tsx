@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
+import { QuarterStructure, WeekInfo, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
 import {
   Card,
@@ -18,6 +18,12 @@ import {
   EmptyCell,
   TableActions,
   ToggleButton,
+  AddSubtaskButton,
+  SubtaskList,
+  SubtaskItem,
+  SubtaskMeta,
+  SubtaskTitle,
+  EmptySubtasks,
 } from "./styles/quarterTableStyles";
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
 import { EditIcon } from "@/components/icons/EditIcon";
@@ -31,6 +37,7 @@ type QuarterTableProps = {
   tasks: Task[];
   onRemoveTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
+  onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
 };
 
 const weekFormatter = new Intl.DateTimeFormat("et-EE", {
@@ -44,7 +51,23 @@ const dateFormatter = new Intl.DateTimeFormat("et-EE", {
   year: "numeric",
 });
 
-export function QuarterTable({ structure, tasks, onRemoveTask, onEditTask }: QuarterTableProps) {
+const subtaskDateFormatter = new Intl.DateTimeFormat("et-EE", {
+  day: "2-digit",
+  month: "2-digit",
+});
+
+const subtaskTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+export function QuarterTable({
+  structure,
+  tasks,
+  onRemoveTask,
+  onEditTask,
+  onAddSubtask,
+}: QuarterTableProps) {
   const [isCompact, setIsCompact] = useState(false);
 
   return (
@@ -182,9 +205,53 @@ export function QuarterTable({ structure, tasks, onRemoveTask, onEditTask }: Qua
                         const rangeLabel = `${dateFormatter.format(week.start)} – ${dateFormatter.format(
                           week.end,
                         )}`;
+
+                        const weekStartMs = week.start.getTime();
+                        const weekEndMs = week.end.getTime() + 24 * 60 * 60 * 1000 - 1;
+
+                        const weekSubtasks = task.subtasks
+                          .map((subtask) => {
+                            const timestampDate = new Date(subtask.timestamp);
+                            return {
+                              ...subtask,
+                              timestampDate,
+                            };
+                          })
+                          .filter((subtask) => {
+                            const time = subtask.timestampDate.getTime();
+                            return !Number.isNaN(time) && time >= weekStartMs && time <= weekEndMs;
+                          })
+                          .sort(
+                            (a, b) =>
+                              a.timestampDate.getTime() - b.timestampDate.getTime(),
+                          );
+
                         return (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
-                            <WeekCell $active={active} $compact={isCompact} />
+                            <WeekCell $active={active} $compact={isCompact}>
+                              <AddSubtaskButton
+                                type="button"
+                                onClick={() => onAddSubtask(task.id, task.name, week)}
+                                aria-label={`Add subtask for ${task.name} in week ${week.isoWeek}`}
+                              >
+                                +
+                              </AddSubtaskButton>
+                              {weekSubtasks.length > 0 ? (
+                                <SubtaskList>
+                                  {weekSubtasks.map((subtask) => (
+                                    <SubtaskItem key={subtask.id}>
+                                      <SubtaskMeta>
+                                        {subtaskDateFormatter.format(subtask.timestampDate)} ·{" "}
+                                        {subtaskTimeFormatter.format(subtask.timestampDate)}
+                                      </SubtaskMeta>
+                                      <SubtaskTitle>{subtask.title}</SubtaskTitle>
+                                    </SubtaskItem>
+                                  ))}
+                                </SubtaskList>
+                              ) : active ? (
+                                <EmptySubtasks>No subtasks</EmptySubtasks>
+                              ) : null}
+                            </WeekCell>
                           </Tooltip>
                         );
                       }),

@@ -2,12 +2,27 @@
   {
     "id": "4b088252-2d2a-4d0e-a200-b12806239a27",
     "name": "Default task",
-    "durationDays": 14
+    "durationDays": 14,
+    "start": "2025-11-12",
+    "end": "2025-11-26",
+    "subtasks": [
+      {
+        "id": "3418a143-2b1a-4aa7-a3ff-0ebd43eb0b32",
+        "title": "Kick-off sync",
+        "timestamp": "2025-11-13T09:00:00.000Z"
+      },
+      {
+        "id": "5c8fd5f9-1af4-42be-93c6-a635b794561c",
+        "title": "Review workshop",
+        "timestamp": "2025-11-17T13:30:00.000Z"
+      }
+    ]
   },
   {
     "id": "2fe6e492-858b-4954-9e78-32318aa26f41",
-    "name": "Marko task adding test",
+    "name": "Marko task test",
     "start": "2025-11-12",
-    "end": "2025-11-19"
+    "end": "2025-11-19",
+    "subtasks": []
   }
 ]

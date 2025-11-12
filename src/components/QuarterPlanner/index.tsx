@@ -3,10 +3,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { QuarterKey, buildQuarterStructure, formatISODate, parseISODate, shiftQuarter } from "@/lib/quarter";
+import {
+  QuarterKey,
+  WeekInfo,
+  buildQuarterStructure,
+  formatISODate,
+  parseISODate,
+  shiftQuarter,
+} from "@/lib/quarter";
 import { HeaderSection } from "./HeaderSection";
 import { QuarterTable } from "./QuarterTable";
-import { Task } from "./types";
+import { Task, Subtask } from "./types";
+import { SubtaskDialog } from "./Subtasks/SubtaskDialog";
 import theme from "@/styles/theme";
 
 const PlannerShell = styled.div`
@@ -19,12 +27,19 @@ const PlannerShell = styled.div`
 const plannerSubtitle =
   "Visualise task timelines across weeks. Navigate between quarters and add up to ten tasks to your view.";
 
+type StoredSubtask = {
+  id?: string;
+  title?: string;
+  timestamp?: string;
+};
+
 type StoredTask = {
   id?: string;
   name?: string;
   start?: string;
   end?: string;
   durationDays?: number;
+  subtasks?: StoredSubtask[];
 };
 
 function normaliseTasks(rawTasks: StoredTask[]): Task[] {
@@ -61,6 +76,24 @@ function normaliseTasks(rawTasks: StoredTask[]): Task[] {
         name: task.name?.trim() ?? "Untitled Task",
         start: startISO,
         end: endISO,
+        subtasks: Array.isArray(task.subtasks)
+          ? task.subtasks
+              .map((subtask) => {
+                if (typeof subtask?.title !== "string" || typeof subtask?.timestamp !== "string") {
+                  return null;
+                }
+                const timestamp = new Date(subtask.timestamp);
+                if (Number.isNaN(timestamp.getTime())) {
+                  return null;
+                }
+                return {
+                  id: subtask.id ?? crypto.randomUUID(),
+                  title: subtask.title.trim() || "Untitled subtask",
+                  timestamp: timestamp.toISOString(),
+                };
+              })
+              .filter((subtask): subtask is Subtask => subtask !== null)
+          : [],
       };
     })
     .filter((task): task is Task => task !== null);
@@ -91,6 +124,13 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
 
   const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [subtaskDraft, setSubtaskDraft] = useState<{
+    taskId: string;
+    taskName: string;
+    week: WeekInfo;
+  } | null>(null);
+  const [subtaskError, setSubtaskError] = useState<string | null>(null);
+  const [isSavingSubtask, setIsSavingSubtask] = useState(false);
 
   useEffect(() => {
     setCurrentQuarter(initialQuarter);
@@ -141,6 +181,58 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
     setTasks((previous) => previous.filter((task) => task.id !== taskId));
   }, []);
 
+  const handleSubtaskAddRequest = useCallback(
+    (taskId: string, taskName: string, week: WeekInfo) => {
+      setSubtaskDraft({
+        taskId,
+        taskName,
+        week,
+      });
+      setSubtaskError(null);
+    },
+    [],
+  );
+
+  const handleSubtaskSubmit = useCallback(
+    async (taskId: string, payload: { title: string; date: string; time: string }) => {
+      setIsSavingSubtask(true);
+      setSubtaskError(null);
+      try {
+        const response = await fetch(`/api/tasks/${taskId}/subtasks`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const message = (await response.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(message?.error ?? "Failed to add subtask.");
+        }
+
+        const created = (await response.json()) as Subtask;
+
+        setTasks((previous) =>
+          previous.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  subtasks: [...task.subtasks, created],
+                }
+              : task,
+          ),
+        );
+
+        setSubtaskDraft(null);
+      } catch (error) {
+        console.error("Failed to create subtask", error);
+        setSubtaskError(error instanceof Error ? error.message : "Failed to add subtask.");
+      } finally {
+        setIsSavingSubtask(false);
+      }
+    },
+    [],
+  );
+
   const handleEditTaskNavigate = useCallback(
     (taskId: string) => {
       router.push(
@@ -173,7 +265,21 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
         tasks={tasks}
         onRemoveTask={handleRemoveTask}
         onEditTask={handleEditTaskNavigate}
+        onAddSubtask={handleSubtaskAddRequest}
       />
+      {subtaskDraft ? (
+        <SubtaskDialog
+          taskName={subtaskDraft.taskName}
+          week={subtaskDraft.week}
+          error={subtaskError}
+          isSaving={isSavingSubtask}
+          onDismiss={() => {
+            setSubtaskDraft(null);
+            setSubtaskError(null);
+          }}
+          onSubmit={(form) => handleSubtaskSubmit(subtaskDraft.taskId, form)}
+        />
+      ) : null}
     </PlannerShell>
   );
 }

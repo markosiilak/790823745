@@ -3,17 +3,24 @@ import { promises as fs } from "fs";
 import path from "path";
 import { formatISODate, parseISODate } from "@/lib/quarter";
 
-type StoredTask = {
+export type StoredSubtask = {
+  id?: string;
+  title?: string;
+  timestamp?: string;
+};
+
+export type StoredTask = {
   id?: string;
   name?: string;
   start?: string;
   end?: string;
   durationDays?: number;
+  subtasks?: StoredSubtask[];
 };
 
 const tasksFile = path.join(process.cwd(), "src", "data", "default-tasks.json");
 
-async function readTasks(): Promise<StoredTask[]> {
+export async function readTasks(): Promise<StoredTask[]> {
   try {
     const content = await fs.readFile(tasksFile, "utf-8");
     return JSON.parse(content) as StoredTask[];
@@ -25,7 +32,7 @@ async function readTasks(): Promise<StoredTask[]> {
   }
 }
 
-async function writeTasks(tasks: StoredTask[]) {
+export async function writeTasks(tasks: StoredTask[]) {
   await fs.writeFile(tasksFile, `${JSON.stringify(tasks, null, 2)}\n`, "utf-8");
 }
 
@@ -67,6 +74,15 @@ export async function POST(request: Request) {
       name: payload.name.trim(),
       start: startISO,
       end: endISO,
+      subtasks: Array.isArray(payload.subtasks)
+        ? payload.subtasks
+            .filter((subtask) => typeof subtask?.title === "string" && typeof subtask?.timestamp === "string")
+            .map((subtask) => ({
+              id: subtask?.id ?? crypto.randomUUID(),
+              title: subtask?.title?.trim() ?? "",
+              timestamp: subtask?.timestamp ?? "",
+            }))
+        : [],
     };
 
     tasks.push(newTask);
@@ -107,6 +123,17 @@ export async function PUT(request: Request) {
       name: payload.name.trim(),
       start: startISO,
       end: endISO,
+      subtasks: Array.isArray(payload.subtasks)
+        ? payload.subtasks
+            .filter((subtask) => typeof subtask?.title === "string" && typeof subtask?.timestamp === "string")
+            .map((subtask) => ({
+              id: subtask?.id ?? crypto.randomUUID(),
+              title: subtask?.title?.trim() ?? "",
+              timestamp: subtask?.timestamp ?? "",
+            }))
+        : Array.isArray(tasks[taskIndex].subtasks)
+          ? tasks[taskIndex].subtasks
+          : [],
     };
 
     const conflict = tasks.some(
