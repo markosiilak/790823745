@@ -173,6 +173,17 @@ type QuarterTableProps = {
   onRemoveTask: (taskId: string) => void;
 };
 
+const weekFormatter = new Intl.DateTimeFormat("et-EE", {
+  day: "2-digit",
+  month: "2-digit",
+});
+
+const dateFormatter = new Intl.DateTimeFormat("et-EE", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
 export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTableProps) {
   return (
     <Card>
@@ -202,12 +213,11 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
               {structure.months.flatMap((month) =>
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
-                  const weekEndLabel = formatISODate(week.end);
                   return (
                     <th key={`${month.month}-${weekStartKey}`}>
                       W{week.isoWeek}
                       <WeekRange>
-                        {weekStartKey.slice(5)} – {weekEndLabel.slice(5)}
+                        {weekFormatter.format(week.start)} – {weekFormatter.format(week.end)}
                       </WeekRange>
                     </th>
                   );
@@ -233,7 +243,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                         <TaskDetails>
                           <TaskName>{task.name}</TaskName>
                           <TaskDates>
-                            {task.start} → {task.end}
+                            {dateFormatter.format(taskStart)} → {dateFormatter.format(taskEnd)}
                           </TaskDates>
                         </TaskDetails>
                         <RemoveButton
