@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { use } from "react";
-import { QuarterPlanner } from "@/components/QuarterPlanner";
+import { TaskCreate } from "@/components/QuarterPlanner/TaskCreate";
 
-type CalendarPageProps = {
-  params: {
+type NewTaskPageProps = {
+  params: Promise<{
     year: string;
     quarter: string;
-  };
+  }>;
 };
 
 function parseParams(yearParam: string, quarterParam: string) {
@@ -24,13 +24,15 @@ function parseParams(yearParam: string, quarterParam: string) {
   return { year, quarter };
 }
 
-export default function CalendarPage({ params }: CalendarPageProps) {
-  const resolvedParams = use(params as unknown as Promise<{ year: string; quarter: string }>);
+export default function NewTaskPage({ params }: NewTaskPageProps) {
+  const resolvedParams = use(params);
   const parsed = parseParams(resolvedParams.year, resolvedParams.quarter);
 
   if (!parsed) {
     notFound();
   }
 
-  return <QuarterPlanner initialQuarter={parsed} />;
+  return <TaskCreate quarter={parsed} />;
 }
+
+
