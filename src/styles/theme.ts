@@ -47,9 +47,11 @@ const theme = {
     controlPadding: "0.65rem 1.6rem",
     iconPadding: "0.5rem",
     tableCellPadding: "1rem",
+    tableCellPaddingCompact: "0.65rem 0.75rem",
   },
   sizes: {
     weekCell: "62px",
+    weekCellCompact: "46px",
   },
   typography: {
     kickerLetterSpacing: "0.08em",

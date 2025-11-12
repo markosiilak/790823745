@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
 import {
@@ -13,6 +14,8 @@ import {
   RemoveButton,
   WeekCell,
   EmptyCell,
+  TableActions,
+  ToggleButton,
 } from "./styles/quarterTableStyles";
 import { RemoveIcon } from "@/components/icons/RemoveIcon";
 import { Tooltip } from "@/components/Tooltip";
@@ -38,6 +41,8 @@ const dateFormatter = new Intl.DateTimeFormat("et-EE", {
 });
 
 export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTableProps) {
+  const [isCompact, setIsCompact] = useState(false);
+
   return (
     <Card>
       <TableHeader>
@@ -48,12 +53,28 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
             to the month they mostly occupy.
           </Subtitle>
         </div>
+        <TableActions>
+          <ToggleButton
+            type="button"
+            onClick={() => setIsCompact((previous) => !previous)}
+            $active={isCompact}
+            aria-pressed={isCompact}
+          >
+            {isCompact ? "Standard width" : "Compact width"}
+          </ToggleButton>
+        </TableActions>
       </TableHeader>
       <TableWrapper>
-        <StyledTable>
+        <StyledTable $compact={isCompact}>
           <thead>
             <tr>
-              <StickyHeaderCell rowSpan={2} scope="col" $left={0} $width={NAME_COLUMN_WIDTH}>
+              <StickyHeaderCell
+                rowSpan={2}
+                scope="col"
+                $left={0}
+                $width={NAME_COLUMN_WIDTH}
+                $compact={isCompact}
+              >
                 Task
               </StickyHeaderCell>
               <StickyHeaderCell
@@ -61,6 +82,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                 scope="col"
                 $left={NAME_COLUMN_WIDTH}
                 $width={DATE_COLUMN_WIDTH}
+                $compact={isCompact}
               >
                 Start date
               </StickyHeaderCell>
@@ -69,6 +91,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                 scope="col"
                 $left={NAME_COLUMN_WIDTH + DATE_COLUMN_WIDTH}
                 $width={DATE_COLUMN_WIDTH}
+                $compact={isCompact}
               >
                 End date
               </StickyHeaderCell>
@@ -97,7 +120,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
           <tbody>
             {tasks.length === 0 ? (
               <tr>
-                <EmptyCell colSpan={1 + structure.weeks.length}>
+                <EmptyCell colSpan={3 + structure.weeks.length}>
                   No tasks yet. Add one above to see it highlighted here.
                 </EmptyCell>
               </tr>
@@ -107,7 +130,13 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                 const taskEnd = parseISODate(task.end);
                 return (
                   <tr key={task.id}>
-                    <StickyBodyCell as="th" scope="row" $left={0} $width={NAME_COLUMN_WIDTH}>
+                    <StickyBodyCell
+                      as="th"
+                      scope="row"
+                      $left={0}
+                      $width={NAME_COLUMN_WIDTH}
+                      $compact={isCompact}
+                    >
                       <TaskRow>
                         <TaskName>{task.name}</TaskName>
                         <RemoveButton
@@ -122,12 +151,14 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                     <StickyBodyCell
                       $left={NAME_COLUMN_WIDTH}
                       $width={DATE_COLUMN_WIDTH}
+                      $compact={isCompact}
                     >
                       {dateFormatter.format(taskStart)}
                     </StickyBodyCell>
                     <StickyBodyCell
                       $left={NAME_COLUMN_WIDTH + DATE_COLUMN_WIDTH}
                       $width={DATE_COLUMN_WIDTH}
+                      $compact={isCompact}
                     >
                       {dateFormatter.format(taskEnd)}
                     </StickyBodyCell>
@@ -135,10 +166,12 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                       month.weeks.map((week) => {
                         const weekStartKey = formatISODate(week.start);
                         const active = weekOverlapsRange(week, taskStart, taskEnd);
-                        const rangeLabel = `${dateFormatter.format(week.start)} – ${dateFormatter.format(week.end)}`;
+                        const rangeLabel = `${dateFormatter.format(week.start)} – ${dateFormatter.format(
+                          week.end,
+                        )}`;
                         return (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
-                            <WeekCell $active={active} />
+                            <WeekCell $active={active} $compact={isCompact} />
                           </Tooltip>
                         );
                       }),

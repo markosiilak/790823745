@@ -26,16 +26,45 @@ export const TableWrapper = styled.div`
   overflow-x: auto;
 `;
 
-export const StyledTable = styled.table`
+export const TableActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.controlGap};
+`;
+
+export const ToggleButton = styled.button<{ $active: boolean }>`
+  border-radius: ${theme.radii.pill};
+  border: 1px solid ${theme.colors.border};
+  background: ${({ $active }) => ($active ? theme.colors.accent : "transparent")};
+  color: ${({ $active }) => ($active ? theme.colors.accentInverted : theme.colors.foreground)};
+  padding: ${theme.spacing.controlPadding};
+  font-weight: ${theme.typography.fontWeightBold};
+  cursor: pointer;
+  transition: ${theme.transitions.primary}, background-color 0.18s ease, color 0.18s ease,
+    border-color 0.18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: ${theme.colors.accent};
+    box-shadow: ${theme.shadows.navHover};
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px ${theme.colors.accentMuted};
+  }
+`;
+
+export const StyledTable = styled.table<{ $compact: boolean }>`
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 720px;
+  min-width: ${({ $compact }) => ($compact ? "640px" : "720px")};
 
   thead th {
     text-align: center;
-    padding: 0.85rem;
-    font-size: 0.9rem;
+    padding: ${({ $compact }) => ($compact ? "0.6rem 0.4rem" : "0.85rem")};
+    font-size: ${({ $compact }) => ($compact ? "0.8rem" : "0.9rem")};
     font-weight: 600;
     color: ${theme.colors.tableHeaderText};
     background: ${theme.colors.tableHeader};
@@ -74,23 +103,25 @@ const stickyColumnStyles = css`
   box-shadow: 1px 0 0 rgba(31, 41, 51, 0.08);
 `;
 
-export const StickyHeaderCell = styled.th<{ $left: number; $width: number }>`
+export const StickyHeaderCell = styled.th<{ $left: number; $width: number; $compact: boolean }>`
   ${stickyColumnStyles};
   z-index: 3;
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
-  padding: ${theme.spacing.tableCellPadding};
+  padding: ${({ $compact }) =>
+    $compact ? theme.spacing.tableCellPaddingCompact : theme.spacing.tableCellPadding};
   text-align: left;
 `;
 
-export const StickyBodyCell = styled.td<{ $left: number; $width: number }>`
+export const StickyBodyCell = styled.td<{ $left: number; $width: number; $compact: boolean }>`
   ${stickyColumnStyles};
   z-index: 1;
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
-  padding: ${theme.spacing.tableCellPadding};
+  padding: ${({ $compact }) =>
+    $compact ? theme.spacing.tableCellPaddingCompact : theme.spacing.tableCellPadding};
 `;
 
 export const TaskRow = styled.div`
@@ -127,10 +158,13 @@ export const RemoveButton = styled.button`
   }
 `;
 
-export const WeekCell = styled.td<{ $active: boolean }>`
-  height: ${theme.sizes.weekCell};
-  width: ${theme.sizes.weekCell};
-  min-width: ${theme.sizes.weekCell};
+export const WeekCell = styled.td<{ $active: boolean; $compact: boolean }>`
+  height: ${({ $compact }) =>
+    $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
+  width: ${({ $compact }) =>
+    $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
+  min-width: ${({ $compact }) =>
+    $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
   border-right: 1px solid ${theme.colors.tableDivider};
   position: relative;
   background: ${({ $active }) =>
