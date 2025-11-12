@@ -72,33 +72,30 @@ const WeekRange = styled.span`
 
 const stickyColumnStyles = css`
   position: sticky;
-  left: 0;
   background: ${theme.colors.backgroundAlt};
   box-shadow: 1px 0 0 rgba(31, 41, 51, 0.08);
 `;
 
-const TaskHeaderCell = styled.th`
+const NAME_COLUMN_WIDTH = 260;
+const DATE_COLUMN_WIDTH = 140;
+
+const StickyHeaderCell = styled.th<{ $left: number; $width: number }>`
   ${stickyColumnStyles};
   z-index: 3;
-  width: 260px;
+  left: ${({ $left }) => `${$left}px`};
+  width: ${({ $width }) => `${$width}px`};
+  min-width: ${({ $width }) => `${$width}px`};
   padding: 1rem;
   text-align: left;
-
-  @media (max-width: 900px) {
-    width: 220px;
-  }
 `;
 
-const TaskRowHeader = styled.th`
+const StickyBodyCell = styled.td<{ $left: number; $width: number }>`
   ${stickyColumnStyles};
   z-index: 1;
-  width: 260px;
+  left: ${({ $left }) => `${$left}px`};
+  width: ${({ $width }) => `${$width}px`};
+  min-width: ${({ $width }) => `${$width}px`};
   padding: 1rem;
-  text-align: left;
-
-  @media (max-width: 900px) {
-    width: 220px;
-  }
 `;
 
 const TaskRow = styled.div`
@@ -108,20 +105,9 @@ const TaskRow = styled.div`
   align-items: center;
 `;
 
-const TaskDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-`;
-
 const TaskName = styled.span`
   font-weight: 600;
   display: block;
-`;
-
-const TaskDates = styled.span`
-  font-size: 0.8rem;
-  color: ${theme.colors.foregroundMuted};
 `;
 
 const RemoveButton = styled.button`
@@ -200,9 +186,25 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
         <StyledTable>
           <thead>
             <tr>
-              <TaskHeaderCell rowSpan={2} scope="col">
+              <StickyHeaderCell rowSpan={2} scope="col" $left={0} $width={NAME_COLUMN_WIDTH}>
                 Task
-              </TaskHeaderCell>
+              </StickyHeaderCell>
+              <StickyHeaderCell
+                rowSpan={2}
+                scope="col"
+                $left={NAME_COLUMN_WIDTH}
+                $width={DATE_COLUMN_WIDTH}
+              >
+                Start date
+              </StickyHeaderCell>
+              <StickyHeaderCell
+                rowSpan={2}
+                scope="col"
+                $left={NAME_COLUMN_WIDTH + DATE_COLUMN_WIDTH}
+                $width={DATE_COLUMN_WIDTH}
+              >
+                End date
+              </StickyHeaderCell>
               {structure.months.map((month) => (
                 <th key={month.month} colSpan={month.weeks.length} scope="colgroup">
                   {month.name}
@@ -238,14 +240,9 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                 const taskEnd = parseISODate(task.end);
                 return (
                   <tr key={task.id}>
-                    <TaskRowHeader scope="row">
+                    <StickyBodyCell as="th" scope="row" $left={0} $width={NAME_COLUMN_WIDTH}>
                       <TaskRow>
-                        <TaskDetails>
-                          <TaskName>{task.name}</TaskName>
-                          <TaskDates>
-                            {dateFormatter.format(taskStart)} → {dateFormatter.format(taskEnd)}
-                          </TaskDates>
-                        </TaskDetails>
+                        <TaskName>{task.name}</TaskName>
                         <RemoveButton
                           type="button"
                           onClick={() => onRemoveTask(task.id)}
@@ -254,7 +251,19 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                           Remove
                         </RemoveButton>
                       </TaskRow>
-                    </TaskRowHeader>
+                    </StickyBodyCell>
+                    <StickyBodyCell
+                      $left={NAME_COLUMN_WIDTH}
+                      $width={DATE_COLUMN_WIDTH}
+                    >
+                      {dateFormatter.format(taskStart)}
+                    </StickyBodyCell>
+                    <StickyBodyCell
+                      $left={NAME_COLUMN_WIDTH + DATE_COLUMN_WIDTH}
+                      $width={DATE_COLUMN_WIDTH}
+                    >
+                      {dateFormatter.format(taskEnd)}
+                    </StickyBodyCell>
                     {structure.months.flatMap((month) =>
                       month.weeks.map((week) => {
                         const weekStartKey = formatISODate(week.start);
