@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
+import defaultTasks from "@/data/default-tasks.json";
 import { QuarterKey, buildQuarterStructure, formatISODate, shiftQuarter } from "@/lib/quarter";
 import { HeaderSection } from "./HeaderSection";
 import { QuarterTable } from "./QuarterTable";
@@ -23,16 +24,20 @@ const plannerSubtitle =
 
 function createDefaultTasks(): Task[] {
   const today = new Date();
-  const twoWeeks = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+  today.setHours(0, 0, 0, 0);
 
-  return [
-    {
-      id: "kickoff",
-      name: "Product Discovery",
+  return defaultTasks.map((task) => {
+    const duration = Number(task.durationDays) || 0;
+    const end = new Date(today);
+    end.setDate(end.getDate() + Math.max(duration, 0));
+
+    return {
+      id: task.id ?? crypto.randomUUID(),
+      name: task.name ?? "Untitled Task",
       start: formatISODate(today),
-      end: formatISODate(twoWeeks),
-    },
-  ];
+      end: formatISODate(end),
+    };
+  });
 }
 
 const AddTaskButton = styled.button`
