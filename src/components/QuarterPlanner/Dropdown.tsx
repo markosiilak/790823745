@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import theme from "@/styles/theme";
+import { ChevronDownIcon } from "@/components/icons/ChevronDownIcon";
 
 const Wrapper = styled.div<{ $width?: string }>`
   position: relative;
@@ -200,7 +201,9 @@ export function Dropdown({
         $isOpen={isOpen}
       >
         <LabelText>{options.find((option) => option.value === value)?.label ?? placeholder}</LabelText>
-        <Chevron $isOpen={isOpen}>▼</Chevron>
+        <Chevron $isOpen={isOpen}>
+          <ChevronDownIcon width={16} height={16} />
+        </Chevron>
       </TriggerButton>
 
       {isOpen ? (
