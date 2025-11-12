@@ -20,7 +20,6 @@ import {
   ViewControls,
   WeekHeaderContent,
   WeekHeaderLabel,
-  AddWeekButton,
   AddSubtaskButton,
   SubtaskList,
   SubtaskItem,
@@ -42,7 +41,6 @@ type QuarterTableProps = {
   onRemoveTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
-  onAddSubtaskForWeek: (week: WeekInfo, candidateTaskIds: string[]) => void;
 };
 
 type ViewMode = "standard" | "compact" | "single-week";
@@ -74,7 +72,6 @@ export function QuarterTable({
   onRemoveTask,
   onEditTask,
   onAddSubtask,
-  onAddSubtaskForWeek,
 }: QuarterTableProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("standard");
   const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(() => {
@@ -257,34 +254,14 @@ export function QuarterTable({
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
                   const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
-                  const weekTasks = parsedTasks.filter((task) =>
-                    weekOverlapsRange(week, task.startDate, task.endDate),
-                  );
-                  const canAddForWeek = weekTasks.length > 0;
                   return (
-                    <Tooltip key={`${month.month}-${weekStartKey}`} content={rangeLabel}>
-                      <th>
-                        <WeekHeaderContent>
-                          <WeekHeaderLabel>{`W${week.isoWeek}`}</WeekHeaderLabel>
-                          {canAddForWeek ? (
-                            <AddWeekButton
-                              type="button"
-                              aria-label={`Add subtask in week ${week.isoWeek}`}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                onAddSubtaskForWeek(
-                                  week,
-                                  weekTasks.map((task) => task.id),
-                                );
-                              }}
-                            >
-                              +
-                            </AddWeekButton>
-                          ) : null}
-                        </WeekHeaderContent>
-                      </th>
-                    </Tooltip>
+                  <Tooltip key={`${month.month}-${weekStartKey}`} content={rangeLabel}>
+                    <th>
+                      <WeekHeaderContent>
+                        <WeekHeaderLabel>{`W${week.isoWeek}`}</WeekHeaderLabel>
+                      </WeekHeaderContent>
+                    </th>
+                  </Tooltip>
                   );
                 }),
               )}

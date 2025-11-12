@@ -124,20 +124,11 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
 
   const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);
   const [tasks, setTasks] = useState<Task[]>([]);
-type SubtaskDraft =
-  | {
-      mode: "task";
-      taskId: string;
-      taskName: string;
-      week: WeekInfo;
-    }
-  | {
-      mode: "week";
-      week: WeekInfo;
-      taskOptions: Array<{ id: string; name: string }>;
-    };
-
-  const [subtaskDraft, setSubtaskDraft] = useState<SubtaskDraft | null>(null);
+  const [subtaskDraft, setSubtaskDraft] = useState<{
+    taskId: string;
+    taskName: string;
+    week: WeekInfo;
+  } | null>(null);
   const [subtaskError, setSubtaskError] = useState<string | null>(null);
   const [isSavingSubtask, setIsSavingSubtask] = useState(false);
 
@@ -193,7 +184,6 @@ type SubtaskDraft =
   const handleSubtaskAddRequest = useCallback(
     (taskId: string, taskName: string, week: WeekInfo) => {
       setSubtaskDraft({
-        mode: "task",
         taskId,
         taskName,
         week,
@@ -201,27 +191,6 @@ type SubtaskDraft =
       setSubtaskError(null);
     },
     [],
-  );
-
-  const handleSubtaskAddForWeek = useCallback(
-    (week: WeekInfo, candidateTaskIds: string[]) => {
-      const taskOptions = tasks
-        .filter((task) => candidateTaskIds.includes(task.id))
-        .map((task) => ({
-          id: task.id,
-          name: task.name,
-        }));
-      if (taskOptions.length === 0) {
-        return;
-      }
-      setSubtaskDraft({
-        mode: "week",
-        week,
-        taskOptions,
-      });
-      setSubtaskError(null);
-    },
-    [tasks],
   );
 
   const handleSubtaskSubmit = useCallback(
@@ -297,20 +266,15 @@ type SubtaskDraft =
         onRemoveTask={handleRemoveTask}
         onEditTask={handleEditTaskNavigate}
         onAddSubtask={handleSubtaskAddRequest}
-        onAddSubtaskForWeek={handleSubtaskAddForWeek}
       />
-      {subtaskDraft ? (
+      {subtaskDraft && subtaskDraft.mode === "task" ? (
         <SubtaskDialog
-          key={
-            subtaskDraft.mode === "task"
-              ? `task-${subtaskDraft.taskId}-${subtaskDraft.week.start.toISOString()}`
-              : `week-${subtaskDraft.week.start.toISOString()}`
-          }
-          mode={subtaskDraft.mode}
-          taskName={subtaskDraft.mode === "task" ? subtaskDraft.taskName : undefined}
-          taskId={subtaskDraft.mode === "task" ? subtaskDraft.taskId : undefined}
+          key={`task-${subtaskDraft.taskId}-${subtaskDraft.week.start.toISOString()}`}
+          mode="task"
+          taskName={subtaskDraft.taskName}
+          taskId={subtaskDraft.taskId}
           week={subtaskDraft.week}
-          availableTasks={subtaskDraft.mode === "week" ? subtaskDraft.taskOptions : []}
+          availableTasks={[]}
           error={subtaskError}
           isSaving={isSavingSubtask}
           onDismiss={() => {
