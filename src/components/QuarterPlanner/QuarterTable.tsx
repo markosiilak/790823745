@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
 import theme from "@/styles/theme";
+import { RemoveIcon } from "@/components/icons/RemoveIcon";
 
 const Card = styled.section`
   background: ${theme.colors.backgroundAlt};
@@ -114,13 +115,21 @@ const RemoveButton = styled.button`
   border: none;
   background: transparent;
   color: ${theme.colors.accentStrong};
-  font-size: 0.8rem;
-  font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${theme.spacing.controlPadding};
+  border-radius: ${theme.radii.input};
 
   &:hover {
     opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px ${theme.colors.accentMuted};
   }
 `;
 
@@ -248,7 +257,7 @@ export function QuarterTable({ structure, tasks, onRemoveTask }: QuarterTablePro
                           onClick={() => onRemoveTask(task.id)}
                           aria-label={`Remove task ${task.name}`}
                         >
-                          Remove
+                          <RemoveIcon />
                         </RemoveButton>
                       </TaskRow>
                     </StickyBodyCell>
