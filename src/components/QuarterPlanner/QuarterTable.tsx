@@ -397,7 +397,7 @@ export function QuarterTable({
                                   ))}
                                 </SubtaskList>
                               ) : active ? (
-                                <EmptySubtasks>No subtasks</EmptySubtasks>
+                                <EmptySubtasks></EmptySubtasks>
                               ) : null}
                             </WeekCell>
                           </Tooltip>
