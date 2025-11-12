@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+import theme from "@/styles/theme";
 
 const Header = styled.header`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.controlGap};
+  gap: ${theme.spacing.controlGap};
   align-items: center;
 
   @media (max-width: 900px) {

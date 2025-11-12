@@ -1,4 +1,4 @@
-export const theme = {
+const theme = {
   colorScheme: "light",
   colors: {
     background: "#f5f7fb",
@@ -47,8 +47,12 @@ export const theme = {
   typography: {
     kickerLetterSpacing: "0.08em",
   },
-};
+} as const;
 
 export type AppTheme = typeof theme;
+
+export { theme };
+
+export default theme;
 
 
