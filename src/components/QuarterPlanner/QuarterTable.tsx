@@ -3,23 +3,23 @@ import { QuarterStructure, formatISODate, parseISODate, weekOverlapsRange } from
 import { Task } from "./types";
 
 const Card = styled.section`
-  background: var(--background-alt);
-  border-radius: 20px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radii.card};
   border: 1px solid rgba(31, 41, 51, 0.08);
-  box-shadow: var(--shadow);
+  box-shadow: ${({ theme }) => theme.shadows.card};
   padding: 2rem;
 `;
 
 const TableHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
   align-items: flex-start;
   margin-bottom: 1.5rem;
 `;
 
 const Subtitle = styled.p`
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 
@@ -38,9 +38,9 @@ const StyledTable = styled.table`
     padding: 0.85rem;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--foreground);
-    background: #eef2ff;
-    border-bottom: 1px solid var(--border);
+    color: ${({ theme }) => theme.colors.tableHeaderText};
+    background: ${({ theme }) => theme.colors.tableHeader};
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   }
 
   thead tr:first-child th:first-child {
@@ -53,7 +53,7 @@ const StyledTable = styled.table`
 
   tbody th,
   tbody td {
-    border-bottom: 1px solid #ecf0f6;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.tableDivider};
   }
 
   tbody tr:last-child th,
@@ -65,14 +65,14 @@ const StyledTable = styled.table`
 const WeekRange = styled.span`
   display: block;
   font-size: 0.7rem;
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
   margin-top: 0.2rem;
 `;
 
 const stickyColumnStyles = css`
   position: sticky;
   left: 0;
-  background: var(--background-alt);
+  background: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: 1px 0 0 rgba(31, 41, 51, 0.08);
 `;
 
@@ -120,13 +120,13 @@ const TaskName = styled.span`
 
 const TaskDates = styled.span`
   font-size: 0.8rem;
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
 `;
 
 const RemoveButton = styled.button`
   border: none;
   background: transparent;
-  color: var(--accent-strong);
+  color: ${({ theme }) => theme.colors.accentStrong};
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -138,18 +138,19 @@ const RemoveButton = styled.button`
 `;
 
 const WeekCell = styled.td<{ $active: boolean }>`
-  height: 62px;
-  width: 62px;
-  min-width: 62px;
-  border-right: 1px solid #ecf0f6;
+  height: ${({ theme }) => theme.sizes.weekCell};
+  width: ${({ theme }) => theme.sizes.weekCell};
+  min-width: ${({ theme }) => theme.sizes.weekCell};
+  border-right: 1px solid ${({ theme }) => theme.colors.tableDivider};
   position: relative;
-  background: ${({ $active }) =>
+  background: ${({ $active, theme }) =>
     $active
-      ? "linear-gradient(135deg, rgba(67, 97, 238, 0.12), rgba(67, 97, 238, 0.28))"
-      : "#fbfcff"};
-  box-shadow: ${({ $active }) =>
-    $active ? "inset 0 0 0 2px rgba(67, 97, 238, 0.25)" : "none"};
-  border-right-color: ${({ $active }) => ($active ? "rgba(67, 97, 238, 0.45)" : "#ecf0f6")};
+      ? `linear-gradient(135deg, ${theme.colors.weekGradientStart}, ${theme.colors.weekGradientEnd})`
+      : theme.colors.tableCellBg};
+  box-shadow: ${({ $active, theme }) =>
+    $active ? `inset 0 0 0 2px ${theme.colors.accentMuted}` : "none"};
+  border-right-color: ${({ $active, theme }) =>
+    $active ? theme.colors.weekBorderActive : theme.colors.tableDivider};
 
   &:last-child {
     border-right: none;
@@ -161,7 +162,7 @@ const EmptyCell = styled.td`
   z-index: 1;
   text-align: center;
   padding: 2.5rem 1rem;
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
   font-style: italic;
 `;
 

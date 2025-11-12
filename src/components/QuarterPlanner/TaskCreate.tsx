@@ -11,17 +11,17 @@ const PageShell = styled.div`
   width: min(720px, 100%);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: ${({ theme }) => theme.spacing.stackGap};
 `;
 
 const HeadingGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
 `;
 
 const Subtitle = styled.p`
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 

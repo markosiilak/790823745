@@ -2,29 +2,29 @@ import styled, { css } from "styled-components";
 import { TaskFormState } from "./types";
 
 const Card = styled.section`
-  background: var(--background-alt);
-  border-radius: 20px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radii.card};
   border: 1px solid rgba(31, 41, 51, 0.08);
-  box-shadow: var(--shadow);
+  box-shadow: ${({ theme }) => theme.shadows.card};
   padding: 2rem;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: ${({ theme }) => theme.spacing.formGap};
   margin-top: 1rem;
 `;
 
 const FormRow = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
 `;
 
 const FormGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
 `;
 
 const Label = styled.label`
@@ -32,42 +32,42 @@ const Label = styled.label`
   font-weight: 600;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  color: var(--foreground);
+  gap: ${({ theme }) => theme.spacing.fieldGap};
+  color: ${({ theme }) => theme.colors.foreground};
   width: 100%;
 `;
 
 const Input = styled.input`
   appearance: none;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.input};
   padding: 0.7rem 0.85rem;
   font: inherit;
-  color: var(--foreground);
-  background: #f8fbff;
+  color: ${({ theme }) => theme.colors.foreground};
+  background: ${({ theme }) => theme.colors.tableCellBg};
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 
   &:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-muted);
+    border-color: ${({ theme }) => theme.colors.accent};
+    box-shadow: 0 0 0 4px ${({ theme }) => theme.colors.accentMuted};
     outline: none;
   }
 `;
 
 const ErrorMessage = styled.p`
-  color: #d64545;
-  background: rgba(214, 69, 69, 0.1);
+  color: ${({ theme }) => theme.colors.danger};
+  background: ${({ theme }) => theme.colors.dangerTint};
   padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(214, 69, 69, 0.25);
+  border-radius: ${({ theme }) => theme.radii.input};
+  border: 1px solid ${({ theme }) => theme.colors.dangerBorder};
 `;
 
 const FormActions = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
 `;
 
 const buttonBase = css`
@@ -81,12 +81,12 @@ const buttonBase = css`
 
 const PrimaryButton = styled.button`
   ${buttonBase};
-  background: var(--accent);
+  background: ${({ theme }) => theme.colors.accent};
   color: #ffffff;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+    box-shadow: ${({ theme }) => theme.shadows.primaryHover};
   }
 
   &:disabled {
@@ -100,23 +100,23 @@ const PrimaryButton = styled.button`
 const SecondaryButton = styled.button`
   ${buttonBase};
   background: transparent;
-  color: var(--foreground-muted);
-  border: 1px solid var(--border);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   &:hover {
     transform: translateY(-1px);
-    border-color: var(--accent);
-    color: var(--accent-strong);
+    border-color: ${({ theme }) => theme.colors.accent};
+    color: ${({ theme }) => theme.colors.accentStrong};
   }
 `;
 
 const LimitBadge = styled.span`
   margin-left: auto;
   font-size: 0.85rem;
-  color: var(--foreground-muted);
-  background: rgba(67, 97, 238, 0.08);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
+  background: ${({ theme }) => theme.colors.accentBadge};
   padding: 0.35rem 0.75rem;
-  border-radius: 999px;
+  border-radius: ${({ theme }) => theme.radii.pill};
 `;
 
 type TaskFormProps = {

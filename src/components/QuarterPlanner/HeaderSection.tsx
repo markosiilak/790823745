@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
 
 const Header = styled.header`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
   align-items: center;
 
   @media (max-width: 900px) {
@@ -21,21 +22,21 @@ const TitleGroup = styled.div`
 
 const Kicker = styled.p`
   font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  letter-spacing: ${({ theme }) => theme.typography.kickerLetterSpacing};
   text-transform: uppercase;
-  color: var(--accent-strong);
+  color: ${({ theme }) => theme.colors.accentStrong};
   font-weight: 600;
   margin-bottom: 0.35rem;
 `;
 
 const Subtitle = styled.p`
-  color: var(--foreground-muted);
+  color: ${({ theme }) => theme.colors.foregroundMuted};
   max-width: 46ch;
 `;
 
 const Controls = styled.div`
   display: flex;
-  gap: 0.75rem;
+  gap: ${({ theme }) => theme.spacing.controlGap};
   align-items: center;
 
   @media (max-width: 900px) {
@@ -46,18 +47,18 @@ const Controls = styled.div`
 `;
 
 const NavButton = styled.button`
-  border: 1px solid var(--border);
-  background: var(--background-alt);
-  border-radius: 999px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radii.pill};
   padding: 0.65rem 1.2rem;
   font-weight: 500;
-  color: var(--foreground);
+  color: ${({ theme }) => theme.colors.foreground};
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
-    border-color: var(--accent);
-    box-shadow: 0 6px 18px rgba(67, 97, 238, 0.15);
+    border-color: ${({ theme }) => theme.colors.accent};
+    box-shadow: ${({ theme }) => theme.shadows.navHover};
     transform: translateY(-1px);
   }
 `;
@@ -67,7 +68,7 @@ type HeaderSectionProps = {
   subtitle: string;
   onPrevious: () => void;
   onNext: () => void;
-  extraActions?: React.ReactNode;
+  extraActions?: ReactNode;
 };
 
 export function HeaderSection({

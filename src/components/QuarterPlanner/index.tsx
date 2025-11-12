@@ -14,7 +14,7 @@ const PlannerShell = styled.div`
   width: min(1200px, 100%);
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: ${({ theme }) => theme.spacing.sectionGap};
 `;
 
 const plannerSubtitle =
@@ -35,18 +35,18 @@ function createDefaultTasks(): Task[] {
 }
 
 const AddTaskButton = styled.button`
-  border-radius: 999px;
+  border-radius: ${({ theme }) => theme.radii.pill};
   border: none;
   padding: 0.65rem 1.6rem;
   font-weight: 600;
-  background: var(--accent);
+  background: ${({ theme }) => theme.colors.accent};
   color: #ffffff;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+    box-shadow: ${({ theme }) => theme.shadows.primaryHover};
   }
 `;
 
