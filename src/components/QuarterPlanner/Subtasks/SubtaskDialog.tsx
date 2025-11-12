@@ -83,6 +83,26 @@ const TimeInput = styled(TextInput).attrs({ type: "time" })`
   width: 160px;
 `;
 
+const TaskSelect = styled.select`
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.radii.input};
+  padding: 0.65rem 0.85rem;
+  font: inherit;
+  color: ${theme.colors.foreground};
+  background: ${theme.colors.backgroundAlt};
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: ${theme.colors.accent};
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: ${theme.colors.accent};
+    box-shadow: 0 0 0 4px ${theme.colors.accentMuted};
+  }
+`;
+
 const Actions = styled.div`
   display: flex;
   gap: ${theme.spacing.controlGap};
@@ -140,11 +160,11 @@ const ErrorMessage = styled.p`
 `;
 
 type SubtaskDialogProps = {
-  mode: "task";
+  mode: "task" | "week";
   taskName?: string;
   taskId?: string;
   week: WeekInfo;
-  availableTasks?: Array<{ id: string; name: string }>;
+  availableTasks: Array<{ id: string; name: string }>;
   error: string | null;
   isSaving: boolean;
   onDismiss: () => void;
@@ -152,9 +172,11 @@ type SubtaskDialogProps = {
 };
 
 export function SubtaskDialog({
+  mode,
   taskName,
   taskId,
   week,
+  availableTasks,
   error,
   isSaving,
   onDismiss,
@@ -165,7 +187,9 @@ export function SubtaskDialog({
   const [date, setDate] = useState(defaultDate);
   const [time, setTime] = useState("09:00");
   const [localError, setLocalError] = useState<string | null>(null);
-  const [selectedTaskId] = useState<string | undefined>(taskId);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
+    mode === "task" ? taskId : availableTasks[0]?.id,
+  );
 
   const weekSummary = useMemo(() => {
     const rangeStart = formatISODate(week.start);
@@ -193,7 +217,7 @@ export function SubtaskDialog({
         return;
       }
 
-      const resolvedTaskId = selectedTaskId;
+       const resolvedTaskId = mode === "task" ? taskId : selectedTaskId;
        if (!resolvedTaskId) {
          setLocalError("Please pick a task for this subtask.");
          return;
@@ -219,13 +243,15 @@ export function SubtaskDialog({
         time,
       });
     },
-    [date, onSubmit, selectedTaskId, time, title, week.end, week.start],
+    [date, mode, onSubmit, selectedTaskId, taskId, time, title, week.end, week.start],
   );
 
   const dialogSubtitle =
-    taskName ? `${taskName} · Week ${week.isoWeek} (${weekSummary})` : `Week ${week.isoWeek} (${weekSummary})`;
+    mode === "task" && taskName
+      ? `${taskName} · Week ${week.isoWeek} (${weekSummary})`
+      : `Week ${week.isoWeek} (${weekSummary})`;
 
-  const canSubmit = Boolean(taskId);
+  const canSubmit = mode === "task" ? Boolean(taskId) : availableTasks.length > 0 && Boolean(selectedTaskId);
 
   return (
     <Overlay>
@@ -235,6 +261,25 @@ export function SubtaskDialog({
           <Subtitle>{dialogSubtitle}</Subtitle>
         </Heading>
         <Form onSubmit={handleSubmit}>
+          {mode === "week" ? (
+            <FieldGroup>
+              <Label htmlFor="subtask-task">Task</Label>
+              <TaskSelect
+                id="subtask-task"
+                value={selectedTaskId ?? ""}
+                onChange={(event) => setSelectedTaskId(event.target.value)}
+              >
+                {availableTasks.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </TaskSelect>
+              {availableTasks.length === 0 ? (
+                <Subtitle>No tasks overlap with this week.</Subtitle>
+              ) : null}
+            </FieldGroup>
+          ) : null}
           <FieldGroup>
             <Label htmlFor="subtask-title">Title</Label>
             <TextInput
