@@ -76,7 +76,7 @@ const OptionsCard = styled.ul`
   overflow-y: auto;
 `;
 
-const OptionButton = styled.button<{ $isActive: boolean }>`
+const OptionButton = styled.button<{ $isActive: boolean; disabled?: boolean }>`
   width: 100%;
   background: ${({ $isActive }) =>
     $isActive ? "rgba(123, 63, 228, 0.08)" : "transparent"};
@@ -85,16 +85,19 @@ const OptionButton = styled.button<{ $isActive: boolean }>`
   padding: 0.55rem 0.85rem;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.18s ease;
+  transition: background 0.18s ease, opacity 0.18s ease;
+  opacity: ${({ disabled }) => (disabled ? 0.45 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
 
   &:hover,
   &:focus-visible {
     outline: none;
-    background: rgba(123, 63, 228, 0.16);
+    background: ${({ disabled }) =>
+      disabled ? "transparent" : "rgba(123, 63, 228, 0.16)"};
   }
 `;
 
@@ -108,6 +111,7 @@ export type DropdownOption = {
   value: string;
   label: string;
   description?: string;
+  disabled?: boolean;
 };
 
 type DropdownProps = {
@@ -221,6 +225,8 @@ export function Dropdown({
                   }}
                   role="option"
                   aria-selected={isActive}
+                  aria-disabled={option.disabled ?? false}
+                  disabled={option.disabled}
                 >
                   <span>{option.label}</span>
                   {option.description ? (

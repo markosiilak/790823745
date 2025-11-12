@@ -92,16 +92,33 @@ export function QuarterTable({
     [tasks],
   );
 
+  const activeWeekKeys = useMemo(
+    () =>
+      structure.weeks
+        .filter((week) =>
+          parsedTasks.some((task) => weekOverlapsRange(week, task.startDate, task.endDate)),
+        )
+        .map((week) => week.start.toISOString()),
+    [parsedTasks, structure.weeks],
+  );
+
+  const firstActiveWeekKey = useMemo(() => {
+    if (activeWeekKeys.length > 0) {
+      return activeWeekKeys[0];
+    }
+    return structure.weeks[0]?.start.toISOString() ?? null;
+  }, [activeWeekKeys, structure.weeks]);
+
   const effectiveSelectedWeekKey = useMemo(() => {
     if (structure.weeks.length === 0) {
       return null;
     }
     if (!selectedWeekKey) {
-      return structure.weeks[0].start.toISOString();
+      return firstActiveWeekKey;
     }
     const exists = structure.weeks.some((week) => week.start.toISOString() === selectedWeekKey);
-    return exists ? selectedWeekKey : structure.weeks[0].start.toISOString();
-  }, [selectedWeekKey, structure.weeks]);
+    return exists ? selectedWeekKey : firstActiveWeekKey;
+  }, [firstActiveWeekKey, selectedWeekKey, structure.weeks]);
 
   const isCompact = viewMode === "compact";
 
@@ -119,8 +136,9 @@ export function QuarterTable({
       structure.weeks.map((week) => ({
         value: week.start.toISOString(),
         label: `W${week.isoWeek} · ${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`,
+        disabled: activeWeekKeys.length > 0 && !activeWeekKeys.includes(week.start.toISOString()),
       })),
-    [structure.weeks],
+    [activeWeekKeys, structure.weeks],
   );
 
   const weeksToRender = useMemo(() => {
@@ -169,15 +187,16 @@ export function QuarterTable({
                 if (nextMode !== "single-week") {
                   return;
                 }
-                if (
-                  !selectedWeekKey ||
-                  !structure.weeks.some((week) => week.start.toISOString() === selectedWeekKey)
-                ) {
-                  const fallback = structure.weeks[0];
-                  if (fallback) {
-                    setSelectedWeekKey(fallback.start.toISOString());
+                setSelectedWeekKey((current) => {
+                  if (
+                    current &&
+                    structure.weeks.some((week) => week.start.toISOString() === current) &&
+                    (activeWeekKeys.length === 0 || activeWeekKeys.includes(current))
+                  ) {
+                    return current;
                   }
-                }
+                  return firstActiveWeekKey;
+                });
               }}
               ariaLabel="Table view mode"
               width="220px"
