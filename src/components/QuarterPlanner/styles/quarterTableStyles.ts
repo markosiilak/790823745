@@ -30,29 +30,50 @@ export const TableActions = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.controlGap};
+  flex-wrap: wrap;
 `;
 
-export const ToggleButton = styled.button<{ $active: boolean }>`
-  border-radius: ${theme.radii.pill};
+export const ViewControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.controlGap};
+`;
+
+const baseSelectStyles = css`
+  border-radius: ${theme.radii.input};
   border: 1px solid ${theme.colors.border};
-  background: ${({ $active }) => ($active ? theme.colors.accent : "transparent")};
-  color: ${({ $active }) => ($active ? theme.colors.accentInverted : theme.colors.foreground)};
-  padding: ${theme.spacing.controlPadding};
-  font-weight: ${theme.typography.fontWeightBold};
+  background: ${theme.colors.backgroundAlt};
+  color: ${theme.colors.foreground};
+  padding: 0.55rem 2.25rem 0.55rem 0.75rem;
+  font: inherit;
   cursor: pointer;
-  transition: ${theme.transitions.primary}, background-color 0.18s ease, color 0.18s ease,
-    border-color 0.18s ease;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, ${theme.colors.accentStrong} 50%),
+    linear-gradient(135deg, ${theme.colors.accentStrong} 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1.1em), calc(100% - 13px) calc(1.1em);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
-    transform: translateY(-1px);
     border-color: ${theme.colors.accent};
-    box-shadow: ${theme.shadows.navHover};
   }
 
   &:focus-visible {
     outline: none;
+    border-color: ${theme.colors.accent};
     box-shadow: 0 0 0 3px ${theme.colors.accentMuted};
   }
+`;
+
+export const ViewModeSelect = styled.select`
+  ${baseSelectStyles};
+  min-width: 190px;
+`;
+
+export const WeekSelect = styled.select`
+  ${baseSelectStyles};
+  min-width: 220px;
 `;
 
 export const StyledTable = styled.table<{ $compact: boolean }>`

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { QuarterStructure, WeekInfo, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
 import {
@@ -17,7 +17,9 @@ import {
   WeekCell,
   EmptyCell,
   TableActions,
-  ToggleButton,
+  ViewControls,
+  ViewModeSelect,
+  WeekSelect,
   AddSubtaskButton,
   SubtaskList,
   SubtaskItem,
@@ -39,6 +41,8 @@ type QuarterTableProps = {
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
 };
+
+type ViewMode = "standard" | "compact" | "single-week";
 
 const weekFormatter = new Intl.DateTimeFormat("et-EE", {
   day: "2-digit",
@@ -68,7 +72,49 @@ export function QuarterTable({
   onEditTask,
   onAddSubtask,
 }: QuarterTableProps) {
-  const [isCompact, setIsCompact] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("standard");
+  const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(() => {
+    const firstWeek = structure.weeks[0];
+    return firstWeek ? firstWeek.start.toISOString() : null;
+  });
+
+  const effectiveSelectedWeekKey = useMemo(() => {
+    if (structure.weeks.length === 0) {
+      return null;
+    }
+    if (!selectedWeekKey) {
+      return structure.weeks[0].start.toISOString();
+    }
+    const exists = structure.weeks.some((week) => week.start.toISOString() === selectedWeekKey);
+    return exists ? selectedWeekKey : structure.weeks[0].start.toISOString();
+  }, [selectedWeekKey, structure.weeks]);
+
+  const isCompact = viewMode === "compact";
+
+  const weeksToRender = useMemo(() => {
+    if (viewMode === "single-week") {
+      if (!effectiveSelectedWeekKey) {
+        return [];
+      }
+      return structure.weeks.filter((week) => week.start.toISOString() === effectiveSelectedWeekKey);
+    }
+    return structure.weeks;
+  }, [effectiveSelectedWeekKey, structure.weeks, viewMode]);
+
+  const monthsToRender = useMemo(
+    () =>
+      viewMode === "single-week"
+        ? structure.months
+            .map((month) => ({
+              ...month,
+              weeks: month.weeks.filter((week) =>
+                weeksToRender.some((visibleWeek) => visibleWeek.start.getTime() === week.start.getTime()),
+              ),
+            }))
+            .filter((month) => month.weeks.length > 0)
+        : structure.months,
+    [structure.months, viewMode, weeksToRender],
+  );
 
   return (
     <Card>
@@ -81,14 +127,45 @@ export function QuarterTable({
           </Subtitle>
         </div>
         <TableActions>
-          <ToggleButton
-            type="button"
-            onClick={() => setIsCompact((previous) => !previous)}
-            $active={isCompact}
-            aria-pressed={isCompact}
-          >
-            {isCompact ? "Standard width" : "Compact width"}
-          </ToggleButton>
+          <ViewControls>
+            <ViewModeSelect
+              value={viewMode}
+              aria-label="Table view mode"
+              onChange={(event) => {
+                const nextMode = event.target.value as ViewMode;
+                setViewMode(nextMode);
+                if (nextMode !== "single-week") {
+                  return;
+                }
+                if (
+                  !selectedWeekKey ||
+                  !structure.weeks.some((week) => week.start.toISOString() === selectedWeekKey)
+                ) {
+                  const fallback = structure.weeks[0];
+                  if (fallback) {
+                    setSelectedWeekKey(fallback.start.toISOString());
+                  }
+                }
+              }}
+            >
+              <option value="standard">Full quarter · standard</option>
+              <option value="compact">Full quarter · compact</option>
+              <option value="single-week">Single week</option>
+            </ViewModeSelect>
+            {viewMode === "single-week" ? (
+              <WeekSelect
+                value={effectiveSelectedWeekKey ?? ""}
+                aria-label="Select week to display"
+                onChange={(event) => setSelectedWeekKey(event.target.value)}
+              >
+                {structure.weeks.map((week) => (
+                  <option key={week.start.toISOString()} value={week.start.toISOString()}>
+                    {`W${week.isoWeek} · ${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`}
+                  </option>
+                ))}
+              </WeekSelect>
+            ) : null}
+          </ViewControls>
         </TableActions>
       </TableHeader>
       <TableWrapper>
@@ -122,14 +199,14 @@ export function QuarterTable({
               >
                 End date
               </StickyHeaderCell>
-              {structure.months.map((month) => (
+              {monthsToRender.map((month) => (
                 <th key={month.month} colSpan={month.weeks.length} scope="colgroup">
                   {month.name}
                 </th>
               ))}
             </tr>
             <tr>
-              {structure.months.flatMap((month) =>
+              {monthsToRender.flatMap((month) =>
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
                   const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
@@ -147,7 +224,7 @@ export function QuarterTable({
           <tbody>
             {tasks.length === 0 ? (
               <tr>
-                <EmptyCell colSpan={3 + structure.weeks.length}>
+                <EmptyCell colSpan={3 + weeksToRender.length}>
                   No tasks yet. Add one above to see it highlighted here.
                 </EmptyCell>
               </tr>
@@ -198,7 +275,7 @@ export function QuarterTable({
                     >
                       {dateFormatter.format(taskEnd)}
                     </StickyBodyCell>
-                    {structure.months.flatMap((month) =>
+                    {monthsToRender.flatMap((month) =>
                       month.weeks.map((week) => {
                         const weekStartKey = formatISODate(week.start);
                         const active = weekOverlapsRange(week, taskStart, taskEnd);
