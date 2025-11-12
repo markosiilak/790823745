@@ -127,7 +127,7 @@ const DayButton = styled.button<{
   }
 `;
 
-const dayFormatter = new Intl.DateTimeFormat("en-GB", {
+const displayFormatter = new Intl.DateTimeFormat("et-EE", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
@@ -222,7 +222,7 @@ export function DatePicker({ value, onChange, ariaLabel, ariaLabelledBy }: DateP
     [onChange],
   );
 
-  const displayValue = parsedValue ? dayFormatter.format(parsedValue) : null;
+  const displayValue = parsedValue ? displayFormatter.format(parsedValue) : null;
 
   return (
     <Container ref={containerRef}>
