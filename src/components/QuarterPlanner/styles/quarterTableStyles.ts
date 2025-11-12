@@ -304,6 +304,47 @@ export const EmptySubtasks = styled.span`
   border-radius: ${theme.radii.input};
 `;
 
+export const WeekHeaderContent = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+`;
+
+export const WeekHeaderLabel = styled.span`
+  font-weight: ${theme.typography.fontWeightBold};
+  line-height: 1;
+`;
+
+export const AddWeekButton = styled.button`
+  border: none;
+  background: transparent;
+  color: ${theme.colors.accentStrong};
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: ${theme.transitions.primary}, border-color 0.18s ease, background-color 0.18s ease;
+  border: 1px solid transparent;
+  padding: 0;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: ${theme.colors.accentStrong};
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px ${theme.colors.accentMuted};
+  }
+`;
+
 export const EmptyCell = styled.td`
   ${stickyColumnStyles};
   z-index: 1;

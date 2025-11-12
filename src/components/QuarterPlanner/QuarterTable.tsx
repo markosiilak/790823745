@@ -20,6 +20,9 @@ import {
   ViewControls,
   ViewModeSelect,
   WeekSelect,
+  WeekHeaderContent,
+  WeekHeaderLabel,
+  AddWeekButton,
   AddSubtaskButton,
   SubtaskList,
   SubtaskItem,
@@ -40,6 +43,7 @@ type QuarterTableProps = {
   onRemoveTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
+  onAddSubtaskForWeek: (week: WeekInfo, candidateTaskIds: string[]) => void;
 };
 
 type ViewMode = "standard" | "compact" | "single-week";
@@ -71,12 +75,23 @@ export function QuarterTable({
   onRemoveTask,
   onEditTask,
   onAddSubtask,
+  onAddSubtaskForWeek,
 }: QuarterTableProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("standard");
   const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(() => {
     const firstWeek = structure.weeks[0];
     return firstWeek ? firstWeek.start.toISOString() : null;
   });
+
+  const parsedTasks = useMemo(
+    () =>
+      tasks.map((task) => ({
+        ...task,
+        startDate: parseISODate(task.start),
+        endDate: parseISODate(task.end),
+      })),
+    [tasks],
+  );
 
   const effectiveSelectedWeekKey = useMemo(() => {
     if (structure.weeks.length === 0) {
@@ -210,10 +225,32 @@ export function QuarterTable({
                 month.weeks.map((week) => {
                   const weekStartKey = formatISODate(week.start);
                   const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
+                  const weekTasks = parsedTasks.filter((task) =>
+                    weekOverlapsRange(week, task.startDate, task.endDate),
+                  );
+                  const canAddForWeek = weekTasks.length > 0;
                   return (
                     <Tooltip key={`${month.month}-${weekStartKey}`} content={rangeLabel}>
                       <th>
-                        W{week.isoWeek}
+                        <WeekHeaderContent>
+                          <WeekHeaderLabel>{`W${week.isoWeek}`}</WeekHeaderLabel>
+                          {canAddForWeek ? (
+                            <AddWeekButton
+                              type="button"
+                              aria-label={`Add subtask in week ${week.isoWeek}`}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                onAddSubtaskForWeek(
+                                  week,
+                                  weekTasks.map((task) => task.id),
+                                );
+                              }}
+                            >
+                              +
+                            </AddWeekButton>
+                          ) : null}
+                        </WeekHeaderContent>
                       </th>
                     </Tooltip>
                   );
@@ -222,16 +259,16 @@ export function QuarterTable({
             </tr>
           </thead>
           <tbody>
-            {tasks.length === 0 ? (
+            {parsedTasks.length === 0 ? (
               <tr>
                 <EmptyCell colSpan={3 + weeksToRender.length}>
                   No tasks yet. Add one above to see it highlighted here.
                 </EmptyCell>
               </tr>
             ) : (
-              tasks.map((task) => {
-                const taskStart = parseISODate(task.start);
-                const taskEnd = parseISODate(task.end);
+              parsedTasks.map((task) => {
+                const taskStart = task.startDate;
+                const taskEnd = task.endDate;
                 return (
                   <tr key={task.id}>
                     <StickyBodyCell
@@ -303,16 +340,20 @@ export function QuarterTable({
                               a.timestampDate.getTime() - b.timestampDate.getTime(),
                           );
 
+                        const showCellAddButton = active || weekSubtasks.length > 0;
+
                         return (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
                             <WeekCell $active={active} $compact={isCompact}>
-                              <AddSubtaskButton
-                                type="button"
-                                onClick={() => onAddSubtask(task.id, task.name, week)}
-                                aria-label={`Add subtask for ${task.name} in week ${week.isoWeek}`}
-                              >
-                                +
-                              </AddSubtaskButton>
+                              {showCellAddButton ? (
+                                <AddSubtaskButton
+                                  type="button"
+                                  onClick={() => onAddSubtask(task.id, task.name, week)}
+                                  aria-label={`Add subtask for ${task.name} in week ${week.isoWeek}`}
+                                >
+                                  +
+                                </AddSubtaskButton>
+                              ) : null}
                               {weekSubtasks.length > 0 ? (
                                 <SubtaskList>
                                   {weekSubtasks.map((subtask) => (

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -83,6 +83,26 @@ const TimeInput = styled(TextInput).attrs({ type: "time" })`
   width: 160px;
 `;
 
+const TaskSelect = styled.select`
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.radii.input};
+  padding: 0.65rem 0.85rem;
+  font: inherit;
+  color: ${theme.colors.foreground};
+  background: ${theme.colors.backgroundAlt};
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: ${theme.colors.accent};
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: ${theme.colors.accent};
+    box-shadow: 0 0 0 4px ${theme.colors.accentMuted};
+  }
+`;
+
 const Actions = styled.div`
   display: flex;
   gap: ${theme.spacing.controlGap};
@@ -140,20 +160,36 @@ const ErrorMessage = styled.p`
 `;
 
 type SubtaskDialogProps = {
-  taskName: string;
+  mode: "task" | "week";
+  taskName?: string;
+  taskId?: string;
   week: WeekInfo;
+  availableTasks: Array<{ id: string; name: string }>;
   error: string | null;
   isSaving: boolean;
   onDismiss: () => void;
-  onSubmit: (form: { title: string; date: string; time: string }) => Promise<void> | void;
+  onSubmit: (form: { taskId: string; title: string; date: string; time: string }) => Promise<void> | void;
 };
 
-export function SubtaskDialog({ taskName, week, error, isSaving, onDismiss, onSubmit }: SubtaskDialogProps) {
+export function SubtaskDialog({
+  mode,
+  taskName,
+  taskId,
+  week,
+  availableTasks,
+  error,
+  isSaving,
+  onDismiss,
+  onSubmit,
+}: SubtaskDialogProps) {
   const defaultDate = useMemo(() => formatISODate(week.start), [week.start]);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(defaultDate);
   const [time, setTime] = useState("09:00");
   const [localError, setLocalError] = useState<string | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
+    mode === "task" ? taskId : availableTasks[0]?.id,
+  );
 
   const weekSummary = useMemo(() => {
     const rangeStart = formatISODate(week.start);
@@ -181,6 +217,12 @@ export function SubtaskDialog({ taskName, week, error, isSaving, onDismiss, onSu
         return;
       }
 
+       const resolvedTaskId = mode === "task" ? taskId : selectedTaskId;
+       if (!resolvedTaskId) {
+         setLocalError("Please pick a task for this subtask.");
+         return;
+       }
+
       const selectedDate = parseISODate(date);
       selectedDate.setHours(0, 0, 0, 0);
 
@@ -195,24 +237,49 @@ export function SubtaskDialog({ taskName, week, error, isSaving, onDismiss, onSu
       }
 
       await onSubmit({
+        taskId: resolvedTaskId,
         title: title.trim(),
         date,
         time,
       });
     },
-    [date, onSubmit, time, title, week.end, week.start],
+    [date, mode, onSubmit, selectedTaskId, taskId, time, title, week.end, week.start],
   );
+
+  const dialogSubtitle =
+    mode === "task" && taskName
+      ? `${taskName} · Week ${week.isoWeek} (${weekSummary})`
+      : `Week ${week.isoWeek} (${weekSummary})`;
+
+  const canSubmit = mode === "task" ? Boolean(taskId) : availableTasks.length > 0 && Boolean(selectedTaskId);
 
   return (
     <Overlay>
       <DialogCard role="dialog" aria-modal="true" aria-labelledby="subtask-dialog-title">
         <Heading>
           <h2 id="subtask-dialog-title">Add subtask</h2>
-          <Subtitle>
-            {taskName} · Week {week.isoWeek} ({weekSummary})
-          </Subtitle>
+          <Subtitle>{dialogSubtitle}</Subtitle>
         </Heading>
         <Form onSubmit={handleSubmit}>
+          {mode === "week" ? (
+            <FieldGroup>
+              <Label htmlFor="subtask-task">Task</Label>
+              <TaskSelect
+                id="subtask-task"
+                value={selectedTaskId ?? ""}
+                onChange={(event) => setSelectedTaskId(event.target.value)}
+              >
+                {availableTasks.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </TaskSelect>
+              {availableTasks.length === 0 ? (
+                <Subtitle>No tasks overlap with this week.</Subtitle>
+              ) : null}
+            </FieldGroup>
+          ) : null}
           <FieldGroup>
             <Label htmlFor="subtask-title">Title</Label>
             <TextInput
@@ -242,7 +309,7 @@ export function SubtaskDialog({ taskName, week, error, isSaving, onDismiss, onSu
             <SecondaryButton type="button" onClick={onDismiss}>
               Cancel
             </SecondaryButton>
-            <PrimaryButton type="submit" disabled={isSaving}>
+            <PrimaryButton type="submit" disabled={isSaving || !canSubmit}>
               {isSaving ? "Saving…" : "Save subtask"}
             </PrimaryButton>
           </Actions>

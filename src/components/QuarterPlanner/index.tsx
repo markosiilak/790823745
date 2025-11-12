@@ -124,11 +124,20 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
 
   const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [subtaskDraft, setSubtaskDraft] = useState<{
-    taskId: string;
-    taskName: string;
-    week: WeekInfo;
-  } | null>(null);
+type SubtaskDraft =
+  | {
+      mode: "task";
+      taskId: string;
+      taskName: string;
+      week: WeekInfo;
+    }
+  | {
+      mode: "week";
+      week: WeekInfo;
+      taskOptions: Array<{ id: string; name: string }>;
+    };
+
+  const [subtaskDraft, setSubtaskDraft] = useState<SubtaskDraft | null>(null);
   const [subtaskError, setSubtaskError] = useState<string | null>(null);
   const [isSavingSubtask, setIsSavingSubtask] = useState(false);
 
@@ -184,6 +193,7 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
   const handleSubtaskAddRequest = useCallback(
     (taskId: string, taskName: string, week: WeekInfo) => {
       setSubtaskDraft({
+        mode: "task",
         taskId,
         taskName,
         week,
@@ -191,6 +201,27 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
       setSubtaskError(null);
     },
     [],
+  );
+
+  const handleSubtaskAddForWeek = useCallback(
+    (week: WeekInfo, candidateTaskIds: string[]) => {
+      const taskOptions = tasks
+        .filter((task) => candidateTaskIds.includes(task.id))
+        .map((task) => ({
+          id: task.id,
+          name: task.name,
+        }));
+      if (taskOptions.length === 0) {
+        return;
+      }
+      setSubtaskDraft({
+        mode: "week",
+        week,
+        taskOptions,
+      });
+      setSubtaskError(null);
+    },
+    [tasks],
   );
 
   const handleSubtaskSubmit = useCallback(
@@ -266,18 +297,29 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
         onRemoveTask={handleRemoveTask}
         onEditTask={handleEditTaskNavigate}
         onAddSubtask={handleSubtaskAddRequest}
+        onAddSubtaskForWeek={handleSubtaskAddForWeek}
       />
       {subtaskDraft ? (
         <SubtaskDialog
-          taskName={subtaskDraft.taskName}
+          key={
+            subtaskDraft.mode === "task"
+              ? `task-${subtaskDraft.taskId}-${subtaskDraft.week.start.toISOString()}`
+              : `week-${subtaskDraft.week.start.toISOString()}`
+          }
+          mode={subtaskDraft.mode}
+          taskName={subtaskDraft.mode === "task" ? subtaskDraft.taskName : undefined}
+          taskId={subtaskDraft.mode === "task" ? subtaskDraft.taskId : undefined}
           week={subtaskDraft.week}
+          availableTasks={subtaskDraft.mode === "week" ? subtaskDraft.taskOptions : []}
           error={subtaskError}
           isSaving={isSavingSubtask}
           onDismiss={() => {
             setSubtaskDraft(null);
             setSubtaskError(null);
           }}
-          onSubmit={(form) => handleSubtaskSubmit(subtaskDraft.taskId, form)}
+          onSubmit={({ taskId, title, date, time }) =>
+            handleSubtaskSubmit(taskId, { title, date, time })
+          }
         />
       ) : null}
     </PlannerShell>
