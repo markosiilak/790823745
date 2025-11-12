@@ -81,6 +81,7 @@ export const StickyHeaderCell = styled.th<{ $left: number; $width: number }>`
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
   padding: 1rem;
+  padding-left: 0;
   text-align: left;
 `;
 
