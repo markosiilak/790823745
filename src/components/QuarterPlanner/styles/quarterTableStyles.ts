@@ -207,7 +207,11 @@ export const RemoveButton = styled.button`
   }
 `;
 
-export const WeekCell = styled.td<{ $active: boolean; $compact: boolean }>`
+export const WeekCell = styled.td<{
+  $active: boolean;
+  $compact: boolean;
+  $hasContent: boolean;
+}>`
   min-height: ${({ $compact }) =>
     $compact ? theme.sizes.weekCellCompact : theme.sizes.weekCell};
   width: ${({ $compact }) =>
@@ -231,6 +235,16 @@ export const WeekCell = styled.td<{ $active: boolean; $compact: boolean }>`
   gap: 0.4rem;
   align-items: stretch;
   overflow: hidden;
+
+  ${({ $hasContent }) =>
+    !$hasContent &&
+    css`
+      background: transparent;
+      box-shadow: none;
+      border-right-color: transparent;
+      padding: 0;
+      min-height: 0;
+    `}
 
   &:last-child {
     border-right: none;

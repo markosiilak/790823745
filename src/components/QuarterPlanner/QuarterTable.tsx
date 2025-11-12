@@ -340,20 +340,30 @@ export function QuarterTable({
                               a.timestampDate.getTime() - b.timestampDate.getTime(),
                           );
 
-                        const showCellAddButton = active || weekSubtasks.length > 0;
+                        const hasContent = active || weekSubtasks.length > 0;
+
+                        if (!hasContent) {
+                          return (
+                            <WeekCell
+                              key={`${task.id}-${weekStartKey}`}
+                              $active={false}
+                              $compact={isCompact}
+                              $hasContent={false}
+                              aria-hidden="true"
+                            />
+                          );
+                        }
 
                         return (
                           <Tooltip key={`${task.id}-${weekStartKey}`} content={rangeLabel}>
-                            <WeekCell $active={active} $compact={isCompact}>
-                              {showCellAddButton ? (
-                                <AddSubtaskButton
-                                  type="button"
-                                  onClick={() => onAddSubtask(task.id, task.name, week)}
-                                  aria-label={`Add subtask for ${task.name} in week ${week.isoWeek}`}
-                                >
-                                  +
-                                </AddSubtaskButton>
-                              ) : null}
+                            <WeekCell $active={active} $compact={isCompact} $hasContent>
+                              <AddSubtaskButton
+                                type="button"
+                                onClick={() => onAddSubtask(task.id, task.name, week)}
+                                aria-label={`Add subtask for ${task.name} in week ${week.isoWeek}`}
+                              >
+                                +
+                              </AddSubtaskButton>
                               {weekSubtasks.length > 0 ? (
                                 <SubtaskList>
                                   {weekSubtasks.map((subtask) => (
