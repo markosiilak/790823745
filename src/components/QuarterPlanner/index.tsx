@@ -73,6 +73,12 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
   }, [initialQuarter]);
 
   useEffect(() => {
+    if (tasks.length === 0) {
+      setTasks(createDefaultTasks());
+    }
+  }, [tasks.length]);
+
+  useEffect(() => {
     const rawTask = searchParams.get("task");
     if (!rawTask) {
       return;
@@ -89,6 +95,18 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
           if (previous.length >= MAX_TASKS) {
             return previous;
           }
+
+          const exists = previous.some(
+            (task) =>
+              task.name === payload.name &&
+              task.start === payload.start &&
+              task.end === payload.end,
+          );
+
+          if (exists) {
+            return previous;
+          }
+
           return [
             ...previous,
             {
