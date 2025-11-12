@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
-import { TaskFormState } from "./types";
 import theme from "@/styles/theme";
+import { DatePicker } from "@/components/DatePicker";
+import { TaskFormState } from "./types";
 
 const Card = styled.section`
   background: ${theme.colors.backgroundAlt};
@@ -36,6 +37,20 @@ const Label = styled.label`
   gap: ${theme.spacing.fieldGap};
   color: ${theme.colors.foreground};
   width: 100%;
+`;
+
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.fieldGap};
+  color: ${theme.colors.foreground};
+  width: 100%;
+`;
+
+const FieldLabel = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: ${theme.colors.foreground};
 `;
 
 const Input = styled.input`
@@ -172,26 +187,22 @@ export function TaskForm({
           </Label>
         </FormRow>
         <FormGrid>
-          <Label>
-            Start date
-            <Input
-              type="date"
-              name="start"
+          <FieldGroup>
+            <FieldLabel id="task-start-label">Start date</FieldLabel>
+            <DatePicker
               value={form.start}
-              onChange={(event) => onStartChange(event.target.value)}
-              required
+              onChange={onStartChange}
+              ariaLabelledBy="task-start-label"
             />
-          </Label>
-          <Label>
-            End date
-            <Input
-              type="date"
-              name="end"
+          </FieldGroup>
+          <FieldGroup>
+            <FieldLabel id="task-end-label">End date</FieldLabel>
+            <DatePicker
               value={form.end}
-              onChange={(event) => onEndChange(event.target.value)}
-              required
+              onChange={onEndChange}
+              ariaLabelledBy="task-end-label"
             />
-          </Label>
+          </FieldGroup>
         </FormGrid>
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <FormActions>
