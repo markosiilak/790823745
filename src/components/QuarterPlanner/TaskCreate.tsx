@@ -33,11 +33,23 @@ type TaskCreateProps = {
 
 export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: TaskCreateProps) {
   const router = useRouter();
-  const today = useMemo(() => new Date(), []);
+  const today = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return now;
+  }, []);
+
+  const defaultStart = useMemo(() => formatISODate(today), [today]);
+  const defaultEnd = useMemo(() => {
+    const future = new Date(today);
+    future.setDate(future.getDate() + 7);
+    return formatISODate(future);
+  }, [today]);
+
   const [form, setForm] = useState<TaskFormState>(() => ({
     name: "",
-    start: formatISODate(today),
-    end: formatISODate(today),
+    start: defaultStart,
+    end: defaultEnd,
   }));
   const [error, setError] = useState<string | null>(null);
 
@@ -54,11 +66,11 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
   const resetForm = useCallback(() => {
     setForm({
       name: "",
-      start: formatISODate(today),
-      end: formatISODate(today),
+      start: defaultStart,
+      end: defaultEnd,
     });
     setError(null);
-  }, [today]);
+  }, [defaultEnd, defaultStart]);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
