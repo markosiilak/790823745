@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styled, { css } from "styled-components";
 import {
   QuarterKey,
   buildQuarterStructure,
   formatISODate,
-  getQuarterFromDate,
   parseISODate,
   shiftQuarter,
   weekOverlapsRange,
@@ -361,19 +360,14 @@ const EmptyCell = styled.td`
   font-style: italic;
 `;
 
-export function QuarterPlanner() {
+type QuarterPlannerProps = {
+  initialQuarter: QuarterKey;
+};
+
+export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const today = useMemo(() => new Date(), []);
-  const fallbackQuarter = useMemo(() => getQuarterFromDate(today), [today]);
-
-  const searchQuarter = useMemo(
-    () => parseQuarterFromSearch(new URLSearchParams(searchParams.toString())),
-    [searchParams],
-  );
-
-  const currentQuarter = searchQuarter ?? fallbackQuarter;
+  const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);
 
   const [tasks, setTasks] = useState<Task[]>(DEFAULT_TASKS);
 
@@ -382,25 +376,9 @@ export function QuarterPlanner() {
   const [end, setEnd] = useState(formatISODate(today));
   const [error, setError] = useState<string | null>(null);
 
-  const setQuarterInUrl = useCallback(
-    (nextQuarter: QuarterKey) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("year", String(nextQuarter.year));
-      params.set("quarter", String(nextQuarter.quarter));
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [pathname, router, searchParams],
-  );
-
   useEffect(() => {
-    if (searchQuarter) {
-      return;
-    }
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("year", String(fallbackQuarter.year));
-    params.set("quarter", String(fallbackQuarter.quarter));
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [fallbackQuarter, pathname, router, searchParams, searchQuarter]);
+    setCurrentQuarter(initialQuarter);
+  }, [initialQuarter]);
 
   const structure = useMemo(
     () => buildQuarterStructure(currentQuarter.year, currentQuarter.quarter),
@@ -410,9 +388,10 @@ export function QuarterPlanner() {
   const handleShiftQuarter = useCallback(
     (delta: number) => {
       const nextQuarter = shiftQuarter(currentQuarter, delta);
-      setQuarterInUrl(nextQuarter);
+      setCurrentQuarter(nextQuarter);
+      router.push(`/calendar/${nextQuarter.year}/${nextQuarter.quarter}`);
     },
-    [currentQuarter, setQuarterInUrl],
+    [currentQuarter, router],
   );
 
   const resetForm = useCallback(() => {
@@ -643,19 +622,5 @@ export function QuarterPlanner() {
       </Card>
     </Planner>
   );
-}
-
-function parseQuarterFromSearch(searchParams: URLSearchParams): QuarterKey | null {
-  const yearParam = Number(searchParams.get("year"));
-  const quarterParam = Number(searchParams.get("quarter"));
-  if (!Number.isFinite(yearParam) || !Number.isFinite(quarterParam)) {
-    return null;
-  }
-
-  if (quarterParam < 1 || quarterParam > 4) {
-    return null;
-  }
-
-  return { year: yearParam, quarter: quarterParam };
 }
 
