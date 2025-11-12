@@ -1,4 +1,13 @@
 import { useMemo, useState } from "react";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { QuarterStructure, WeekInfo, formatISODate, parseISODate, weekOverlapsRange } from "@/lib/quarter";
 import { Task } from "./types";
 import {
@@ -43,6 +52,7 @@ type QuarterTableProps = {
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
   onAddSubtaskForWeek: (week: WeekInfo, candidateTaskIds: string[]) => void;
+  onMoveSubtask?: (payload: { taskId: string; subtaskId: string; isoDate: string }) => void;
 };
 
 type ViewMode = "standard" | "compact" | "single-week";
@@ -75,6 +85,7 @@ export function QuarterTable({
   onEditTask,
   onAddSubtask,
   onAddSubtaskForWeek,
+  onMoveSubtask,
 }: QuarterTableProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("standard");
   const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(() => {
@@ -166,6 +177,42 @@ export function QuarterTable({
     [structure.months, viewMode, weeksToRender],
   );
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!active || !over) {
+      return;
+    }
+
+    const activeData = active.data.current as
+      | { type: "subtask"; taskId: string; subtaskId: string }
+      | null
+      | undefined;
+    const overData = over.data.current as { type: "day"; isoDate: string } | null | undefined;
+
+    if (!activeData || !overData || activeData.type !== "subtask" || overData.type !== "day") {
+      return;
+    }
+
+    if (onMoveSubtask) {
+      onMoveSubtask({
+        taskId: activeData.taskId,
+        subtaskId: activeData.subtaskId,
+        isoDate: overData.isoDate,
+      });
+    }
+  };
+
   return (
     <Card>
       <TableHeader>
@@ -216,7 +263,8 @@ export function QuarterTable({
         </TableActions>
       </TableHeader>
       <TableWrapper>
-        <StyledTable $compact={isCompact}>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <StyledTable $compact={isCompact}>
           <thead>
             <tr>
               <StickyHeaderCell
@@ -266,6 +314,22 @@ export function QuarterTable({
                       <th>
                         <WeekHeaderContent>
                           <WeekHeaderLabel>{`W${week.isoWeek}`}</WeekHeaderLabel>
+                          {canAddForWeek ? (
+                            <AddWeekButton
+                              type="button"
+                              aria-label={`Add subtask in week ${week.isoWeek}`}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                onAddSubtaskForWeek?.(
+                                  week,
+                                  weekTasks.map((task) => task.id),
+                                );
+                              }}
+                            >
+                              +
+                            </AddWeekButton>
+                          ) : null}
                         </WeekHeaderContent>
                       </th>
                     </Tooltip>
@@ -402,6 +466,7 @@ export function QuarterTable({
             )}
           </tbody>
         </StyledTable>
+        </DndContext>
       </TableWrapper>
     </Card>
   );
