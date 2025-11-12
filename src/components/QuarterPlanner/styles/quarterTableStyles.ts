@@ -136,6 +136,7 @@ export const TaskRow = styled.div`
 export const TaskName = styled.span`
   font-weight: 600;
   display: block;
+  text-align: left;
 `;
 
 export const ActionGroup = styled.div`
