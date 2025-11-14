@@ -69,8 +69,7 @@
     "taskUpdated": "Ülesanne \"{{taskName}}\" muudetud",
     "taskDeleted": "Ülesanne \"{{taskName}}\" kustutatud",
     "subtaskCreated": "Alaülesanne ülesandele \"{{taskName}}\" lisatud",
-    "subtaskUpdated": "Alaülesanne ülesandele \"{{taskName}}\" muudetud",
-    "subtaskDeleted": "Alaülesanne ülesandele \"{{taskName}}\" kustutatud"
+    "subtaskUpdated": "Alaülesanne ülesandele \"{{taskName}}\" muudetud"
   }
 }
 

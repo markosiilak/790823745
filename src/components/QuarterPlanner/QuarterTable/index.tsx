@@ -12,8 +12,7 @@ import { TableHead } from "@/components/QuarterPlanner/QuarterTable/TableHead";
 import { TableBody } from "@/components/QuarterPlanner/QuarterTable/TableBody";
 import { LoadingIndicator } from "@/components/QuarterPlanner/QuarterTable/LoadingIndicator";
 import { LoadingWrapper } from "@/components/QuarterPlanner/QuarterTable/styles";
-import { useMemo, type JSX } from "react";
-import { type ViewMode } from "@/components/QuarterPlanner/QuarterTable/constants";
+import { useMemo } from "react";
 
 /**
  * Props for the QuarterTable component.
@@ -51,18 +50,15 @@ export function QuarterTable({
   onAddSubtask,
   onAddSubtaskForWeek,
   onEditSubtask,
-}: QuarterTableProps): JSX.Element {
-  const activeWeekKeysFromViewMode = useMemo<string[]>(() => [], []);
-
+}: QuarterTableProps) {
   const {
     viewMode,
     setViewMode,
-    selectedWeekKey,
     setSelectedWeekKey,
     effectiveSelectedWeekKey,
     viewModeOptions,
     weekDropdownOptions,
-  } = useViewMode(structure, activeWeekKeysFromViewMode);
+  } = useViewMode(structure, []);
 
   const { parsedTasks, activeWeekKeys: updatedActiveWeekKeys, weeksToRender, monthsToRender } =
     useTableData(tasks, structure, viewMode, effectiveSelectedWeekKey);
