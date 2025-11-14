@@ -70,6 +70,26 @@
     "taskDeleted": "Task \"{{taskName}}\" deleted successfully",
     "subtaskCreated": "Subtask for \"{{taskName}}\" created successfully",
     "subtaskUpdated": "Subtask for \"{{taskName}}\" updated successfully"
+  },
+  "subtaskDialog": {
+    "titleAdd": "Add subtask",
+    "titleEdit": "Edit subtask",
+    "taskLabel": "Task",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Client sync",
+    "dateLabel": "Date",
+    "timeLabel": "Time",
+    "cancel": "Cancel",
+    "save": "Save subtask",
+    "saving": "Saving…",
+    "noTasks": "No tasks overlap with this week.",
+    "errorTitleRequired": "Please provide a subtask title.",
+    "errorDateRequired": "Please choose a date.",
+    "errorTimeRequired": "Please choose a time.",
+    "errorTaskRequired": "Please pick a task for this subtask.",
+    "errorDateOutOfRange": "The subtask date must fall within the selected week.",
+    "subtitleTask": "{{taskName}} · Week {{week}} ({{range}})",
+    "subtitleWeek": "Week {{week}} ({{range}})"
   }
 }
 

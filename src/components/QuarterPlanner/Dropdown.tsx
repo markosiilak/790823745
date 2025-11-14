@@ -12,23 +12,9 @@ import {
   OptionButton,
   OptionDescription,
 } from "./styles/dropdownStyles";
+import type { DropdownProps, DropdownOption } from "./Dropdown/types";
 
-export type DropdownOption = {
-  value: string;
-  label: string;
-  description?: string;
-  disabled?: boolean;
-};
-
-type DropdownProps = {
-  options: DropdownOption[];
-  value: string | null;
-  onChange: (value: string) => void;
-  ariaLabel?: string;
-  width?: string;
-  disabled?: boolean;
-  placeholder?: string;
-};
+export type { DropdownOption } from "./Dropdown/types";
 
 /**
  * Reusable dropdown/select component with custom styling.
@@ -54,8 +40,8 @@ export function Dropdown({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLUListElement | null>(null);
 
-  const activeIndex = useMemo(
-    () => options.findIndex((option) => option.value === value),
+  const activeIndex = useMemo<number>(
+    () => options.findIndex((option: DropdownOption) => option.value === value),
     [options, value],
   );
 
@@ -121,7 +107,7 @@ export function Dropdown({
         disabled={disabled}
         $isOpen={isOpen}
       >
-        <LabelText>{options.find((option) => option.value === value)?.label ?? placeholder}</LabelText>
+        <LabelText>{options.find((option: DropdownOption) => option.value === value)?.label ?? placeholder}</LabelText>
         <Chevron $isOpen={isOpen}>
           <ChevronDownIcon width={16} height={16} />
         </Chevron>
@@ -129,7 +115,7 @@ export function Dropdown({
 
       {isOpen ? (
         <OptionsCard role="listbox" ref={listRef}>
-          {options.map((option) => {
+          {options.map((option: DropdownOption) => {
             const isActive = option.value === value;
             return (
               <li key={option.value}>

@@ -2,17 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Toast as StyledToast, ToastMessage, ToastCloseButton, ToastContainer } from "./styles";
+import type { ToastProps, ToastListProps, ToastType } from "./types";
 
-export type ToastType = {
-  id: string;
-  message: string;
-  duration?: number;
-};
-
-type ToastProps = {
-  toast: ToastType;
-  onRemove: (id: string) => void;
-};
+export type { ToastType } from "./types";
 
 function Toast({ toast, onRemove }: ToastProps) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -62,11 +54,6 @@ function Toast({ toast, onRemove }: ToastProps) {
   );
 }
 
-type ToastListProps = {
-  toasts: ToastType[];
-  onRemove: (id: string) => void;
-};
-
 export function ToastList({ toasts, onRemove }: ToastListProps) {
   if (toasts.length === 0) {
     return null;
@@ -74,7 +61,7 @@ export function ToastList({ toasts, onRemove }: ToastListProps) {
 
   return (
     <ToastContainer role="region" aria-live="polite" aria-label="Notifications">
-      {toasts.map((toast) => (
+      {toasts.map((toast: ToastType) => (
         <Toast key={toast.id} toast={toast} onRemove={onRemove} />
       ))}
     </ToastContainer>

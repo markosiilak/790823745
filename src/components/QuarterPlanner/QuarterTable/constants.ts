@@ -14,13 +14,3 @@ export const dateFormatter = new Intl.DateTimeFormat("et-EE", {
   year: "numeric",
 });
 
-export const subtaskDateFormatter = new Intl.DateTimeFormat("et-EE", {
-  day: "2-digit",
-  month: "2-digit",
-});
-
-export const subtaskTimeFormatter = new Intl.DateTimeFormat("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
-

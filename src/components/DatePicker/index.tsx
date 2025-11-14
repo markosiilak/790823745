@@ -16,18 +16,7 @@ import {
   WeekdayCell,
   DayButton,
 } from "./styles";
-
-type DatePickerProps = {
-  value: string;
-  onChange: (value: string) => void;
-  ariaLabel?: string;
-  ariaLabelledBy?: string;
-};
-
-type CalendarDay = {
-  date: Date;
-  isCurrentMonth: boolean;
-};
+import type { DatePickerProps, CalendarDay } from "./types";
 
 const displayFormatter = new Intl.DateTimeFormat("et-EE", {
   day: "2-digit",

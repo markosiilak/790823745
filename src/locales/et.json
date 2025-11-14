@@ -70,6 +70,26 @@
     "taskDeleted": "Ülesanne \"{{taskName}}\" kustutatud",
     "subtaskCreated": "Alaülesanne ülesandele \"{{taskName}}\" lisatud",
     "subtaskUpdated": "Alaülesanne ülesandele \"{{taskName}}\" muudetud"
+  },
+  "subtaskDialog": {
+    "titleAdd": "Lisa alaülesanne",
+    "titleEdit": "Muuda alaülesannet",
+    "taskLabel": "Ülesanne",
+    "titleLabel": "Pealkiri",
+    "titlePlaceholder": "nt. Klientide koosolek",
+    "dateLabel": "Kuupäev",
+    "timeLabel": "Kellaaeg",
+    "cancel": "Tühista",
+    "save": "Salvesta alaülesanne",
+    "saving": "Salvestamine…",
+    "noTasks": "Ühtegi ülesannet ei kattu selle nädalaga.",
+    "errorTitleRequired": "Palun sisesta alaülesande pealkiri.",
+    "errorDateRequired": "Palun vali kuupäev.",
+    "errorTimeRequired": "Palun vali kellaaeg.",
+    "errorTaskRequired": "Palun vali selle alaülesande jaoks ülesanne.",
+    "errorDateOutOfRange": "Alaülesande kuupäev peab jääma valitud nädala piiresse.",
+    "subtitleTask": "{{taskName}} · Nädal {{week}} ({{range}})",
+    "subtitleWeek": "Nädal {{week}} ({{range}})"
   }
 }
 

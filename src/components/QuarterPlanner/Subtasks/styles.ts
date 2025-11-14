@@ -78,26 +78,6 @@ export const TimeInput = styled(TextInput).attrs({ type: "time" })`
   width: 160px;
 `;
 
-export const TaskSelect = styled.select`
-  border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.radii.input};
-  padding: 0.65rem 0.85rem;
-  font: inherit;
-  color: ${theme.colors.foreground};
-  background: ${theme.colors.backgroundAlt};
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
-
-  &:hover {
-    border-color: ${theme.colors.accent};
-  }
-
-  &:focus-visible {
-    outline: none;
-    border-color: ${theme.colors.accent};
-    box-shadow: 0 0 0 4px ${theme.colors.accentMuted};
-  }
-`;
-
 export const Actions = styled.div`
   display: flex;
   gap: ${theme.spacing.controlGap};

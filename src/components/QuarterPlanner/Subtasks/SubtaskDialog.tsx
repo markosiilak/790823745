@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { WeekInfo, formatISODate, parseISODate } from "@/lib/quarter";
+import { useCallback, useMemo, useState, type FormEvent, type JSX } from "react";
+import { formatISODate, parseISODate } from "@/lib/quarter";
 import { DatePicker } from "@/components/DatePicker";
+import { Dropdown, type DropdownOption } from "@/components/QuarterPlanner/Dropdown";
+import { useTranslations } from "@/lib/translations";
 import {
   Overlay,
   DialogCard,
@@ -13,28 +15,12 @@ import {
   Label,
   TextInput,
   TimeInput,
-  TaskSelect,
   Actions,
   PrimaryButton,
   SecondaryButton,
   ErrorMessage,
 } from "./styles";
-
-type SubtaskDialogProps = {
-  mode: "task" | "week";
-  taskName?: string;
-  taskId?: string;
-  week: WeekInfo;
-  availableTasks: Array<{ id: string; name: string }>;
-  error: string | null;
-  isSaving: boolean;
-  onDismiss: () => void;
-  onSubmit: (form: { taskId: string; title: string; date: string; time: string; subtaskId?: string }) => Promise<void> | void;
-  // Edit mode props
-  subtaskId?: string;
-  initialTitle?: string;
-  initialDate?: string;
-};
+import type { SubtaskDialogProps, SubtaskFormData, FormState, TaskOption } from "./types";
 
 /**
  * Modal dialog for creating or editing subtasks.
@@ -55,70 +41,78 @@ export function SubtaskDialog({
   subtaskId,
   initialTitle,
   initialDate,
-}: SubtaskDialogProps) {
-  const defaultDate = useMemo(() => formatISODate(week.start), [week.start]);
-  const isEditMode = Boolean(subtaskId);
+}: SubtaskDialogProps): JSX.Element {
+  const t = useTranslations("subtaskDialog");
+  const defaultDate = useMemo<string>(() => formatISODate(week.start), [week.start]);
+  const isEditMode = useMemo<boolean>(() => Boolean(subtaskId), [subtaskId]);
   
-  // Initialize form with existing data if in edit mode, otherwise use defaults
-  const initialFormData = useMemo(() => {
+  const initialFormData = useMemo<FormState>(() => {
     if (isEditMode && initialDate) {
-      // initialDate is an ISO timestamp string, parse it to get date and time
       const timestampDate = new Date(initialDate);
       if (!Number.isNaN(timestampDate.getTime())) {
-        const timeString = timestampDate.toTimeString().slice(0, 5); // HH:mm format
+        const timeString = timestampDate.toTimeString().slice(0, 5) as `${number}${number}:${number}${number}`;
         return {
-          title: initialTitle || "",
+          title: initialTitle ?? "",
           date: formatISODate(timestampDate),
           time: timeString,
-        };
+        } as const;
       }
     }
     return {
       title: "",
       date: defaultDate,
       time: "09:00",
-    };
+    } as const;
   }, [isEditMode, initialTitle, initialDate, defaultDate]);
 
-  const [title, setTitle] = useState(initialFormData.title);
-  const [date, setDate] = useState(initialFormData.date);
-  const [time, setTime] = useState(initialFormData.time);
+  const [title, setTitle] = useState<string>(initialFormData.title);
+  const [date, setDate] = useState<string>(initialFormData.date);
+  const [time, setTime] = useState<string>(initialFormData.time);
   const [localError, setLocalError] = useState<string | null>(null);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(() =>
     mode === "task" ? taskId : availableTasks[0]?.id,
   );
 
-  const weekSummary = useMemo(() => {
+  const taskOptions = useMemo<DropdownOption[]>(
+    () =>
+      availableTasks.map((task: TaskOption) => ({
+        value: task.id,
+        label: task.name,
+      })),
+    [availableTasks],
+  );
+
+  const weekSummary = useMemo<string>(() => {
     const rangeStart = formatISODate(week.start);
     const rangeEnd = formatISODate(week.end);
     return `${rangeStart} – ${rangeEnd}`;
   }, [week.end, week.start]);
 
   const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault();
       setLocalError(null);
 
       if (!title.trim()) {
-        setLocalError("Please provide a subtask title.");
+        setLocalError(t.errorTitleRequired);
         return;
       }
 
       if (!date) {
-        setLocalError("Please choose a date.");
+        setLocalError(t.errorDateRequired);
         return;
       }
 
       if (!time) {
-        setLocalError("Please choose a time.");
+        setLocalError(t.errorTimeRequired);
         return;
       }
 
-       const resolvedTaskId = mode === "task" ? taskId : selectedTaskId;
-       if (!resolvedTaskId) {
-         setLocalError("Please pick a task for this subtask.");
-         return;
-       }
+      const resolvedTaskId: string | undefined = mode === "task" ? taskId : selectedTaskId;
+      if (!resolvedTaskId) {
+        setLocalError(t.errorTaskRequired);
+        return;
+      }
 
       const selectedDate = parseISODate(date);
       selectedDate.setHours(0, 0, 0, 0);
@@ -128,76 +122,107 @@ export function SubtaskDialog({
       const weekEnd = new Date(week.end);
       weekEnd.setHours(23, 59, 59, 999);
 
-      if (selectedDate.getTime() < weekStart.getTime() || selectedDate.getTime() > weekEnd.getTime()) {
-        setLocalError("The subtask date must fall within the selected week.");
+      const selectedTime = selectedDate.getTime();
+      const weekStartTime = weekStart.getTime();
+      const weekEndTime = weekEnd.getTime();
+
+      if (selectedTime < weekStartTime || selectedTime > weekEndTime) {
+        setLocalError(t.errorDateOutOfRange);
         return;
       }
 
-      await onSubmit({
+      const formData: SubtaskFormData = {
         taskId: resolvedTaskId,
         title: title.trim(),
         date,
         time,
-        ...(subtaskId && { subtaskId }),
-      });
+        ...(subtaskId ? { subtaskId } : undefined),
+      };
+
+      await onSubmit(formData);
     },
-    [date, mode, onSubmit, selectedTaskId, taskId, time, title, week.end, week.start, subtaskId],
+    [
+      date,
+      mode,
+      onSubmit,
+      selectedTaskId,
+      taskId,
+      time,
+      title,
+      week.end,
+      week.start,
+      subtaskId,
+      t.errorTitleRequired,
+      t.errorDateRequired,
+      t.errorTimeRequired,
+      t.errorTaskRequired,
+      t.errorDateOutOfRange,
+    ],
   );
 
-  const dialogSubtitle =
-    mode === "task" && taskName
-      ? `${taskName} · Week ${week.isoWeek} (${weekSummary})`
-      : `Week ${week.isoWeek} (${weekSummary})`;
+  const dialogSubtitle = useMemo<string>(() => {
+    if (mode === "task" && taskName) {
+      return t.subtitleTask
+        .replace("{{taskName}}", taskName)
+        .replace("{{week}}", String(week.isoWeek))
+        .replace("{{range}}", weekSummary);
+    }
+    return t.subtitleWeek.replace("{{week}}", String(week.isoWeek)).replace("{{range}}", weekSummary);
+  }, [mode, taskName, week.isoWeek, weekSummary, t.subtitleTask, t.subtitleWeek]);
 
-  const canSubmit = mode === "task" ? Boolean(taskId) : availableTasks.length > 0 && Boolean(selectedTaskId);
+  const canSubmit = useMemo<boolean>(
+    () => (mode === "task" ? Boolean(taskId) : availableTasks.length > 0 && Boolean(selectedTaskId)),
+    [mode, taskId, availableTasks.length, selectedTaskId],
+  );
 
   return (
     <Overlay>
       <DialogCard role="dialog" aria-modal="true" aria-labelledby="subtask-dialog-title">
         <Heading>
-          <h2 id="subtask-dialog-title">{isEditMode ? "Edit subtask" : "Add subtask"}</h2>
+          <h2 id="subtask-dialog-title">{isEditMode ? t.titleEdit : t.titleAdd}</h2>
           <Subtitle>{dialogSubtitle}</Subtitle>
         </Heading>
         <Form onSubmit={handleSubmit}>
           {mode === "week" ? (
             <FieldGroup>
-              <Label htmlFor="subtask-task">Task</Label>
-              <TaskSelect
-                id="subtask-task"
-                value={selectedTaskId ?? ""}
-                onChange={(event) => setSelectedTaskId(event.target.value)}
-              >
-                {availableTasks.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </TaskSelect>
-              {availableTasks.length === 0 ? (
-                <Subtitle>No tasks overlap with this week.</Subtitle>
-              ) : null}
+              <Label>{t.taskLabel}</Label>
+              {availableTasks.length > 0 ? (
+                <Dropdown
+                  options={taskOptions}
+                  value={selectedTaskId ?? null}
+                  onChange={setSelectedTaskId}
+                  ariaLabel={t.taskLabel}
+                  width="100%"
+                />
+              ) : (
+                <Subtitle>{t.noTasks}</Subtitle>
+              )}
             </FieldGroup>
           ) : null}
           <FieldGroup>
-            <Label htmlFor="subtask-title">Title</Label>
+            <Label htmlFor="subtask-title">{t.titleLabel}</Label>
             <TextInput
               id="subtask-title"
               type="text"
-              placeholder="e.g. Client sync"
+              placeholder={t.titlePlaceholder}
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setTitle(event.target.value);
+              }}
             />
           </FieldGroup>
           <FieldGroup>
-            <Label id="subtask-date-label">Date</Label>
+            <Label id="subtask-date-label">{t.dateLabel}</Label>
             <DatePicker value={date} onChange={setDate} ariaLabelledBy="subtask-date-label" />
           </FieldGroup>
           <FieldGroup>
-            <Label htmlFor="subtask-time">Time</Label>
+            <Label htmlFor="subtask-time">{t.timeLabel}</Label>
             <TimeInput
               id="subtask-time"
               value={time}
-              onChange={(event) => setTime(event.target.value)}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setTime(event.target.value);
+              }}
               step={300}
             />
           </FieldGroup>
@@ -205,10 +230,10 @@ export function SubtaskDialog({
           {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <Actions>
             <SecondaryButton type="button" onClick={onDismiss}>
-              Cancel
+              {t.cancel}
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={isSaving || !canSubmit}>
-              {isSaving ? "Saving…" : "Save subtask"}
+              {isSaving ? t.saving : t.save}
             </PrimaryButton>
           </Actions>
         </Form>

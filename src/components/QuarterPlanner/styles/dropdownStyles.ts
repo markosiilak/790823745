@@ -12,7 +12,7 @@ export const TriggerButton = styled.button<{ $isOpen: boolean }>`
   border: 1px solid ${theme.colors.border};
   background: ${theme.colors.backgroundAlt};
   color: ${theme.colors.foreground};
-  padding: 0.55rem 2.25rem 0.55rem 0.85rem;
+  padding: 0.55rem;
   font: inherit;
   display: flex;
   align-items: center;

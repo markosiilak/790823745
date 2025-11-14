@@ -50,7 +50,7 @@ const theme = {
     tableCellPaddingCompact: "0.65rem 0.75rem",
   },
   sizes: {
-    weekCell: "62px",
+    weekCell: "90px",
     weekCellCompact: "46px",
   },
   typography: {

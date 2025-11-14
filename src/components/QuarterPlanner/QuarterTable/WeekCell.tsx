@@ -6,11 +6,10 @@ import {
   AddSubtaskButton,
   SubtaskList,
   SubtaskItem,
-  SubtaskMeta,
   SubtaskTitle,
   EmptySubtasks,
 } from "@/components/QuarterPlanner/styles/quarterTableStyles";
-import { dateFormatter, subtaskDateFormatter, subtaskTimeFormatter } from "@/components/QuarterPlanner/QuarterTable/constants";
+import { dateFormatter } from "@/components/QuarterPlanner/QuarterTable/constants";
 import type { WeekInfo } from "@/lib/quarter";
 import type { Subtask } from "@/components/QuarterPlanner/types";
 
@@ -93,10 +92,6 @@ export function WeekCell({
                 }}
                 aria-label={`${t.editSubtask}: ${subtask.title}`}
               >
-                <SubtaskMeta>
-                  {subtaskDateFormatter.format(subtask.timestampDate)} ·{" "}
-                  {subtaskTimeFormatter.format(subtask.timestampDate)}
-                </SubtaskMeta>
                 <SubtaskTitle>{subtask.title}</SubtaskTitle>
               </SubtaskItem>
             ))}
