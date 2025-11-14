@@ -1,4 +1,3 @@
-import { DndContext } from "@dnd-kit/core";
 import { QuarterStructure, WeekInfo } from "@/lib/quarter";
 import { Task } from "@/components/QuarterPlanner/types";
 import {
@@ -8,7 +7,6 @@ import {
 } from "@/components/QuarterPlanner/styles/quarterTableStyles";
 import { useViewMode } from "@/components/QuarterPlanner/QuarterTable/hooks/useViewMode";
 import { useTableData } from "@/components/QuarterPlanner/QuarterTable/hooks/useTableData";
-import { useDragAndDrop } from "@/components/QuarterPlanner/QuarterTable/hooks/useDragAndDrop";
 import { TableHeaderSection } from "@/components/QuarterPlanner/QuarterTable/TableHeaderSection";
 import { TableHead } from "@/components/QuarterPlanner/QuarterTable/TableHead";
 import { TableBody } from "@/components/QuarterPlanner/QuarterTable/TableBody";
@@ -31,7 +29,6 @@ type QuarterTableProps = {
     subtaskTimestamp: string,
     week: WeekInfo,
   ) => void;
-  onMoveSubtask?: (payload: { taskId: string; subtaskId: string; isoDate: string }) => void;
 };
 
 export function QuarterTable({
@@ -43,7 +40,6 @@ export function QuarterTable({
   onAddSubtask,
   onAddSubtaskForWeek,
   onEditSubtask,
-  onMoveSubtask,
 }: QuarterTableProps) {
   const {
     viewMode,
@@ -62,8 +58,6 @@ export function QuarterTable({
     updatedActiveWeekKeys.length > 0
       ? updatedActiveWeekKeys[0]
       : structure.weeks[0]?.start.toISOString() ?? null;
-
-  const { sensors, handleDragEnd } = useDragAndDrop(onMoveSubtask);
 
   const isCompact = viewMode === "compact";
 
@@ -90,26 +84,24 @@ export function QuarterTable({
         firstActiveWeekKey={firstActiveWeekKey}
       />
       <TableWrapper>
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <StyledTable $compact={isCompact}>
-            <TableHead
-              monthsToRender={monthsToRender}
-              isCompact={isCompact}
-              parsedTasks={parsedTasks}
-              onAddSubtaskForWeek={onAddSubtaskForWeek}
-            />
-            <TableBody
-              parsedTasks={parsedTasks}
-              weeksToRender={weeksToRender}
-              monthsToRender={monthsToRender}
-              isCompact={isCompact}
-              onEditTask={onEditTask}
-              onRemoveTask={onRemoveTask}
-              onAddSubtask={onAddSubtask}
-              onEditSubtask={onEditSubtask}
-            />
-          </StyledTable>
-        </DndContext>
+        <StyledTable $compact={isCompact}>
+          <TableHead
+            monthsToRender={monthsToRender}
+            isCompact={isCompact}
+            parsedTasks={parsedTasks}
+            onAddSubtaskForWeek={onAddSubtaskForWeek}
+          />
+          <TableBody
+            parsedTasks={parsedTasks}
+            weeksToRender={weeksToRender}
+            monthsToRender={monthsToRender}
+            isCompact={isCompact}
+            onEditTask={onEditTask}
+            onRemoveTask={onRemoveTask}
+            onAddSubtask={onAddSubtask}
+            onEditSubtask={onEditSubtask}
+          />
+        </StyledTable>
       </TableWrapper>
     </Card>
   );
