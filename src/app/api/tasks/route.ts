@@ -20,7 +20,7 @@ export type StoredTask = {
   subtasks?: StoredSubtask[];
 };
 
-const tasksFile = path.join(process.cwd(), "src", "data", "default-tasks.json");
+const tasksFile = path.join(process.cwd(), "src", "data", "tasks.json");
 
 export async function readTasks(): Promise<StoredTask[]> {
   try {

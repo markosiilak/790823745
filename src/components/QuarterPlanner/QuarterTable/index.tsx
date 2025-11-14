@@ -12,10 +12,13 @@ import { useDragAndDrop } from "@/components/QuarterPlanner/QuarterTable/hooks/u
 import { TableHeaderSection } from "@/components/QuarterPlanner/QuarterTable/TableHeaderSection";
 import { TableHead } from "@/components/QuarterPlanner/QuarterTable/TableHead";
 import { TableBody } from "@/components/QuarterPlanner/QuarterTable/TableBody";
+import { LoadingIndicator } from "@/components/QuarterPlanner/QuarterTable/LoadingIndicator";
+import { LoadingWrapper } from "@/components/QuarterPlanner/QuarterTable/styles";
 
 type QuarterTableProps = {
   structure: QuarterStructure;
   tasks: Task[];
+  isLoading?: boolean;
   onRemoveTask: (taskId: string) => void;
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
@@ -34,6 +37,7 @@ type QuarterTableProps = {
 export function QuarterTable({
   structure,
   tasks,
+  isLoading = false,
   onRemoveTask,
   onEditTask,
   onAddSubtask,
@@ -62,6 +66,16 @@ export function QuarterTable({
   const { sensors, handleDragEnd } = useDragAndDrop(onMoveSubtask);
 
   const isCompact = viewMode === "compact";
+
+  if (isLoading) {
+    return (
+      <Card>
+        <LoadingWrapper>
+          <LoadingIndicator />
+        </LoadingWrapper>
+      </Card>
+    );
+  }
 
   return (
     <Card>

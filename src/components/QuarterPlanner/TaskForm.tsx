@@ -1,5 +1,6 @@
 import { DatePicker } from "@/components/DatePicker";
 import { TaskFormState } from "./types";
+import { useTranslations } from "@/lib/translations";
 import {
   Card,
   Form,
@@ -39,33 +40,37 @@ export function TaskForm({
   error,
   taskCount = 0,
   maxTasks = Number.MAX_SAFE_INTEGER,
-  title = "Add a task",
+  title,
   onNameChange,
   onStartChange,
   onEndChange,
   onSubmit,
   onReset,
-  submitLabel = "Add task",
-  secondaryLabel = "Clear",
+  submitLabel,
+  secondaryLabel,
   onSecondaryAction,
   showLimitBadge = true,
   submitDisabled = false,
 }: TaskFormProps) {
+  const t = useTranslations("taskForm");
   const handleSecondary = onSecondaryAction ?? onReset;
   const isAtLimit = taskCount >= maxTasks;
   const isSubmitDisabled = submitDisabled || isAtLimit;
+  const displayTitle = title ?? t.title;
+  const displaySubmitLabel = submitLabel ?? t.addTask;
+  const displaySecondaryLabel = secondaryLabel ?? t.clear;
 
   return (
     <Card>
-      <h2>{title}</h2>
+      <h2>{displayTitle}</h2>
       <Form onSubmit={onSubmit}>
         <FormRow>
           <Label>
-            Task name
+            {t.taskName}
             <Input
               type="text"
               name="name"
-              placeholder="e.g. Marketing campaign"
+              placeholder={t.taskNamePlaceholder}
               value={form.name}
               onChange={(event) => onNameChange(event.target.value)}
               required
@@ -74,7 +79,7 @@ export function TaskForm({
         </FormRow>
         <FormGrid>
           <FieldGroup>
-            <FieldLabel id="task-start-label">Start date</FieldLabel>
+            <FieldLabel id="task-start-label">{t.startDate}</FieldLabel>
             <DatePicker
               value={form.start}
               onChange={onStartChange}
@@ -82,7 +87,7 @@ export function TaskForm({
             />
           </FieldGroup>
           <FieldGroup>
-            <FieldLabel id="task-end-label">End date</FieldLabel>
+            <FieldLabel id="task-end-label">{t.endDate}</FieldLabel>
             <DatePicker
               value={form.end}
               onChange={onEndChange}
@@ -93,14 +98,14 @@ export function TaskForm({
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <FormActions>
           <PrimaryButton type="submit" disabled={isSubmitDisabled}>
-            {submitLabel}
+            {displaySubmitLabel}
           </PrimaryButton>
           <SecondaryButton type="button" onClick={handleSecondary} disabled={submitDisabled}>
-            {secondaryLabel}
+            {displaySecondaryLabel}
           </SecondaryButton>
           {showLimitBadge ? (
             <LimitBadge>
-              {taskCount}/{maxTasks} tasks added
+              {taskCount}/{maxTasks} {t.tasksAdded}
             </LimitBadge>
           ) : null}
         </FormActions>

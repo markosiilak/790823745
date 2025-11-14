@@ -5,6 +5,7 @@ import { QuarterKey } from "@/lib/quarter";
 import { TaskForm } from "./TaskForm";
 import { HeadingGroup, PageShell, Subtitle } from "./styles/taskPageStyles";
 import { useTaskForm } from "./hooks/useTaskForm";
+import { useTranslations } from "@/lib/translations";
 
 type TaskEditProps = {
   quarter: QuarterKey;
@@ -12,19 +13,21 @@ type TaskEditProps = {
 };
 
 export function TaskEdit({ quarter, taskId }: TaskEditProps) {
+  const t = useTranslations("taskEdit");
+  const tCreate = useTranslations("taskCreate");
   const { form, error, loadError, isSaving, handleChange, handleSubmit, handleCancel, handleReset } =
     useTaskForm({ quarter, taskId });
 
-  const headingTitle = useMemo(() => (form ? `Edit ${form.name}` : "Edit task"), [form]);
+  const headingTitle = useMemo(
+    () => (form ? `${t.editTaskWithName} ${form.name}` : t.title),
+    [form, t.editTaskWithName, t.title],
+  );
 
   return (
     <PageShell>
       <HeadingGroup>
         <h1>{headingTitle}</h1>
-        <Subtitle>
-          Update the task details below. After saving you will be redirected back to the quarter
-          overview.
-        </Subtitle>
+        <Subtitle>{t.subtitle}</Subtitle>
       </HeadingGroup>
 
       {loadError ? (
@@ -33,20 +36,20 @@ export function TaskEdit({ quarter, taskId }: TaskEditProps) {
         <TaskForm
           form={form}
           error={error}
-          title="Edit task"
+          title={t.title}
           onNameChange={handleChange("name")}
           onStartChange={handleChange("start")}
           onEndChange={handleChange("end")}
           onSubmit={handleSubmit}
           onReset={handleReset}
-          submitLabel="Update task"
-          secondaryLabel="Cancel"
+          submitLabel={t.updateTask}
+          secondaryLabel={tCreate.cancel}
           onSecondaryAction={handleCancel}
           showLimitBadge={false}
           submitDisabled={isSaving}
         />
       ) : (
-        <p>Loading task…</p>
+        <p>{t.loading}</p>
       )}
     </PageShell>
   );

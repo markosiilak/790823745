@@ -23,7 +23,7 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
   const { currentQuarter, handleShiftQuarter, navigateToEditTask, navigateToAddTask } =
     useQuarterNavigation(initialQuarter);
   
-  const { tasks, removeTask, updateTaskSubtasks } = useTasks();
+  const { tasks, isLoading, removeTask, updateTaskSubtasks } = useTasks();
 
   const handleSubtaskCreated = useCallback(
     (taskId: string, subtask: Subtask) => {
@@ -90,6 +90,7 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
       <QuarterTable
         structure={structure}
         tasks={tasks}
+        isLoading={isLoading}
         onRemoveTask={removeTask}
         onEditTask={navigateToEditTask}
         onAddSubtask={handleAddSubtask}
