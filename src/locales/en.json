@@ -1,0 +1,35 @@
+{
+  "headerSection": {
+    "kicker": "Quarterly Task Planner",
+    "previous": "Previous",
+    "next": "Next",
+    "ariaLabelPrevious": "View previous quarter",
+    "ariaLabelNext": "View next quarter",
+    "languageLabel": "Language"
+  },
+  "quarterPlanner": {
+    "subtitle": "Visualise task timelines across weeks. Navigate between quarters and add up to ten tasks to your view.",
+    "addTask": "+ Add task"
+  },
+  "quarterTable": {
+    "title": "Quarter overview",
+    "subtitle": "Weeks follow ISO-8601 rules (Monday start, week 1 contains Thursday). Weeks are assigned to the month they mostly occupy.",
+    "taskColumn": "Task",
+    "startDateColumn": "Start date",
+    "endDateColumn": "End date",
+    "noTasks": "No tasks yet. Add one above to see it highlighted here.",
+    "addSubtaskInWeek": "Add subtask in week",
+    "addSubtaskForTask": "Add subtask for",
+    "editTask": "Edit task",
+    "removeTask": "Remove task",
+    "editSubtask": "Edit subtask",
+    "tableViewMode": "Table view mode",
+    "selectWeek": "Select week to display",
+    "noWeeks": "No weeks"
+  },
+  "languages": {
+    "en": "English",
+    "et": "Eesti"
+  }
+}
+

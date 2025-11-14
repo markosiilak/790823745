@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import {
   Header,
   TitleGroup,
@@ -9,6 +9,8 @@ import {
 } from "./styles/headerSectionStyles";
 import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
 import { ChevronRightIcon } from "@/components/icons/ChevronRightIcon";
+import { useTranslations, useLocale, getAvailableLocales, type Locale } from "@/lib/translations";
+import { Dropdown, type DropdownOption } from "./Dropdown";
 
 type HeaderSectionProps = {
   label: string;
@@ -25,21 +27,45 @@ export function HeaderSection({
   onNext,
   extraActions,
 }: HeaderSectionProps) {
+  const t = useTranslations("headerSection");
+  const tLanguages = useTranslations("languages");
+  const [currentLocale, setLocale] = useLocale();
+
+  const languageOptions: DropdownOption[] = useMemo(
+    () =>
+      getAvailableLocales().map((locale) => ({
+        value: locale,
+        label: (tLanguages as Record<string, string>)[locale] || locale,
+      })),
+    [tLanguages],
+  );
+
+  const handleLanguageChange = (value: string) => {
+    setLocale(value as Locale);
+  };
+
   return (
     <Header>
       <TitleGroup>
-        <Kicker>Quarterly Task Planner</Kicker>
+        <Kicker>{t.kicker}</Kicker>
         <h1>{label}</h1>
         <Subtitle>{subtitle}</Subtitle>
       </TitleGroup>
 
       <Controls>
-        <NavButton type="button" onClick={onPrevious} aria-label="View previous quarter">
+        <Dropdown
+          options={languageOptions}
+          value={currentLocale}
+          onChange={handleLanguageChange}
+          ariaLabel={t.languageLabel}
+          width="120px"
+        />
+        <NavButton type="button" onClick={onPrevious} aria-label={t.ariaLabelPrevious}>
           <ChevronLeftIcon />
-          Previous
+          {t.previous}
         </NavButton>
-        <NavButton type="button" onClick={onNext} aria-label="View next quarter">
-          Next
+        <NavButton type="button" onClick={onNext} aria-label={t.ariaLabelNext}>
+          {t.next}
           <ChevronRightIcon />
         </NavButton>
         {extraActions}

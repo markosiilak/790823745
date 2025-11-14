@@ -1,0 +1,35 @@
+{
+  "headerSection": {
+    "kicker": "Kvartalitööplaneerija",
+    "previous": "Eelmine",
+    "next": "Järgmine",
+    "ariaLabelPrevious": "Vaata eelmist kvartalit",
+    "ariaLabelNext": "Vaata järgmist kvartalit",
+    "languageLabel": "Keel"
+  },
+  "quarterPlanner": {
+    "subtitle": "Visualiseeri ülesannete ajakavasid nädalate kaupa. Liigu kvartalite vahel ja lisa kuni kümme ülesannet oma vaatesse.",
+    "addTask": "+ Lisa ülesanne"
+  },
+  "quarterTable": {
+    "title": "Kvartali ülevaade",
+    "subtitle": "Nädalad järgivad ISO-8601 reegleid (esmaspäev algab, 1. nädal sisaldab neljapäeva). Nädalad on määratud kuusse, millega nad enamasti kattuvad.",
+    "taskColumn": "Ülesanne",
+    "startDateColumn": "Alguskuupäev",
+    "endDateColumn": "Lõppkuupäev",
+    "noTasks": "Ülesandeid veel pole. Lisa üks ülal, et näha seda siin esile tõstetud.",
+    "addSubtaskInWeek": "Lisa alaülesanne nädalasse",
+    "addSubtaskForTask": "Lisa alaülesanne ülesandele",
+    "editTask": "Muuda ülesannet",
+    "removeTask": "Eemalda ülesanne",
+    "editSubtask": "Muuda alaülesannet",
+    "tableViewMode": "Tabeli vaate režiim",
+    "selectWeek": "Vali kuvatav nädal",
+    "noWeeks": "Nädalaid pole"
+  },
+  "languages": {
+    "en": "English",
+    "et": "Eesti"
+  }
+}
+
