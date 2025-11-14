@@ -8,6 +8,8 @@ type RouteContext = {
   }>;
 };
 
+/** * Creates a new subtask for the specified task. * * POST /api/tasks/123/subtasks * Response: 201 { id: "...", title: "Review", timestamp: "2025-03-15T14:30:00Z" }
+ */
 export async function POST(request: Request, context: RouteContext) {
   const { taskId } = await context.params;
 
@@ -61,6 +63,8 @@ export async function POST(request: Request, context: RouteContext) {
   }
 }
 
+/** * Updates an existing subtask for the specified task. * Returns 404 if task or subtask not found. * PUT /api/tasks/123/subtasks * Response: 200 { id: "456", title: "Updated Review", timestamp: "2025-03-16T15:00:00Z" }
+ */
 export async function PUT(request: Request, context: RouteContext) {
   const { taskId } = await context.params;
 

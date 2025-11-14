@@ -20,6 +20,8 @@ type HeaderSectionProps = {
   extraActions?: ReactNode;
 };
 
+/** * Displays quarter label (e.g., "Q4 2025"), subtitle, previous/next navigation, and language dropdown. *
+ */
 export function HeaderSection({
   label,
   subtitle,

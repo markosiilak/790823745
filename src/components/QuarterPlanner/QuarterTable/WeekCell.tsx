@@ -18,8 +18,6 @@ type WeekCellProps = {
   week: WeekInfo;
   taskId: string;
   taskName: string;
-  taskStart: Date;
-  taskEnd: Date;
   isCompact: boolean;
   weekSubtasks: Array<Subtask & { timestampDate: Date }>;
   active: boolean;
@@ -34,12 +32,16 @@ type WeekCellProps = {
   ) => void;
 };
 
+/**
+ * Renders a single week cell in the task table.
+ * Displays subtasks for the week and provides UI for adding/editing subtasks.
+ * Shows an "Add subtask" button if the week is active (overlaps with task range).
+ * Makes subtasks clickable for editing. Handles empty state rendering.
+ */
 export function WeekCell({
   week,
   taskId,
   taskName,
-  taskStart,
-  taskEnd,
   isCompact,
   weekSubtasks,
   active,

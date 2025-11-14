@@ -33,6 +33,8 @@ type TableBodyProps = {
   ) => void;
 };
 
+/** * Maps over parsed tasks to render TaskRow components. *
+ */
 export function TableBody({
   parsedTasks,
   weeksToRender,

@@ -36,6 +36,12 @@ type SubtaskDialogProps = {
   initialDate?: string;
 };
 
+/**
+ * Modal dialog for creating or editing subtasks.
+ * Supports two modes: "task" (subtask for a specific task) and "week" (subtask for a week with task selection).
+ * Handles form state, validation, and submission. Pre-fills data in edit mode.
+ * Combines date and time inputs into an ISO timestamp for storage.
+ */
 export function SubtaskDialog({
   mode,
   taskName,

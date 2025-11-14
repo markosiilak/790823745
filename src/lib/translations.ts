@@ -20,7 +20,11 @@ type TranslationKey = {
 }[keyof TranslationData];
 
 /**
- * Get the current locale from browser or default to 'en'
+ * Gets the current locale preference from localStorage or browser settings.
+ * Falls back to 'en' if no preference is found.
+ * Only runs in browser environment (returns 'en' during SSR).
+ *
+ * @internal
  */
 function getLocale(): Locale {
   if (typeof window === "undefined") return "en";
@@ -37,7 +41,9 @@ function getLocale(): Locale {
 }
 
 /**
- * Set the locale preference
+ * Sets the locale preference and persists it to localStorage.
+ * Dispatches a custom 'localechange' event to notify other components in the same tab.
+ * Only works in browser environment.
  */
 export function setLocale(locale: Locale): void {
   if (typeof window !== "undefined") {
@@ -48,7 +54,9 @@ export function setLocale(locale: Locale): void {
 }
 
 /**
- * Get a translation value by key path (e.g., "headerSection.kicker")
+ * Gets a translation value by a dot-notation key path.
+ * Provides a fallback to the key itself if translation is not found.
+ * Used for server-side or non-React contexts.
  */
 export function t(key: TranslationKey, locale?: Locale): string {
   const currentLocale = locale || getLocale();
@@ -58,7 +66,10 @@ export function t(key: TranslationKey, locale?: Locale): string {
 }
 
 /**
- * Hook to get and set the current locale
+ * React hook to get and set the current locale.
+ * Always starts with 'en' on initial render to prevent hydration mismatches.
+ * Updates to the actual locale after component mounts on the client.
+ * Listens to localStorage changes and custom 'localechange' events for cross-tab synchronization.
  */
 export function useLocale(): [Locale, (locale: Locale) => void] {
   // Always start with "en" to prevent hydration mismatch
@@ -99,9 +110,9 @@ export function useLocale(): [Locale, (locale: Locale) => void] {
 }
 
 /**
- * Type-safe translation hook that returns the full translation object for a section
- * Automatically detects locale from localStorage or browser settings
- * Reacts to locale changes via storage events
+ * Type-safe React hook that returns the full translation object for a specific section.
+ * Automatically updates when locale changes (via localStorage events).
+ * Provides TypeScript autocompletion for translation keys.
  */
 export function useTranslations<T extends keyof TranslationData>(
   section: T,
@@ -112,7 +123,7 @@ export function useTranslations<T extends keyof TranslationData>(
 }
 
 /**
- * Get all available locales
+ * Gets all available locale codes in the translation system.
  */
 export function getAvailableLocales(): Locale[] {
   return Object.keys(translations) as Locale[];

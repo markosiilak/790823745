@@ -37,6 +37,8 @@ type TaskRowProps = {
   ) => void;
 };
 
+/** * Displays task name, start/end dates, edit/remove buttons, and week cells with subtasks. *
+ */
 export function TaskRow({
   task,
   monthsToRender,

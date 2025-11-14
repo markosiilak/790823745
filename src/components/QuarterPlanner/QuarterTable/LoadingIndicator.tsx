@@ -3,6 +3,12 @@
 import styled, { keyframes } from "styled-components";
 import { useTranslations } from "@/lib/translations";
 
+/**
+ * Loading indicator component with progress bar animation.
+ * Displays a message and animated progress bar during data loading.
+ * Used in the quarter table while tasks are being fetched.
+ */
+
 const pulse = keyframes`
   0%, 100% {
     opacity: 1;

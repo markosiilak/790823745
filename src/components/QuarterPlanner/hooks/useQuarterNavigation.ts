@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { QuarterKey, shiftQuarter } from "@/lib/quarter";
 
+/**
+ * React hook for managing quarter navigation and URL routing.
+ * Automatically updates URL when navigating between quarters.
+ */
 export function useQuarterNavigation(initialQuarter: QuarterKey) {
   const router = useRouter();
-  const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);
-
-  useEffect(() => {
-    setCurrentQuarter(initialQuarter);
-  }, [initialQuarter]);
+  const [currentQuarter, setCurrentQuarter] = useState<QuarterKey>(initialQuarter);  
 
   const handleShiftQuarter = useCallback(
     (delta: number) => {

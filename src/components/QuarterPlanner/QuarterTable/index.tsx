@@ -1,5 +1,5 @@
-import { QuarterStructure, WeekInfo } from "@/lib/quarter";
-import { Task } from "@/components/QuarterPlanner/types";
+import { type QuarterStructure, type WeekInfo } from "@/lib/quarter";
+import { type Task } from "@/components/QuarterPlanner/types";
 import {
   Card,
   TableWrapper,
@@ -12,8 +12,13 @@ import { TableHead } from "@/components/QuarterPlanner/QuarterTable/TableHead";
 import { TableBody } from "@/components/QuarterPlanner/QuarterTable/TableBody";
 import { LoadingIndicator } from "@/components/QuarterPlanner/QuarterTable/LoadingIndicator";
 import { LoadingWrapper } from "@/components/QuarterPlanner/QuarterTable/styles";
+import { useMemo, type JSX } from "react";
+import { type ViewMode } from "@/components/QuarterPlanner/QuarterTable/constants";
 
-type QuarterTableProps = {
+/**
+ * Props for the QuarterTable component.
+ */
+interface QuarterTableProps {
   structure: QuarterStructure;
   tasks: Task[];
   isLoading?: boolean;
@@ -29,8 +34,14 @@ type QuarterTableProps = {
     subtaskTimestamp: string,
     week: WeekInfo,
   ) => void;
-};
+}
 
+/**
+ * Main quarter table component that displays tasks in a weekly grid format.
+ * Orchestrates view mode management, data processing, and table rendering.
+ * Shows loading indicator while tasks are being fetched.
+ * Supports three view modes: standard (full table), compact (condensed), and single-week.
+ */
 export function QuarterTable({
   structure,
   tasks,
@@ -40,7 +51,9 @@ export function QuarterTable({
   onAddSubtask,
   onAddSubtaskForWeek,
   onEditSubtask,
-}: QuarterTableProps) {
+}: QuarterTableProps): JSX.Element {
+  const activeWeekKeysFromViewMode = useMemo<string[]>(() => [], []);
+
   const {
     viewMode,
     setViewMode,
@@ -49,17 +62,26 @@ export function QuarterTable({
     effectiveSelectedWeekKey,
     viewModeOptions,
     weekDropdownOptions,
-  } = useViewMode(structure, []);
+  } = useViewMode(structure, activeWeekKeysFromViewMode);
 
   const { parsedTasks, activeWeekKeys: updatedActiveWeekKeys, weeksToRender, monthsToRender } =
     useTableData(tasks, structure, viewMode, effectiveSelectedWeekKey);
 
-  const firstActiveWeekKey =
-    updatedActiveWeekKeys.length > 0
-      ? updatedActiveWeekKeys[0]
-      : structure.weeks[0]?.start.toISOString() ?? null;
+  const firstActiveWeekKey = useMemo<string | null>(() => {
+    if (updatedActiveWeekKeys.length > 0) {
+      return updatedActiveWeekKeys[0] ?? null;
+    }
+    return structure.weeks[0]?.start.toISOString() ?? null;
+  }, [updatedActiveWeekKeys, structure.weeks]);
 
-  const isCompact = viewMode === "compact";
+  const isCompact = useMemo<boolean>(() => viewMode === "compact", [viewMode]);
+
+  const handleViewModeChange = useMemo(
+    () => (value: string) => {
+      setViewMode(value, updatedActiveWeekKeys, firstActiveWeekKey);
+    },
+    [setViewMode, updatedActiveWeekKeys, firstActiveWeekKey],
+  );
 
   if (isLoading) {
     return (
@@ -78,7 +100,7 @@ export function QuarterTable({
         effectiveSelectedWeekKey={effectiveSelectedWeekKey}
         viewModeOptions={viewModeOptions}
         weekDropdownOptions={weekDropdownOptions}
-        onViewModeChange={(value) => setViewMode(value, updatedActiveWeekKeys, firstActiveWeekKey)}
+        onViewModeChange={handleViewModeChange}
         onWeekChange={setSelectedWeekKey}
         activeWeekKeys={updatedActiveWeekKeys}
         firstActiveWeekKey={firstActiveWeekKey}

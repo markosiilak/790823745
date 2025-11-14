@@ -9,6 +9,13 @@ type ParsedTask = Task & {
   endDate: Date;
 };
 
+/**
+ * Parses task dates, determines which weeks are active (have tasks), and filters data based on view mode.
+ *   - parsedTasks: Array of parsed tasks with start and end dates
+ *   - activeWeekKeys: Array of ISO date strings for weeks that have active tasks
+ *   - weeksToRender: Array of weeks to render based on view mode
+ *   - monthsToRender: Array of months to render based on view mode
+ */
 export function useTableData(
   tasks: Task[],
   structure: QuarterStructure,

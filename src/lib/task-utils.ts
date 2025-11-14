@@ -3,7 +3,9 @@ import { Subtask, Task } from "@/components/QuarterPlanner/types";
 import { formatISODate, parseISODate } from "./quarter";
 
 /**
- * Normalize a stored subtask to a Subtask type
+ * Normalizes a stored subtask from the JSON file to a typed Subtask object.
+ * Validates required fields (title, timestamp) and ensures data integrity.
+ * Returns null if the subtask is invalid or missing required data.
  */
 export function normalizeSubtask(subtask: StoredSubtask | null | undefined): Subtask | null {
   if (!subtask || typeof subtask.title !== "string" || typeof subtask.timestamp !== "string") {
@@ -23,7 +25,10 @@ export function normalizeSubtask(subtask: StoredSubtask | null | undefined): Sub
 }
 
 /**
- * Normalize a stored task to a Task type
+ * Normalizes a stored task from the JSON file to a typed Task object.
+ * Handles missing or invalid date fields by providing defaults.
+ * Calculates end date from durationDays if end date is missing.
+ * Normalizes all subtasks recursively.
  */
 export function normalizeTask(rawTask: StoredTask): Task | null {
   if (typeof rawTask.name !== "string") {
@@ -59,7 +64,8 @@ export function normalizeTask(rawTask: StoredTask): Task | null {
 }
 
 /**
- * Normalize an array of stored tasks
+ * Normalizes an array of stored tasks, filtering out invalid tasks and duplicates.
+ * Uses a combination of name, start date, and end date to detect duplicates.
  */
 export function normalizeTasks(rawTasks: StoredTask[]): Task[] {
   const seen = new Set<string>();
@@ -76,7 +82,9 @@ export function normalizeTasks(rawTasks: StoredTask[]): Task[] {
 }
 
 /**
- * Create a StoredSubtask from a subtask input
+ * Creates a StoredSubtask object from a subtask input for persistence.
+ * Generates a UUID if no ID is provided.
+ * Trims whitespace from the title.
  */
 export function createStoredSubtask(subtask: {
   id?: string;
@@ -91,7 +99,9 @@ export function createStoredSubtask(subtask: {
 }
 
 /**
- * Validate and normalize subtask input from API payload
+ * Validates and normalizes subtask input from an API request payload.
+ * Ensures title and timestamp are valid strings and that timestamp is a valid date.
+ * Returns null if validation fails.
  */
 export function validateSubtaskPayload(payload: {
   title?: string;
@@ -113,7 +123,8 @@ export function validateSubtaskPayload(payload: {
 }
 
 /**
- * Parse date and time strings into ISO timestamp
+ * Combines a date string (YYYY-MM-DD) and time string (HH:mm) into an ISO timestamp.
+ * Validates that the resulting timestamp is a valid date.
  */
 export function parseDateTime(date: string, time: string): string | null {
   const timestampCandidate = new Date(`${date}T${time}`);
@@ -124,7 +135,9 @@ export function parseDateTime(date: string, time: string): string | null {
 }
 
 /**
- * Validate task payload from API
+ * Validates a task payload from an API request.
+ * Ensures required fields (name, start, end) are present and valid strings.
+ * Optionally requires an ID field for update operations.
  */
 export function validateTaskPayload(
   payload: unknown,

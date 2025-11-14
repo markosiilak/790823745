@@ -25,6 +25,8 @@ type TableHeadProps = {
   onAddSubtaskForWeek?: (week: WeekInfo, candidateTaskIds: string[]) => void;
 };
 
+/** * Displays task name, start date, end date columns, plus month and week headers. *
+ */
 export function TableHead({ monthsToRender, isCompact, parsedTasks, onAddSubtaskForWeek }: TableHeadProps) {
   const t = useTranslations("quarterTable");
 

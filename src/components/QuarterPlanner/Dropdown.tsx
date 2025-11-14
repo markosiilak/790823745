@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDownIcon } from "@/components/icons/ChevronDownIcon";
+import { useTranslations } from "@/lib/translations";
 import {
   Wrapper,
   TriggerButton,
@@ -29,6 +30,12 @@ type DropdownProps = {
   placeholder?: string;
 };
 
+/**
+ * Reusable dropdown/select component with custom styling.
+ * Supports keyboard navigation, click outside to close, and disabled options.
+ * Automatically scrolls to active option when opened.
+ * Provides accessibility attributes (ARIA) for screen readers.
+ */
 export function Dropdown({
   options,
   value,
@@ -36,8 +43,12 @@ export function Dropdown({
   ariaLabel,
   width,
   disabled = false,
-  placeholder = "Select…",
+  placeholder: providedPlaceholder,
 }: DropdownProps) {
+  const t = useTranslations("dropdown");
+  const defaultPlaceholder = t.selectPlaceholder;
+  const placeholder = providedPlaceholder ?? defaultPlaceholder;
+  
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLUListElement | null>(null);

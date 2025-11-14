@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { formatISODate, parseISODate } from "@/lib/quarter";
+import { useTranslations } from "@/lib/translations";
+import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "@/components/icons/ChevronRightIcon";
 import {
   Container,
   TriggerButton,
@@ -37,8 +40,6 @@ const monthFormatter = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
-const weekdayLabels = ["M", "T", "W", "T", "F", "S", "S"];
-
 function startOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
@@ -47,6 +48,11 @@ function addMonths(date: Date, amount: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1);
 }
 
+
+/**
+ * Builds a 6-week calendar grid for a given month view.
+ * Includes days from previous/next months to fill complete weeks (Monday start).
+ */
 function buildCalendarGrid(viewDate: Date): CalendarDay[] {
   const firstOfMonth = startOfMonth(viewDate);
   const firstDayOffset = (firstOfMonth.getDay() + 6) % 7; // Monday start
@@ -73,6 +79,12 @@ export function DatePicker({ value, onChange, ariaLabel, ariaLabelledBy }: DateP
   const [isOpen, setIsOpen] = useState(false);
   const [monthOffset, setMonthOffset] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const t = useTranslations("datePicker");
+  
+  const weekdayLabels = useMemo<readonly string[]>(
+    () => (t.weekdays as readonly string[]) ?? [],
+    [t.weekdays],
+  );
 
   const viewDate = addMonths(
     startOfMonth(parsedValue ? new Date(parsedValue) : new Date()),
@@ -139,22 +151,22 @@ export function DatePicker({ value, onChange, ariaLabel, ariaLabelledBy }: DateP
           });
         }}
       >
-        {displayValue ? <DisplayValue>{displayValue}</DisplayValue> : <Placeholder>Select date</Placeholder>}
+        {displayValue ? <DisplayValue>{displayValue}</DisplayValue> : <Placeholder>{t.selectDate}</Placeholder>}
       </TriggerButton>
 
       {isOpen ? (
         <CalendarCard>
           <CalendarHeader>
-            <NavButton type="button" onClick={() => setMonthOffset((prev) => prev - 1)} aria-label="Previous month">
-              ←
+            <NavButton type="button" onClick={() => setMonthOffset((prev) => prev - 1)} aria-label={t.previousMonth}>
+              <ChevronLeftIcon />
             </NavButton>
             <MonthLabel>{monthFormatter.format(viewDate)}</MonthLabel>
-            <NavButton type="button" onClick={() => setMonthOffset((prev) => prev + 1)} aria-label="Next month">
-              →
+            <NavButton type="button" onClick={() => setMonthOffset((prev) => prev + 1)} aria-label={t.nextMonth}>
+              <ChevronRightIcon />
             </NavButton>
           </CalendarHeader>
           <CalendarGrid>
-            {weekdayLabels.map((label, index) => (
+            {weekdayLabels.map((label: string, index: number) => (
               <WeekdayCell key={`${label}-${index}`}>{label}</WeekdayCell>
             ))}
             {days.map(({ date, isCurrentMonth }) => {

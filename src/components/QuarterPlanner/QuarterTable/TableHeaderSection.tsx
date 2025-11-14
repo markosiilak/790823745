@@ -19,6 +19,8 @@ type TableHeaderSectionProps = {
   firstActiveWeekKey: string | null;
 };
 
+/** * Displays view mode dropdown and optional week selector for single-week mode. *
+ */
 export function TableHeaderSection({
   viewMode,
   effectiveSelectedWeekKey,

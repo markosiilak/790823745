@@ -4,6 +4,11 @@ import type { DropdownOption } from "@/components/QuarterPlanner/Dropdown";
 import type { ViewMode } from "@/components/QuarterPlanner/QuarterTable/constants";
 import { weekFormatter } from "@/components/QuarterPlanner/QuarterTable/constants";
 
+/**
+ * React hook for managing table view mode and week selection.
+ * Handles three view modes: standard (full table), compact (condensed), and single-week (one week at a time).
+ * Manages week selection for single-week mode and provides dropdown options for view switching.
+ */
 export function useViewMode(structure: QuarterStructure, activeWeekKeys: string[]) {
   const [viewMode, setViewMode] = useState<ViewMode>("standard");
   const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(() => {

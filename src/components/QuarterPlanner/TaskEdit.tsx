@@ -2,9 +2,9 @@
 
 import { useMemo } from "react";
 import { QuarterKey } from "@/lib/quarter";
-import { TaskForm } from "./TaskForm";
-import { HeadingGroup, PageShell, Subtitle } from "./styles/taskPageStyles";
-import { useTaskForm } from "./hooks/useTaskForm";
+import { TaskForm } from "@/components/QuarterPlanner/TaskForm";
+import { HeadingGroup, PageShell, Subtitle } from "@/components/QuarterPlanner/styles/taskPageStyles";
+import { useTaskForm } from "@/components/QuarterPlanner/hooks/useTaskForm";
 import { useTranslations } from "@/lib/translations";
 
 type TaskEditProps = {
@@ -12,6 +12,8 @@ type TaskEditProps = {
   taskId: string;
 };
 
+/** * Loads task data on mount, displays loading state, and handles edit form submission. *
+ */
 export function TaskEdit({ quarter, taskId }: TaskEditProps) {
   const t = useTranslations("taskEdit");
   const tCreate = useTranslations("taskCreate");

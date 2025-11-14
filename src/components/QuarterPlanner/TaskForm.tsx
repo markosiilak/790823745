@@ -35,6 +35,12 @@ type TaskFormProps = {
   submitDisabled?: boolean;
 };
 
+/**
+ * Reusable task form component for creating and editing tasks.
+ * Handles form state, validation display, and submission.
+ * Supports both create and edit modes via different props.
+ * Displays task count limit badge when enabled.
+ */
 export function TaskForm({
   form,
   error,

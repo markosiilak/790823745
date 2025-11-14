@@ -35,6 +35,12 @@ const mergeHandlers =
     next?.(event);
   };
 
+/**
+ * Tooltip component that displays content on hover or focus.
+ * Positions tooltip above the trigger element using portals.
+ * Updates position on scroll/resize and merges event handlers with child props.
+ * Shows tooltip on mouse enter/focus and hides on mouse leave/blur.
+ */
 export function Tooltip({ content, children }: TooltipProps) {
   const [triggerElement, setTriggerElement] = useState<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
