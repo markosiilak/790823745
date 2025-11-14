@@ -1,28 +1,28 @@
-# Kvartalitööplaneerija
+# Quarterly Task Planner
 
-Kaasaegne täisfunktsionaalne Next.js rakendus ülesannete visualiseerimiseks ja haldamiseks kvartalite ajakavadel. Ehitatud TypeScript, React 19 ja styled-components abil, mis sisaldab rahvusvahelistamist ja reageerivat disaini.
+A modern, full-stack Next.js application for visualizing and managing tasks across quarterly timelines. Built with TypeScript, React 19, and styled-components, featuring internationalization and responsive design.
 
-## Ülevaade
+## Overview
 
-See rakendus pakub täielikku ülesannete juhtimise süsteemi, kus kasutajad saavad:
-- Kuvada ülesandeid kvartalite ajakavadel nädalate kaupa
-- Luua, redigeerida ja kustutada ülesandeid algus- ja lõppkuupäevadega
-- Lisata ülesannetele alaülesandeid koos kindlate kuupäevade ja kellaaegadega
-- Sujuvalt liikuda kvartalite vahel
-- Vahetada tabelivaate ja kompaktvaate režiimide vahel
-- Mitmekeelne halduri liides (inglise, eesti)
+This application provides a comprehensive task management system where users can:
+- Display tasks across quarterly timelines by weeks
+- Create, edit, and delete tasks with start and end dates
+- Add subtasks to tasks with specific dates and times
+- Seamlessly navigate between quarters
+- Switch between table view and compact view modes
+- Multilingual admin interface (English, Estonian)
 
-## Tehnoloogilised vahendid
+## Tech Stack
 
-- **Raamistik**: React koos Next.js 16 (App Router)
-- **Jooksukeskkond**: React 19
-- **Keelevalik**: TypeScript 5.7
-- **Stiilide haldamine**: styled-components 6.1
-- **Oleku jälgimine**: React Hooks (useState, useEffect, useCallback, useMemo)
-- **Andmete salvestamine**: JSON-failipõhine andmesalvestus (API marsruutide kaudu)
-- **Rahvusvaheline tugi**: Kohandatud i18n implementatsioon JSON tõlkefailide abil
+- **Framework**: React with Next.js 16 (App Router)
+- **Runtime**: React 19
+- **Language**: TypeScript 5.7
+- **Styling**: styled-components 6.1
+- **State Management**: React Hooks (useState, useEffect, useCallback, useMemo)
+- **Data Persistence**: JSON file-based data storage (via API routes)
+- **Internationalization**: Custom i18n implementation with JSON translation files
 
-## Projekti struktuur
+## Project Structure
 
 ```
 ├── src/
@@ -132,121 +132,108 @@ See rakendus pakub täielikku ülesannete juhtimise süsteemi, kus kasutajad saa
 └── prettier.config.mjs               # Prettier configuration
 ```
 
-### Andmevoog
+## Architecture
 
-1. **Andmete kiht**: JSON-fail (`src/data/tasks.json`) toimib andmete salvestamise kihina.
-2. **API kiht**: Next.js API marsruudid (`src/app/api/tasks/`) teostavad CRUD toiminguid.
-3. **Äriloogika**: Kohandatud hooks (`src/components/QuarterPlanner/hooks/`) haldavad olekut ja suhtlevad API-ga.
-4. **Esitusekiht**: React komponendid renderdavad kasutajaliidese, kasutades styled-components.
+### Data Flow
 
-### Peamised arhitektuurilised otsused
+1. **Data Layer**: JSON file (`src/data/tasks.json`) serves as data storage
+2. **API Layer**: Next.js API routes (`src/app/api/tasks/`) perform CRUD operations
+3. **Business Logic**: Custom hooks (`src/components/QuarterPlanner/hooks/`) manage state and communicate with the API
+4. **Presentation Layer**: React components render the user interface using styled-components
 
-#### 1. Komponentide koostamine ja vastutuste jagamine
-- **Funktsioonipõhine organisatsioon**: Komponendid on grupeeritud vastavalt nende funktsioonidele (QuarterPlanner, QuarterTable).
-- **Selge vastutus**: Igal komponendil või hook'il on kindel, fokuseeritud eesmärk.
-- **Eraldi stiilide haldamine**: Kõik styled-components on paigutatud eraldi `styles.ts` failidesse hooldatavuse parandamiseks.
-- **Taaskasutatavad komponendid**: Ühtsuse tagamiseks jagatud komponendid (Dropdown, DatePicker, Button).
+### Key Architectural Decisions
 
-#### 2. Kohandatud hooks oleku haldamiseks
-- **`useTasks`**: Halab ülesannete laadimist, loomist, uuendamist ja kustutamist.
-- **`useSubtasks`**: Haldab alaülesannete loomist ja muutmist dialooge juhtiva olekuga.
-- **`useTaskForm`**: Vastutab lisamise vormi loogika, valideerimise ja esitamise eest nii loomise kui ka muutmise režiimides.
-- **`useQuarterNavigation`**: Haldab kvartali navigeerimist ja URL-marsruutimist.
-- **`useViewMode`**: Haldab tabeli vaate režiimi (tabel/kompaktne) ja nädala valikut.
-- **`useTableData`**: Töötleb ja transformeerib ülesannete andmeid tabeli renderdamiseks.
+#### 1. Component Composition and Separation of Concerns
+- **Feature-based organization**: Components are grouped according to their functions (QuarterPlanner, QuarterTable)
+- **Clear responsibility**: Each component or hook has a specific, focused purpose
+- **Separate style management**: All styled-components are placed in separate `styles.ts` files to improve maintainability
+- **Reusable components**: Shared components (Dropdown, DatePicker, Button) for consistency
 
-#### 3. Tüübi turvalisus
-- Üksikasjalikud TypeScript tüübid on dokumenteeritud `types.ts` failis.
-- Jagatud utiliidi funktsioonid `task-utils.ts` failis aitavad tagada tüübiturvalist andmete normaliseerimist.
-- Tüübiturvaline tõlke süsteem, mis toetab võtmete automaatset täiendamist.
+#### 2. Custom Hooks for State Management
+- **`useTasks`**: Handles task loading, creation, updating, and deletion
+- **`useSubtasks`**: Manages subtask creation and editing with dialog state
+- **`useTaskForm`**: Responsible for form logic, validation, and submission for both create and edit modes
+- **`useQuarterNavigation`**: Manages quarter navigation and URL routing
+- **`useViewMode`**: Manages table view mode (table/compact) and week selection
+- **`useTableData`**: Processes and transforms task data for table rendering
 
-#### 4. Rahvusvahelistamine (i18n)
-- Kohandatud tõlke süsteem, mis kasutab JSON faile.
-- `useLocale` ja `useTranslations` hooks reaktiivsete tõlkeuuenduste jaoks.
-- Turvaline locale'i initsialiseerimine, mis väldib SSR ja kliendi lahknevust.
-- KeelesePreference jaoks kasutatakse LocalStorage'i salvestamist.
+#### 3. Type Safety
+- Comprehensive TypeScript types are documented in `types.ts` file
+- Shared utility functions in `task-utils.ts` file help ensure type-safe data normalization
+- Type-safe translation system that supports automatic key completion
 
-#### 5. API disain
-- RESTful: `GET /api/tasks`, `POST /api/tasks`, `PUT /api/tasks/[id]`.
-- Täiendavad ressursid: `POST /api/tasks/[id]/subtasks`, `PUT /api/tasks/[id]/subtasks`.
-- Üksik vigade käsitlemine NextResponse'i abil.
-- Andmete valideerimine funktsioonide kaudu.
+#### 4. Internationalization (i18n)
+- Custom translation system using JSON files
+- `useLocale` and `useTranslations` hooks for reactive translation updates
+- Safe locale initialization that prevents SSR and client mismatch (hydration)
+- LocalStorage storage for language preference
 
-#### 6. Kuupäevade käsitlemine
-- ISO-8601 kuupäevade salvestamine.
-- Keskne kuupäevade haldamine `lib/quarter.ts` failis.
-- ISO-8601 nädalate arvutamine (esmaspäev on esimene päev).
-- DatePicker komponent kuupäevade valimiseks.
+#### 5. API Design (REST)
+- RESTful: `GET /api/tasks`, `POST /api/tasks`, `PUT /api/tasks/[id]`
+- Additional resources: `POST /api/tasks/[id]/subtasks`, `PUT /api/tasks/[id]/subtasks`
+- Consistent error handling with NextResponse
+- Data validation through functions
 
-## Kuidas see töötab
+#### 6. Date Handling
+- ISO-8601 date storage
+- Centralized date management in `lib/quarter.ts` file
+- ISO-8601 week calculations (Monday is the first day)
+- DatePicker component for date selection
 
-### Rakenduse voog
+## How It Works
 
-1. Otsisin koodibaasist kõvakodeeritud stringide olemasolu
-2. Lisasin keeletekstid failidesse `en.json` ja `et.json`
-3. Asendasin stringid `useTranslations()` kutsetega
-**Uuendatud failid**: Kõik rakenduse komponendi failid
-- `headerSection`: Navigeerimise ja päise osa
-- `quarterPlanner`: Peamine planeerija tekst
-- `quarterTable`: Tabeli sildid ja teated
-- `taskCreate`: Ülesande loomise lehe sisu
-- `taskEdit`: Ülesande muutmise lehe sisu
-- `taskForm`: Vormis olevad sildid ja nupud
-- `languages`: Keelte nimetused valiku jaoks
+### Application Flow
 
-#### 22: Keele valiku lisamine
-**Fail**: `HeaderSection.tsx`
-- Integreerin `Dropdown` komponendi
-- Loetlen kõik saadaval olevad locale'id
-- Uuendan locale'i `setLocale()` funktsiooni kaudu
-- Kasutajaliides värskendatakse reaktiivselt `useLocale` hook'i abil
+1. **Page**: `app/page.tsx` redirects to the current quarter (`/calendar/{year}/{quarter}`)
+2. **Quarter Page**: `app/calendar/[year]/[quarter]/page.tsx` renders `QuarterPlanner` component
+3. **Main Component**: `QuarterPlanner` contains:
+   - Task loading using `useTasks` hook
+   - Quarter navigation using `useQuarterNavigation` hook
+   - Subtask management using `useSubtasks` hook
+   - Renders `HeaderSection` and `QuarterTable`
+4. **Task Table**: `QuarterTable` displays tasks with weekly dates:
+   - Processes tasks using `useTableData` hook
+   - Dynamically renders tasks, weeks, and dates
+   - Supports table/compact view modes using `useViewMode` hook
 
----
+### Data Flow Example: Creating a Task
 
-### 8: Refaktorimine ja koodi kvaliteet
+1. User clicks "Add task" → navigates to `/calendar/{year}/{quarter}/tasks/new`
+2. `TaskCreate` component renders `TaskForm` component
+3. `TaskForm` uses `useTaskForm` hook for form logic
+4. On submit, `useTaskForm` makes `POST /api/tasks` request
+5. API route validates data, normalizes data, writes to `tasks.json` file
+6. User is redirected back to quarter view
+7. `useTasks` hook reloads tasks and UI updates dynamically
 
-#### 23: Refaktoreerin QuarterTable komponenti
-**Refaktoreerimise põhjendus**:
-- Algne `QuarterTable.tsx` oli üle 400 rea pikk
-- Raske testimis- ja hooldustegevus
-- Segatud vastutused (renderdamine, andmete töötlemine, lohistamine)
+### State Management Strategy
 
-#### 24: Paranda React Hooks rikkumised
-**Probleem**: Tingimuslik tagastamine enne kõigi hook'ide väljakutsumist
-**Parandus**:
-- Viin kõik hook'id komponendi tippu
-- Tingimuslik renderdamine toimub pärast kõigi hook'ide kutsumist
+- **Server State**: Tasks stored in JSON file, loaded via API URLs
+- **Client State**: Managed via React hooks (useState, useCallback, useMemo)
+- **Optimistic Updates**: When editing or adding subtasks, the table updates immediately for a smoother and more pleasant user experience – saving happens in the background (inline editing)
 
-#### 25: Lisa tüübiturbe täiustusi
-- Lisan puuduvat `durationDays` Task tüüpi
-- Korjan üles kaudsed `any` tüübid
-- Lisan õiged vigade käsitlemise tübid
-- Veendun, et kõik importimised kasutavad TypeScript teid (`@/`)
+## Running the Application
 
----
-
-## Rakenduse käitamine
-
-### Arendamine
+### Development
 
 ```bash
 npm run dev
 ```
 
-Ava [http://localhost:3000](http://localhost:3000) brauseris.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Ehitamine
+### Build
 
 ```bash
 npm run build
 npm start
 ```
 
-### Koodi kvaliteet
+### Code Quality
 
 ```bash
-npm run lint        # Käivita ESLint
-npm run format      # Vorminda Prettier'iga
-npm run format:check # Kontrolli vormindust
+npm run lint        # Run ESLint
+npm run format      # Format with Prettier
+npm run format:check # Check formatting
 ```
 
