@@ -22,6 +22,9 @@ export type StoredTask = {
 
 const tasksFile = path.join(process.cwd(), "src", "data", "tasks.json");
 
+/**
+ * Returns an empty array if the file doesn't exist (first run).
+ */
 export async function readTasks(): Promise<StoredTask[]> {
   try {
     const content = await fs.readFile(tasksFile, "utf-8");
@@ -34,10 +37,16 @@ export async function readTasks(): Promise<StoredTask[]> {
   }
 }
 
-export async function writeTasks(tasks: StoredTask[]) {
+/**
+ * Writes tasks array to the JSON file storage.
+ */
+export async function writeTasks(tasks: StoredTask[]): Promise<void> {
   await fs.writeFile(tasksFile, `${JSON.stringify(tasks, null, 2)}\n`, "utf-8");
 }
 
+/**
+ * Retrieves all tasks from JSON file storage.
+ */
 export async function GET() {
   try {
     const tasks = await readTasks();
@@ -48,6 +57,9 @@ export async function GET() {
   }
 }
 
+/**
+ * Creates a new task with validation and duplicate detection.
+ */
 export async function POST(request: Request) {
   try {
     const payload = (await request.json()) as StoredTask;
@@ -91,6 +103,10 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * Updates an existing task with validation, conflict detection, and ID requirement.
+ * Returns 404 if task not found, 409 if update would create a duplicate.
+ */
 export async function PUT(request: Request) {
   try {
     const payload = (await request.json()) as StoredTask;
@@ -148,4 +164,30 @@ export async function PUT(request: Request) {
   }
 }
 
+/**
+ * Deletes a task from the JSON file storage.
+ */
+export async function DELETE(request: Request) {
+  try {
+    const payload = (await request.json()) as { id?: string };
+    
+    if (!payload || typeof payload.id !== "string") {
+      return NextResponse.json({ error: "Invalid payload: task id is required" }, { status: 400 });
+    }
 
+    const tasks = await readTasks();
+    const taskIndex = tasks.findIndex((task) => task.id === payload.id);
+
+    if (taskIndex === -1) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
+    tasks.splice(taskIndex, 1);
+    await writeTasks(tasks);
+
+    return NextResponse.json({ message: "Task deleted" }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to delete tasks.json", error);
+    return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
+  }
+}

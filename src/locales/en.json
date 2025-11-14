@@ -54,6 +54,23 @@
   "languages": {
     "en": "English",
     "et": "Eesti"
+  },
+  "datePicker": {
+    "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
+    "selectDate": "Select date",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "dropdown": {
+    "selectPlaceholder": "Select…"
+  },
+  "toast": {
+    "taskCreated": "Task \"{{taskName}}\" created successfully",
+    "taskUpdated": "Task \"{{taskName}}\" updated successfully",
+    "taskDeleted": "Task \"{{taskName}}\" deleted successfully",
+    "subtaskCreated": "Subtask for \"{{taskName}}\" created successfully",
+    "subtaskUpdated": "Subtask for \"{{taskName}}\" updated successfully",
+    "subtaskDeleted": "Subtask for \"{{taskName}}\" deleted successfully"
   }
 }
 

@@ -54,6 +54,23 @@
   "languages": {
     "en": "English",
     "et": "Eesti"
+  },
+  "datePicker": {
+    "weekdays": ["E", "T", "K", "N", "R", "L", "P"],
+    "selectDate": "Vali kuupäev",
+    "previousMonth": "Eelmine kuu",
+    "nextMonth": "Järgmine kuu"
+  },
+  "dropdown": {
+    "selectPlaceholder": "Vali…"
+  },
+  "toast": {
+    "taskCreated": "Ülesanne \"{{taskName}}\" lisatud",
+    "taskUpdated": "Ülesanne \"{{taskName}}\" muudetud",
+    "taskDeleted": "Ülesanne \"{{taskName}}\" kustutatud",
+    "subtaskCreated": "Alaülesanne ülesandele \"{{taskName}}\" lisatud",
+    "subtaskUpdated": "Alaülesanne ülesandele \"{{taskName}}\" muudetud",
+    "subtaskDeleted": "Alaülesanne ülesandele \"{{taskName}}\" kustutatud"
   }
 }
 

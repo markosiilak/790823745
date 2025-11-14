@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react";
 import { WeekInfo } from "@/lib/quarter";
 import { Subtask } from "../types";
+import { useToast } from "@/components/shared/Toast/ToastContext";
+import { useTranslations } from "@/lib/translations";
 
 export type SubtaskDraft =
   | {
@@ -25,10 +27,18 @@ type UseSubtasksOptions = {
   onSubtaskUpdated: (taskId: string, subtaskId: string, subtask: Subtask) => void;
 };
 
+/**
+ * React hook for managing subtask dialog state and operations.
+ * Handles opening/closing the subtask dialog in different modes (task-specific or week-specific).
+ * Manages subtask creation and editing, including API calls and error handling.
+ * Determines create vs edit mode based on presence of subtaskId.
+ */
 export function useSubtasks({ onSubtaskCreated, onSubtaskUpdated }: UseSubtasksOptions) {
   const [subtaskDraft, setSubtaskDraft] = useState<SubtaskDraft | null>(null);
   const [subtaskError, setSubtaskError] = useState<string | null>(null);
   const [isSavingSubtask, setIsSavingSubtask] = useState(false);
+  const { showToast } = useToast();
+  const t = useTranslations("toast");
 
   const openSubtaskDialog = useCallback((draft: SubtaskDraft) => {
     setSubtaskDraft(draft);
@@ -110,10 +120,21 @@ export function useSubtasks({ onSubtaskCreated, onSubtaskUpdated }: UseSubtasksO
 
         const updated = (await response.json()) as Subtask;
 
+        const taskName =
+          subtaskDraft?.mode === "task"
+            ? subtaskDraft.taskName
+            : subtaskDraft?.mode === "week"
+              ? subtaskDraft.taskOptions.find((t) => t.id === taskId)?.name ?? "Unknown task"
+              : "Unknown task";
+
         if (isEdit && payload.subtaskId) {
           onSubtaskUpdated(taskId, payload.subtaskId, updated);
+          const message = t.subtaskUpdated.replace("{{taskName}}", taskName);
+          showToast(message);
         } else {
           onSubtaskCreated(taskId, updated);
+          const message = t.subtaskCreated.replace("{{taskName}}", taskName);
+          showToast(message);
         }
 
         closeSubtaskDialog();
@@ -128,7 +149,7 @@ export function useSubtasks({ onSubtaskCreated, onSubtaskUpdated }: UseSubtasksO
         setIsSavingSubtask(false);
       }
     },
-    [onSubtaskCreated, onSubtaskUpdated, closeSubtaskDialog],
+    [onSubtaskCreated, onSubtaskUpdated, closeSubtaskDialog, showToast, subtaskDraft, t.subtaskCreated, t.subtaskUpdated],
   );
 
   return {

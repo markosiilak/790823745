@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuarterKey, formatISODate, parseISODate } from "@/lib/quarter";
 import { TaskFormState, Task } from "../types";
+import { useToast } from "@/components/shared/Toast/ToastContext";
+import { useTranslations } from "@/lib/translations";
 
 type UseTaskFormOptions = {
   quarter: QuarterKey;
@@ -9,9 +11,17 @@ type UseTaskFormOptions = {
   onSubmitSuccess?: () => void;
 };
 
+/**
+ * React hook for managing task form state, validation, and submission.
+ * Handles both create and edit modes (determined by presence of taskId).
+ * In edit mode, loads task data from API. In create mode, initializes with default dates.
+ * Validates form data, handles API submission, and manages navigation/redirects.
+ */
 export function useTaskForm({ quarter, taskId, onSubmitSuccess }: UseTaskFormOptions) {
   const router = useRouter();
   const isEditMode = Boolean(taskId);
+  const { showToast } = useToast();
+  const t = useTranslations("toast");
 
   const today = useMemo(() => {
     const now = new Date();
@@ -184,6 +194,9 @@ export function useTaskForm({ quarter, taskId, onSubmitSuccess }: UseTaskFormOpt
           );
         }
 
+        const message = (isEditMode ? t.taskUpdated : t.taskCreated).replace("{{taskName}}", form.name.trim());
+        showToast(message);
+
         if (onSubmitSuccess) {
           onSubmitSuccess();
         } else {
@@ -199,7 +212,7 @@ export function useTaskForm({ quarter, taskId, onSubmitSuccess }: UseTaskFormOpt
         setIsSaving(false);
       }
     },
-    [form, isEditMode, taskId, quarter.quarter, quarter.year, router, validateForm, onSubmitSuccess]
+    [form, isEditMode, taskId, quarter.quarter, quarter.year, router, validateForm, onSubmitSuccess, showToast, t.taskCreated, t.taskUpdated]
   );
 
   const handleCancel = useCallback(() => {
