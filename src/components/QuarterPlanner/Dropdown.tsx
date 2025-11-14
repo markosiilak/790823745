@@ -35,6 +35,7 @@ type DropdownProps = {
  * Supports keyboard navigation, click outside to close, and disabled options.
  * Automatically scrolls to active option when opened.
  * Provides accessibility attributes (ARIA) for screen readers.
+ * Supports localization with a default placeholder.
  */
 export function Dropdown({
   options,
