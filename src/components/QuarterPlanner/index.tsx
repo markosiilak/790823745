@@ -130,6 +130,9 @@ type SubtaskDraft =
       taskId: string;
       taskName: string;
       week: WeekInfo;
+      subtaskId?: string;
+      initialTitle?: string;
+      initialTimestamp?: string;
     }
   | {
       mode: "week";
@@ -224,30 +227,52 @@ type SubtaskDraft =
     [tasks],
   );
 
+  const handleEditSubtask = useCallback(
+    (taskId: string, taskName: string, subtaskId: string, subtaskTitle: string, subtaskTimestamp: string, week: WeekInfo) => {
+      setSubtaskDraft({
+        mode: "task",
+        taskId,
+        taskName,
+        week,
+        subtaskId,
+        initialTitle: subtaskTitle,
+        initialTimestamp: subtaskTimestamp,
+      });
+      setSubtaskError(null);
+    },
+    [],
+  );
+
   const handleSubtaskSubmit = useCallback(
-    async (taskId: string, payload: { title: string; date: string; time: string }) => {
+    async (taskId: string, payload: { title: string; date: string; time: string; subtaskId?: string }) => {
       setIsSavingSubtask(true);
       setSubtaskError(null);
       try {
+        const isEdit = Boolean(payload.subtaskId);
         const response = await fetch(`/api/tasks/${taskId}/subtasks`, {
-          method: "POST",
+          method: isEdit ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            ...payload,
+            ...(isEdit && { subtaskId: payload.subtaskId }),
+          }),
         });
 
         if (!response.ok) {
           const message = (await response.json().catch(() => null)) as { error?: string } | null;
-          throw new Error(message?.error ?? "Failed to add subtask.");
+          throw new Error(message?.error ?? (isEdit ? "Failed to update subtask." : "Failed to add subtask."));
         }
 
-        const created = (await response.json()) as Subtask;
+        const updated = (await response.json()) as Subtask;
 
         setTasks((previous) =>
           previous.map((task) =>
             task.id === taskId
               ? {
                   ...task,
-                  subtasks: [...task.subtasks, created],
+                  subtasks: isEdit
+                    ? task.subtasks.map((subtask) => (subtask.id === payload.subtaskId ? updated : subtask))
+                    : [...task.subtasks, updated],
                 }
               : task,
           ),
@@ -255,8 +280,8 @@ type SubtaskDraft =
 
         setSubtaskDraft(null);
       } catch (error) {
-        console.error("Failed to create subtask", error);
-        setSubtaskError(error instanceof Error ? error.message : "Failed to add subtask.");
+        console.error(`Failed to ${payload.subtaskId ? "update" : "create"} subtask`, error);
+        setSubtaskError(error instanceof Error ? error.message : `Failed to ${payload.subtaskId ? "update" : "add"} subtask.`);
       } finally {
         setIsSavingSubtask(false);
       }
@@ -298,12 +323,13 @@ type SubtaskDraft =
         onEditTask={handleEditTaskNavigate}
         onAddSubtask={handleSubtaskAddRequest}
         onAddSubtaskForWeek={handleSubtaskAddForWeek}
+        onEditSubtask={handleEditSubtask}
       />
       {subtaskDraft ? (
         <SubtaskDialog
           key={
             subtaskDraft.mode === "task"
-              ? `task-${subtaskDraft.taskId}-${subtaskDraft.week.start.toISOString()}`
+              ? `task-${subtaskDraft.taskId}-${subtaskDraft.week.start.toISOString()}-${subtaskDraft.subtaskId || "new"}`
               : `week-${subtaskDraft.week.start.toISOString()}`
           }
           mode={subtaskDraft.mode}
@@ -313,12 +339,15 @@ type SubtaskDraft =
           availableTasks={subtaskDraft.mode === "week" ? subtaskDraft.taskOptions : []}
           error={subtaskError}
           isSaving={isSavingSubtask}
+          subtaskId={subtaskDraft.mode === "task" ? subtaskDraft.subtaskId : undefined}
+          initialTitle={subtaskDraft.mode === "task" ? subtaskDraft.initialTitle : undefined}
+          initialDate={subtaskDraft.mode === "task" ? subtaskDraft.initialTimestamp : undefined}
           onDismiss={() => {
             setSubtaskDraft(null);
             setSubtaskError(null);
           }}
-          onSubmit={({ taskId, title, date, time }) =>
-            handleSubtaskSubmit(taskId, { title, date, time })
+          onSubmit={({ taskId, title, date, time, subtaskId }) =>
+            handleSubtaskSubmit(taskId, { title, date, time, subtaskId })
           }
         />
       ) : null}

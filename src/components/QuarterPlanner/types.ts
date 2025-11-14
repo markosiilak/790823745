@@ -9,6 +9,7 @@ export type Task = {
   name: string;
   start: string;
   end: string;
+  durationDays?: number;
   subtasks: Subtask[];
 };
 

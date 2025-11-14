@@ -52,6 +52,7 @@ type QuarterTableProps = {
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
   onAddSubtaskForWeek: (week: WeekInfo, candidateTaskIds: string[]) => void;
+  onEditSubtask: (taskId: string, taskName: string, subtaskId: string, subtaskTitle: string, subtaskTimestamp: string, week: WeekInfo) => void;
   onMoveSubtask?: (payload: { taskId: string; subtaskId: string; isoDate: string }) => void;
 };
 
@@ -85,6 +86,7 @@ export function QuarterTable({
   onEditTask,
   onAddSubtask,
   onAddSubtaskForWeek,
+  onEditSubtask,
   onMoveSubtask,
 }: QuarterTableProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("standard");
@@ -435,7 +437,19 @@ export function QuarterTable({
                               {weekSubtasks.length > 0 ? (
                                 <SubtaskList>
                                   {weekSubtasks.map((subtask) => (
-                                    <SubtaskItem key={subtask.id}>
+                                    <SubtaskItem 
+                                      key={subtask.id}
+                                      onClick={() => onEditSubtask(task.id, task.name, subtask.id, subtask.title, subtask.timestamp, week)}
+                                      role="button"
+                                      tabIndex={0}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                          e.preventDefault();
+                                          onEditSubtask(task.id, task.name, subtask.id, subtask.title, subtask.timestamp, week);
+                                        }
+                                      }}
+                                      aria-label={`Edit subtask: ${subtask.title}`}
+                                    >
                                       <SubtaskMeta>
                                         {subtaskDateFormatter.format(subtask.timestampDate)} ·{" "}
                                         {subtaskTimeFormatter.format(subtask.timestampDate)}

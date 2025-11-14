@@ -168,7 +168,12 @@ type SubtaskDialogProps = {
   error: string | null;
   isSaving: boolean;
   onDismiss: () => void;
-  onSubmit: (form: { taskId: string; title: string; date: string; time: string }) => Promise<void> | void;
+  onSubmit: (form: { taskId: string; title: string; date: string; time: string; subtaskId?: string }) => Promise<void> | void;
+  // Edit mode props
+  subtaskId?: string;
+  initialTitle?: string;
+  initialDate?: string;
+  initialTime?: string;
 };
 
 export function SubtaskDialog({
@@ -181,11 +186,38 @@ export function SubtaskDialog({
   isSaving,
   onDismiss,
   onSubmit,
+  subtaskId,
+  initialTitle,
+  initialDate,
+  initialTime,
 }: SubtaskDialogProps) {
   const defaultDate = useMemo(() => formatISODate(week.start), [week.start]);
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState(defaultDate);
-  const [time, setTime] = useState("09:00");
+  const isEditMode = Boolean(subtaskId);
+  
+  // Initialize form with existing data if in edit mode, otherwise use defaults
+  const initialFormData = useMemo(() => {
+    if (isEditMode && initialDate) {
+      // initialDate is an ISO timestamp string, parse it to get date and time
+      const timestampDate = new Date(initialDate);
+      if (!Number.isNaN(timestampDate.getTime())) {
+        const timeString = timestampDate.toTimeString().slice(0, 5); // HH:mm format
+        return {
+          title: initialTitle || "",
+          date: formatISODate(timestampDate),
+          time: timeString,
+        };
+      }
+    }
+    return {
+      title: "",
+      date: defaultDate,
+      time: "09:00",
+    };
+  }, [isEditMode, initialTitle, initialDate, defaultDate]);
+
+  const [title, setTitle] = useState(initialFormData.title);
+  const [date, setDate] = useState(initialFormData.date);
+  const [time, setTime] = useState(initialFormData.time);
   const [localError, setLocalError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
     mode === "task" ? taskId : availableTasks[0]?.id,
@@ -241,9 +273,10 @@ export function SubtaskDialog({
         title: title.trim(),
         date,
         time,
+        ...(subtaskId && { subtaskId }),
       });
     },
-    [date, mode, onSubmit, selectedTaskId, taskId, time, title, week.end, week.start],
+    [date, mode, onSubmit, selectedTaskId, taskId, time, title, week.end, week.start, subtaskId],
   );
 
   const dialogSubtitle =
@@ -257,7 +290,7 @@ export function SubtaskDialog({
     <Overlay>
       <DialogCard role="dialog" aria-modal="true" aria-labelledby="subtask-dialog-title">
         <Heading>
-          <h2 id="subtask-dialog-title">Add subtask</h2>
+          <h2 id="subtask-dialog-title">{isEditMode ? "Edit subtask" : "Add subtask"}</h2>
           <Subtitle>{dialogSubtitle}</Subtitle>
         </Heading>
         <Form onSubmit={handleSubmit}>

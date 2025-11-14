@@ -256,6 +256,18 @@ export const SubtaskItem = styled.li`
   flex-direction: column;
   gap: 0.2rem;
   box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.06);
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: inset 0 0 0 1px rgba(123, 63, 228, 0.15);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px ${theme.colors.accent};
+  }
 `;
 
 export const SubtaskMeta = styled.span`
