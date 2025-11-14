@@ -25,7 +25,31 @@
     "editSubtask": "Muuda alaülesannet",
     "tableViewMode": "Tabeli vaate režiim",
     "selectWeek": "Vali kuvatav nädal",
-    "noWeeks": "Nädalaid pole"
+    "noWeeks": "Nädalaid pole",
+    "loading": "Laadimine..."
+  },
+  "taskCreate": {
+    "title": "Lisa ülesanne",
+    "subtitle": "Täida ülesande andmed allpool. Pärast esitamist suunatakse sind tagasi kvartali ülevaate juurde.",
+    "saveTask": "Salvesta ülesanne",
+    "cancel": "Tühista"
+  },
+  "taskEdit": {
+    "title": "Muuda ülesannet",
+    "editTaskWithName": "Muuda",
+    "subtitle": "Uuenda ülesande andmeid allpool. Pärast salvestamist suunatakse sind tagasi kvartali ülevaate juurde.",
+    "updateTask": "Uuenda ülesannet",
+    "loading": "Laadimine…"
+  },
+  "taskForm": {
+    "title": "Lisa ülesanne",
+    "taskName": "Ülesande nimi",
+    "taskNamePlaceholder": "nt. Turunduskampaania",
+    "startDate": "Alguskuupäev",
+    "endDate": "Lõppkuupäev",
+    "addTask": "Lisa ülesanne",
+    "clear": "Tühjenda",
+    "tasksAdded": "ülesannet lisatud"
   },
   "languages": {
     "en": "English",

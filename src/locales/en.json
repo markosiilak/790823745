@@ -25,7 +25,31 @@
     "editSubtask": "Edit subtask",
     "tableViewMode": "Table view mode",
     "selectWeek": "Select week to display",
-    "noWeeks": "No weeks"
+    "noWeeks": "No weeks",
+    "loading": "Loading tasks..."
+  },
+  "taskCreate": {
+    "title": "Add a task",
+    "subtitle": "Fill in the task details below. After submission you will be redirected back to the quarter overview.",
+    "saveTask": "Save task",
+    "cancel": "Cancel"
+  },
+  "taskEdit": {
+    "title": "Edit task",
+    "editTaskWithName": "Edit",
+    "subtitle": "Update the task details below. After saving you will be redirected back to the quarter overview.",
+    "updateTask": "Update task",
+    "loading": "Loading task…"
+  },
+  "taskForm": {
+    "title": "Add a task",
+    "taskName": "Task name",
+    "taskNamePlaceholder": "e.g. Marketing campaign",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "addTask": "Add task",
+    "clear": "Clear",
+    "tasksAdded": "tasks added"
   },
   "languages": {
     "en": "English",

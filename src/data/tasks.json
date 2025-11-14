@@ -8,7 +8,7 @@
     "subtasks": [
       {
         "id": "3418a143-2b1a-4aa7-a3ff-0ebd43eb0b32",
-        "title": "Kick-off sync",
+        "title": "Kick-off",
         "timestamp": "2025-11-13T09:00:00.000Z"
       },
       {
@@ -23,6 +23,13 @@
     "name": "Marko task test",
     "start": "2025-11-12",
     "end": "2025-11-19",
+    "subtasks": []
+  },
+  {
+    "id": "37474fd2-2c56-40ef-b4ab-bb669f543623",
+    "name": "Hommikune proov",
+    "start": "2025-11-14",
+    "end": "2025-11-21",
     "subtasks": []
   }
 ]
