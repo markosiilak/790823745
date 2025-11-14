@@ -53,15 +53,7 @@ export function WeekCell({
   const hasContent = active || weekSubtasks.length > 0;
 
   if (!hasContent) {
-    return (
-      <StyledWeekCell
-        key={`${taskId}-${weekStartKey}`}
-        $active={false}
-        $compact={isCompact}
-        $hasContent={false}
-        aria-hidden="true"
-      />
-    );
+    return null;
   }
 
   return (
