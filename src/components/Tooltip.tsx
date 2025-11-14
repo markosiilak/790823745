@@ -9,27 +9,19 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import styled from "styled-components";
 import theme from "@/styles/theme";
+import { TooltipBubble } from "./Tooltip/styles";
 
 type TooltipProps = {
   content: ReactNode;
-  children: ReactElement;
+  children: ReactElement<{
+    onMouseEnter?: (event: React.MouseEvent) => void;
+    onMouseLeave?: (event: React.MouseEvent) => void;
+    onFocus?: (event: React.FocusEvent) => void;
+    onBlur?: (event: React.FocusEvent) => void;
+    ref?: React.Ref<HTMLElement>;
+  }>;
 };
-
-const TooltipBubble = styled.div`
-  position: absolute;
-  background: ${theme.tooltip.background};
-  color: ${theme.tooltip.color};
-  padding: ${theme.tooltip.padding};
-  border-radius: ${theme.radii.tooltip};
-  box-shadow: ${theme.shadows.tooltip};
-  font-size: 0.75rem;
-  white-space: nowrap;
-  pointer-events: none;
-  transform: translate(-50%, -100%);
-  z-index: 2000;
-`;
 
 const mergeHandlers =
   <E,>(existing?: (event: E) => void, next?: (event: E) => void) =>
@@ -92,10 +84,22 @@ export function Tooltip({ content, children }: TooltipProps) {
   }, []);
 
   const trigger = cloneElement(child, {
-    onMouseEnter: mergeHandlers(child.props.onMouseEnter, show),
-    onMouseLeave: mergeHandlers(child.props.onMouseLeave, hide),
-    onFocus: mergeHandlers(child.props.onFocus, show),
-    onBlur: mergeHandlers(child.props.onBlur, hide),
+    onMouseEnter: mergeHandlers(
+      (child.props as { onMouseEnter?: (event: React.MouseEvent) => void }).onMouseEnter,
+      show,
+    ),
+    onMouseLeave: mergeHandlers(
+      (child.props as { onMouseLeave?: (event: React.MouseEvent) => void }).onMouseLeave,
+      hide,
+    ),
+    onFocus: mergeHandlers(
+      (child.props as { onFocus?: (event: React.FocusEvent) => void }).onFocus,
+      show,
+    ),
+    onBlur: mergeHandlers(
+      (child.props as { onBlur?: (event: React.FocusEvent) => void }).onBlur,
+      hide,
+    ),
     ref: assignTriggerElement,
   });
 

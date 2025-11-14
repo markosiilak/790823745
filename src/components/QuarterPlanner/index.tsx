@@ -2,28 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import styled from "styled-components";
 import {
   QuarterKey,
   WeekInfo,
   buildQuarterStructure,
-  formatISODate,
-  parseISODate,
   shiftQuarter,
 } from "@/lib/quarter";
 import { HeaderSection } from "./HeaderSection";
 import { QuarterTable } from "./QuarterTable";
 import { Task, Subtask } from "./types";
 import { SubtaskDialog } from "./Subtasks/SubtaskDialog";
-import theme from "@/styles/theme";
 import { normalizeTasks } from "@/lib/task-utils";
-
-const PlannerShell = styled.div`
-  width: min(1200px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.sectionGap};
-`;
+import { PlannerShell, AddTaskButton } from "./styles/quarterPlannerStyles";
 
 const plannerSubtitle =
   "Visualise task timelines across weeks. Navigate between quarters and add up to ten tasks to your view.";
@@ -42,23 +32,6 @@ type StoredTask = {
   durationDays?: number;
   subtasks?: StoredSubtask[];
 };
-
-
-const AddTaskButton = styled.button`
-  border-radius: ${theme.radii.pill};
-  border: none;
-  background: ${theme.colors.accent};
-  padding: ${theme.spacing.controlPadding};
-  font-weight: ${theme.typography.fontWeightBold};
-  transition: ${theme.transitions.primary};
-  color: ${theme.colors.accentInverted};
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: ${theme.shadows.primaryHover};
-  }
-`;
 
 type QuarterPlannerProps = {
   initialQuarter: QuarterKey;
