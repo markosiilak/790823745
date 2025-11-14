@@ -7,6 +7,8 @@ import {
   Controls,
   NavButton,
 } from "./styles/headerSectionStyles";
+import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "@/components/icons/ChevronRightIcon";
 
 type HeaderSectionProps = {
   label: string;
@@ -33,10 +35,12 @@ export function HeaderSection({
 
       <Controls>
         <NavButton type="button" onClick={onPrevious} aria-label="View previous quarter">
-          ← Previous
+          <ChevronLeftIcon />
+          Previous
         </NavButton>
         <NavButton type="button" onClick={onNext} aria-label="View next quarter">
-          Next →
+          Next
+          <ChevronRightIcon />
         </NavButton>
         {extraActions}
       </Controls>

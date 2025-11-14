@@ -55,6 +55,9 @@ export const NavButton = styled.button`
   color: ${theme.colors.foreground};
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 
   &:hover {
     border-color: ${theme.colors.accent};
