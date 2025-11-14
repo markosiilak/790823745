@@ -4,23 +4,23 @@ Kaasaegne täisfunktsionaalne Next.js rakendus ülesannete visualiseerimiseks ja
 
 ## Ülevaade
 
-See rakendus pakub täielikku ülesannete haldussüsteemi, kus kasutajad saavad:
-- Visualiseerida ülesandeid kvartalite ajakavadel nädalate kaupa
-- Luua, muuta ja kustutada ülesandeid algus-/lõppkuupäevadega
-- Lisada alaülesandeid ülesannetele koos konkreetsete kuupäevade ja kellaaegadega
-- Liikuda sujuvalt kvartalite vahel
-- Vahetada tabeli- ja kompaktvaate režiime
-- Mitmekeelne adminliides (inglise, eesti)
+See rakendus pakub täielikku ülesannete juhtimise süsteemi, kus kasutajad saavad:
+- Kuvada ülesandeid kvartalite ajakavadel nädalate kaupa
+- Luua, redigeerida ja kustutada ülesandeid algus- ja lõppkuupäevadega
+- Lisata ülesannetele alaülesandeid koos kindlate kuupäevade ja kellaaegadega
+- Sujuvalt liikuda kvartalite vahel
+- Vahetada tabelivaate ja kompaktvaate režiimide vahel
+- Mitmekeelne halduri liides (inglise, eesti)
 
 ## Tehnoloogilised vahendid
 
 - **Raamistik**: React koos Next.js 16 (App Router)
-- **Jooksva keskkonna**: React 19
-- **Keel**: TypeScript 5.7
-- **Stiilimine**: styled-components 6.1
-- **Oleku haldamine**: React Hooks (useState, useEffect, useCallback, useMemo)
-- **Andmete säilimine**: JSON-failipõhine salvestamine (API marsruutide kaudu)
-- **Rahvusvahelistamine**: Kohandatud i18n implementatsioon JSON tõlke failidega
+- **Jooksukeskkond**: React 19
+- **Keelevalik**: TypeScript 5.7
+- **Stiilide haldamine**: styled-components 6.1
+- **Oleku jälgimine**: React Hooks (useState, useEffect, useCallback, useMemo)
+- **Andmete salvestamine**: JSON-failipõhine andmesalvestus (API marsruutide kaudu)
+- **Rahvusvaheline tugi**: Kohandatud i18n implementatsioon JSON tõlkefailide abil
 
 ## Projekti struktuur
 
@@ -132,101 +132,99 @@ See rakendus pakub täielikku ülesannete haldussüsteemi, kus kasutajad saavad:
 └── prettier.config.mjs               # Prettier configuration
 ```
 
-## Arhitektuur
-
 ### Andmevoog
 
-1. **Andmete kiht**: JSON-fail (`src/data/tasks.json`) toimib säilimise kihina
-2. **API kiht**: Next.js API marsruudid (`src/app/api/tasks/`) käsitlevad CRUD toiminguid
-3. **Äriloogika**: Kohandatud hooks (`src/components/QuarterPlanner/hooks/`) haldavad olekut ja API suhtlust
-4. **Esitusekiht**: React komponendid renderdavad UI-d kasutades styled-components
+1. **Andmete kiht**: JSON-fail (`src/data/tasks.json`) toimib andmete salvestamise kihina.
+2. **API kiht**: Next.js API marsruudid (`src/app/api/tasks/`) teostavad CRUD toiminguid.
+3. **Äriloogika**: Kohandatud hooks (`src/components/QuarterPlanner/hooks/`) haldavad olekut ja suhtlevad API-ga.
+4. **Esitusekiht**: React komponendid renderdavad kasutajaliidese, kasutades styled-components.
 
 ### Peamised arhitektuurilised otsused
 
-#### 1. Komponentide koostamine ja vastutuste eraldamine
-- **Funktsioonipõhine organisatsioon**: Komponendid on rühmitatud funktsiooni järgi (QuarterPlanner, QuarterTable)
-- **Üksikvastutus**: Igal komponendil/hook'il on selge, fokseeritud eesmärk
-- **Eraldatud stiilid**: Kõik styled-components viidud eraldi `styles.ts` failidesse hooldatavuse huvides
-- **Taaskasutatavad komponendid**: Jagatud komponendid (Dropdown, DatePicker, Button) ühtsuse jaoks
+#### 1. Komponentide koostamine ja vastutuste jagamine
+- **Funktsioonipõhine organisatsioon**: Komponendid on grupeeritud vastavalt nende funktsioonidele (QuarterPlanner, QuarterTable).
+- **Selge vastutus**: Igal komponendil või hook'il on kindel, fokuseeritud eesmärk.
+- **Eraldi stiilide haldamine**: Kõik styled-components on paigutatud eraldi `styles.ts` failidesse hooldatavuse parandamiseks.
+- **Taaskasutatavad komponendid**: Ühtsuse tagamiseks jagatud komponendid (Dropdown, DatePicker, Button).
 
 #### 2. Kohandatud hooks oleku haldamiseks
-- **`useTasks`**: Haldab ülesannete laadimist, loomist, uuendamist, kustutamist
-- **`useSubtasks`**: Käsitleb alaülesannete loomist ja muutmist dialoogi olekuga
-- **`useTaskForm`**: Lisamise vormi loogika, valideerimise ja esitamise nii loomise kui ka muutmise režiimides
-- **`useQuarterNavigation`**: Haldab kvartali navigeerimist ja URL marsruutimist
-- **`useViewMode`**: Haldab tabeli vaate režiimi (tabel/kompaktne) ja nädala valikut
-- **`useTableData`**: Töötleb ja transformeerib ülesannete andmeid tabeli renderdamiseks
+- **`useTasks`**: Halab ülesannete laadimist, loomist, uuendamist ja kustutamist.
+- **`useSubtasks`**: Haldab alaülesannete loomist ja muutmist dialooge juhtiva olekuga.
+- **`useTaskForm`**: Vastutab lisamise vormi loogika, valideerimise ja esitamise eest nii loomise kui ka muutmise režiimides.
+- **`useQuarterNavigation`**: Haldab kvartali navigeerimist ja URL-marsruutimist.
+- **`useViewMode`**: Haldab tabeli vaate režiimi (tabel/kompaktne) ja nädala valikut.
+- **`useTableData`**: Töötleb ja transformeerib ülesannete andmeid tabeli renderdamiseks.
 
 #### 3. Tüübi turvalisus
-- Põhjalikud TypeScript tüübid `types.ts` failis
-- Jagatud utiliidi funktsioonid `task-utils.ts` failis tüübiturvalise andmete normaliseerimise jaoks
-- Tüübiturvaline tõlke süsteem võtmete automaatse täiendamisega
+- Üksikasjalikud TypeScript tüübid on dokumenteeritud `types.ts` failis.
+- Jagatud utiliidi funktsioonid `task-utils.ts` failis aitavad tagada tüübiturvalist andmete normaliseerimist.
+- Tüübiturvaline tõlke süsteem, mis toetab võtmete automaatset täiendamist.
 
 #### 4. Rahvusvahelistamine (i18n)
-- Kohandatud tõlke süsteem JSON failidega
-- `useLocale` ja `useTranslations` hooks reaktiivsete tõlke uuenduste jaoks
-- Hydration-turvaline locale initsialiseerimine (vältib SSR/kliendi lahknevust)
-- LocalStorage säilimine keele eelistuse jaoks
+- Kohandatud tõlke süsteem, mis kasutab JSON faile.
+- `useLocale` ja `useTranslations` hooks reaktiivsete tõlkeuuenduste jaoks.
+- Turvaline locale'i initsialiseerimine, mis väldib SSR ja kliendi lahknevust.
+- KeelesePreference jaoks kasutatakse LocalStorage'i salvestamist.
 
 #### 5. API disain
-- RESTful: `GET /api/tasks`, `POST /api/tasks`, `PUT /api/tasks/[id]`
-- Lisaks ressursid: `POST /api/tasks/[id]/subtasks`, `PUT /api/tasks/[id]/subtasks`
-- Ühine vigade käsitlemine NextResponse'iga
-- Andmete valideerimise funktsioonide abil
+- RESTful: `GET /api/tasks`, `POST /api/tasks`, `PUT /api/tasks/[id]`.
+- Täiendavad ressursid: `POST /api/tasks/[id]/subtasks`, `PUT /api/tasks/[id]/subtasks`.
+- Üksik vigade käsitlemine NextResponse'i abil.
+- Andmete valideerimine funktsioonide kaudu.
 
 #### 6. Kuupäevade käsitlemine
-- ISO-8601 kuupäeva salvestamiseks
-- Tsentraliseeritud kuupäevad `lib/quarter.ts` failis
-- ISO-8601 nädala arvutused (esmaspäev on esimene)
-- DatePicker komponent kuupäevade jaoks
+- ISO-8601 kuupäevade salvestamine.
+- Keskne kuupäevade haldamine `lib/quarter.ts` failis.
+- ISO-8601 nädalate arvutamine (esmaspäev on esimene päev).
+- DatePicker komponent kuupäevade valimiseks.
 
 ## Kuidas see töötab
 
 ### Rakenduse voog
 
-1. **Lehekülg**: `app/page.tsx` suunab praeguse kvartali juurde (`/calendar/{year}/{quarter}`)
-2. **Kvartali leht**: `app/calendar/[year]/[quarter]/page.tsx` renderdab `QuarterPlanner` komponenti
+1. **Lehekülg**: `app/page.tsx` suunab kasutaja praegusele kvartalile (`/calendar/{year}/{quarter}`).
+2. **Kvartali leht**: `app/calendar/[year]/[quarter]/page.tsx` renderdab `QuarterPlanner` komponendi.
 3. **Peamine komponent**: `QuarterPlanner` sisaldab:
-   - Ülesannete laadimist `useTasks` hook'i abil
-   - Kvartali navigeerimist `useQuarterNavigation` hook'i abil
-   - Alaülesannete haldamist `useSubtasks` hook'i abil
-   - Renderdab `HeaderSection` ja `QuarterTable`
-4. **Ülesannete tabel**: `QuarterTable` kuvab ülesandeid nädalate kuupäevatega:
-   - Töötleb ülesandeid `useTableData` hook'i abil
-   - Renderdab ülesandeid, nädalaid ja kuupäeva dünaamiliselt
-   - Toetab tabeli/kompaktse vaate režiime `useViewMode` hook'i abil
+   - Ülesannete laadimist `useTasks` hook'i kaudu.
+   - Kvartali navigeerimist `useQuarterNavigation` hook'i kaudu.
+   - Alaülesannete haldamist `useSubtasks` hook'i kaudu.
+   - Renderdab `HeaderSection` ja `QuarterTable`.
+4. **Ülesannete tabel**: `QuarterTable` kuvab ülesandeid nädalate kuupäevadega:
+   - Töötleb ülesandeid `useTableData` hook'i kaudu.
+   - Renderdab ülesandeid, nädalaid ja kuupäevi dünaamiliselt.
+   - Toetab tabeli ja kompaktse vaate režiime `useViewMode` hook'i kaudu.
 
 ### Andmevoo näide: Ülesande loomine
 
-1. Kasutaja klõpsab "Lisa ülesanne" → suunab `/calendar/{year}/{quarter}/tasks/new`
-2. `TaskCreate` komponent renderdab `TaskForm` komponenti
-3. `TaskForm` kasutab `useTaskForm` hook'i vormi loogikat
-4. Esitamisel teeb `useTaskForm` `POST /api/tasks` päringu
-5. API marsruut valideerib andmeid, normaliseerib andmed, kirjutab `tasks.json` faili
-6. Kasutaja suunatakse tagasi kvartali vaatesse
-7. `useTasks` hook laeb ülesanded uuesti ja UI uueneb dünaamiliselt
+1. Kasutaja valib "Lisa ülesanne" → suunatakse ` /calendar/{year}/{quarter}/tasks/new `
+2. ` TaskCreate ` komponent tõukab ` TaskForm ` komponenti
+3. ` TaskForm ` kasutab vormi loogika jaoks ` useTaskForm ` hook'i
+4. Esitamisel saadab ` useTaskForm ` ` POST /api/tasks ` päringu
+5. API marsruut kontrollib andmeid, normaliseerib neid ja salvestab ` tasks.json ` faili
+6. Kasutaja suunatakse tagasi kvartali vaatamisele
+7. ` useTasks ` hook toob ülesanded taas laadides UI uuendatakse dünaamiliselt
 
 ### Oleku haldamise strateegia
 
-- **Serveri olek**: Ülesanded salvestatud JSON failis, laetud API url'ide abil
-- **Kliendi olek**: Hallatakse React hooks'ide kaudu (useState, useCallback, useMemo)
-- **Optimistlikud uuendused**: Kui muudad või lisad alaülesandeid, uuendatakse tabel koheselt, et kasutajakogemus oleks sujuvam ja mõnusam – salvestamine toimib (inline editing) taustal.
+- ** Serveri olek ** : Ülesanded salvestatakse JSON failis, laaditakse API url'ide kaudu
+- ** Kliendi olek ** : Hallatakse React hooks'ide abil (useState, useCallback, useMemo)
+- ** Optimistlikud uuendused ** : Kui muudad või lisad alaülesandeid, uuendab tabel kaasaegselt, et kasutajakogemus oleks sujuvam – salvestamine toimub taustal (inline editing).
 
 ## Arendamise protsess: samm-sammult juhend
 
 ### 1: Projekti seadistamine ja alus
 
-#### 1: Initsialiseeri Next.js projekt TypeScript'iga
-```bash
+#### 1: Alusta Next.js projekti TypeScript'iga
+``` bash
 npx create-next-app@latest --typescript --app --no-tailwind
 ```
-**Otsus**: Valiti App Router Pages Router'i asemel kaasaegsete Next.js. Jäeti Tailwind välja styled-components eelistuse tõttu.
+** Otsus ** : Valiti kaasaegne Next.js, kasutades App Routerit, mitte Pages Routerit. Tailwind jäeti välja, eelistatud olid styled-components.
 
-#### 2: Paigalda põhisõltuvused
-```bash
+#### 2: Paigalda põhiraamatukogud
+``` bash
 npm install styled-components @types/styled-components
 ```
-**Põhjendus**: styled-components CSS-in-JS jaoks komponendi stiilidega.
+** Põhjendus ** : styled-components kasutatakse CSS-in-JS komponentide stiilimiseks.
 
 #### 3: Konfigureeri TypeScripti importid
 **Fail**: `tsconfig.json`
