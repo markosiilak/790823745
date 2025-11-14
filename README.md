@@ -14,7 +14,7 @@ See rakendus pakub täielikku ülesannete haldussüsteemi, kus kasutajad saavad:
 
 ## Tehnoloogilised vahendid
 
-- **Raamistik**: Next.js 16 (App Router)
+- **Raamistik**: React koos Next.js 16 (App Router)
 - **Jooksva keskkonna**: React 19
 - **Keel**: TypeScript 5.7
 - **Stiilimine**: styled-components 6.1
