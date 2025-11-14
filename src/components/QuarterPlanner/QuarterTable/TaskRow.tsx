@@ -125,8 +125,6 @@ export function TaskRow({
               week={week}
               taskId={task.id}
               taskName={task.name}
-              taskStart={taskStart}
-              taskEnd={taskEnd}
               isCompact={isCompact}
               weekSubtasks={weekSubtasks}
               active={active}
