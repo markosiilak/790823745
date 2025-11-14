@@ -1,11 +1,9 @@
 'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { QuarterKey, formatISODate, parseISODate } from "@/lib/quarter";
+import { QuarterKey } from "@/lib/quarter";
 import { TaskForm } from "./TaskForm";
-import { TaskFormState } from "./types";
 import { HeadingGroup, PageShell, Subtitle } from "./styles/taskPageStyles";
+import { useTaskForm } from "./hooks/useTaskForm";
 
 type TaskCreateProps = {
   quarter: QuarterKey;
@@ -13,99 +11,10 @@ type TaskCreateProps = {
 };
 
 export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: TaskCreateProps) {
-  const router = useRouter();
-  const today = useMemo(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    return now;
-  }, []);
+  const { form, error, isSaving, handleChange, handleSubmit, handleCancel, handleReset } =
+    useTaskForm({ quarter });
 
-  const defaultStart = useMemo(() => formatISODate(today), [today]);
-  const defaultEnd = useMemo(() => {
-    const future = new Date(today);
-    future.setDate(future.getDate() + 7);
-    return formatISODate(future);
-  }, [today]);
-
-  const [form, setForm] = useState<TaskFormState>(() => ({
-    name: "",
-    start: defaultStart,
-    end: defaultEnd,
-  }));
-  const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleChange = useCallback(
-    (field: keyof TaskFormState) => (value: string) => {
-      setForm((previous) => ({
-        ...previous,
-        [field]: value,
-      }));
-    },
-    [],
-  );
-
-  const resetForm = useCallback(() => {
-    setForm({
-      name: "",
-      start: defaultStart,
-      end: defaultEnd,
-    });
-    setError(null);
-  }, [defaultEnd, defaultStart]);
-
-  const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      if (!form.name.trim()) {
-        setError("Please provide a task name.");
-        return;
-      }
-
-      if (!form.start || !form.end) {
-        setError("Please pick both start and end dates.");
-        return;
-      }
-
-      const startDate = parseISODate(form.start);
-      const endDate = parseISODate(form.end);
-
-      if (startDate > endDate) {
-        setError("The end date must be on or after the start date.");
-        return;
-      }
-
-      try {
-        setIsSaving(true);
-        const response = await fetch("/api/tasks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: form.name.trim(),
-            start: formatISODate(startDate),
-            end: formatISODate(endDate),
-          }),
-        });
-
-        if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-          throw new Error(payload?.error ?? "Failed to save task.");
-        }
-
-        router.push(`/calendar/${quarter.year}/${quarter.quarter}`);
-      } catch (saveError) {
-        console.error("Failed to save task", saveError);
-        setError(saveError instanceof Error ? saveError.message : "Failed to save task.");
-        setIsSaving(false);
-      }
-    },
-    [form.end, form.name, form.start, quarter.quarter, quarter.year, router],
-  );
-
-  const handleCancel = useCallback(() => {
-    router.back();
-  }, [router]);
+  if (!form) return null;
 
   return (
     <PageShell>
@@ -126,7 +35,7 @@ export function TaskCreate({ quarter, maxTasks = Number.MAX_SAFE_INTEGER }: Task
         onStartChange={handleChange("start")}
         onEndChange={handleChange("end")}
         onSubmit={handleSubmit}
-        onReset={resetForm}
+        onReset={handleReset}
         submitLabel="Save task"
         secondaryLabel="Cancel"
         onSecondaryAction={handleCancel}

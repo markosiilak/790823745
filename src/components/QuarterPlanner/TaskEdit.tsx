@@ -1,11 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { QuarterKey, formatISODate, parseISODate } from "@/lib/quarter";
+import { useMemo } from "react";
+import { QuarterKey } from "@/lib/quarter";
 import { TaskForm } from "./TaskForm";
-import { TaskFormState, Task } from "./types";
 import { HeadingGroup, PageShell, Subtitle } from "./styles/taskPageStyles";
+import { useTaskForm } from "./hooks/useTaskForm";
 
 type TaskEditProps = {
   quarter: QuarterKey;
@@ -13,160 +12,8 @@ type TaskEditProps = {
 };
 
 export function TaskEdit({ quarter, taskId }: TaskEditProps) {
-  const router = useRouter();
-  const [form, setForm] = useState<TaskFormState | null>(null);
-  const [initialForm, setInitialForm] = useState<TaskFormState | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadTask() {
-      try {
-        setLoadError(null);
-        const response = await fetch("/api/tasks", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("Failed to load task data.");
-        }
-        const tasks = (await response.json()) as Task[];
-        const task = tasks.find((item) => item.id === taskId);
-        if (!task) {
-          throw new Error("Task not found.");
-        }
-
-        if (!cancelled) {
-          if (typeof task.name !== "string") {
-            throw new Error("Task is missing a name.");
-          }
-
-          const baseStart = (() => {
-            if (typeof task.start === "string") {
-              return formatISODate(parseISODate(task.start));
-            }
-            if (typeof task.durationDays === "number") {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return formatISODate(today);
-            }
-            throw new Error("Task is missing start information.");
-          })();
-
-          const baseEnd = (() => {
-            if (typeof task.end === "string") {
-              return formatISODate(parseISODate(task.end));
-            }
-            if (typeof task.durationDays === "number") {
-              const startDate = parseISODate(baseStart);
-              const endDate = new Date(startDate);
-              endDate.setDate(endDate.getDate() + Math.max(task.durationDays, 0));
-              return formatISODate(endDate);
-            }
-            return baseStart;
-          })();
-
-          const normalised: TaskFormState = {
-            name: task.name,
-            start: baseStart,
-            end: baseEnd,
-          };
-          setForm(normalised);
-          setInitialForm(normalised);
-        }
-      } catch (loadErr) {
-        if (!cancelled) {
-          setLoadError(loadErr instanceof Error ? loadErr.message : "Failed to load task.");
-        }
-      }
-    }
-
-    loadTask();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [taskId]);
-
-  const handleChange = useCallback(
-    (field: keyof TaskFormState) => (value: string) => {
-      setForm((previous) => {
-        if (!previous) {
-          return previous;
-        }
-        return {
-          ...previous,
-          [field]: value,
-        };
-      });
-    },
-    [],
-  );
-
-  const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      if (!form) {
-        return;
-      }
-
-      if (!form.name.trim()) {
-        setError("Please provide a task name.");
-        return;
-      }
-
-      if (!form.start || !form.end) {
-        setError("Please pick both start and end dates.");
-        return;
-      }
-
-      const startDate = parseISODate(form.start);
-      const endDate = parseISODate(form.end);
-
-      if (startDate > endDate) {
-        setError("The end date must be on or after the start date.");
-        return;
-      }
-
-      try {
-        setIsSaving(true);
-        const response = await fetch("/api/tasks", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: taskId,
-            name: form.name.trim(),
-            start: formatISODate(startDate),
-            end: formatISODate(endDate),
-          }),
-        });
-
-        if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-          throw new Error(payload?.error ?? "Failed to update task.");
-        }
-
-        router.push(`/calendar/${quarter.year}/${quarter.quarter}`);
-      } catch (saveError) {
-        console.error("Failed to update task", saveError);
-        setError(saveError instanceof Error ? saveError.message : "Failed to update task.");
-        setIsSaving(false);
-      }
-    },
-    [form, quarter.quarter, quarter.year, router, taskId],
-  );
-
-  const handleCancel = useCallback(() => {
-    router.back();
-  }, [router]);
-
-  const handleReset = useCallback(() => {
-    if (initialForm) {
-      setForm(initialForm);
-      setError(null);
-    }
-  }, [initialForm]);
+  const { form, error, loadError, isSaving, handleChange, handleSubmit, handleCancel, handleReset } =
+    useTaskForm({ quarter, taskId });
 
   const headingTitle = useMemo(() => (form ? `Edit ${form.name}` : "Edit task"), [form]);
 

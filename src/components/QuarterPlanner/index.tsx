@@ -16,6 +16,7 @@ import { QuarterTable } from "./QuarterTable";
 import { Task, Subtask } from "./types";
 import { SubtaskDialog } from "./Subtasks/SubtaskDialog";
 import theme from "@/styles/theme";
+import { normalizeTasks } from "@/lib/task-utils";
 
 const PlannerShell = styled.div`
   width: min(1200px, 100%);
@@ -42,62 +43,6 @@ type StoredTask = {
   subtasks?: StoredSubtask[];
 };
 
-function normaliseTasks(rawTasks: StoredTask[]): Task[] {
-  const base = new Date();
-  base.setHours(0, 0, 0, 0);
-  const fallbackStart = formatISODate(base);
-  const seen = new Set<string>();
-
-  return rawTasks
-    .filter((task) => typeof task.name === "string")
-    .map((task) => {
-      const startISO = task.start
-        ? formatISODate(parseISODate(task.start))
-        : fallbackStart;
-
-      const startDate = parseISODate(startISO);
-      const endISO = task.end
-        ? formatISODate(parseISODate(task.end))
-        : (() => {
-            const end = new Date(startDate);
-            const duration = Number(task.durationDays) || 0;
-            end.setDate(end.getDate() + Math.max(duration, 0));
-            return formatISODate(end);
-          })();
-
-      const key = `${task.name}-${startISO}-${endISO}`;
-      if (seen.has(key)) {
-        return null;
-      }
-      seen.add(key);
-
-      return {
-        id: task.id ?? crypto.randomUUID(),
-        name: task.name?.trim() ?? "Untitled Task",
-        start: startISO,
-        end: endISO,
-        subtasks: Array.isArray(task.subtasks)
-          ? task.subtasks
-              .map((subtask) => {
-                if (typeof subtask?.title !== "string" || typeof subtask?.timestamp !== "string") {
-                  return null;
-                }
-                const timestamp = new Date(subtask.timestamp);
-                if (Number.isNaN(timestamp.getTime())) {
-                  return null;
-                }
-                return {
-                  id: subtask.id ?? crypto.randomUUID(),
-                  title: subtask.title.trim() || "Untitled subtask",
-                  timestamp: timestamp.toISOString(),
-                };
-              })
-              .filter((subtask): subtask is Subtask => subtask !== null)
-          : [],
-      };
-    })
-    .filter((task): task is Task => task !== null);
-}
 
 const AddTaskButton = styled.button`
   border-radius: ${theme.radii.pill};
@@ -159,7 +104,7 @@ type SubtaskDraft =
         }
         const payload = (await response.json()) as StoredTask[];
         if (!cancelled) {
-          setTasks(normaliseTasks(payload));
+          setTasks(normalizeTasks(payload));
         }
       } catch (error) {
         console.error("Failed to load tasks", error);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readTasks, StoredSubtask, StoredTask, writeTasks } from "../../route";
+import { parseDateTime } from "@/lib/task-utils";
 
 type RouteContext = {
   params: Promise<{
@@ -25,8 +26,8 @@ export async function POST(request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const timestampCandidate = new Date(`${payload.date}T${payload.time}`);
-    if (Number.isNaN(timestampCandidate.getTime())) {
+    const timestampISO = parseDateTime(payload.date, payload.time);
+    if (!timestampISO) {
       return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
     }
 
@@ -36,8 +37,6 @@ export async function POST(request: Request, context: RouteContext) {
     if (taskIndex === -1) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
-
-    const timestampISO = timestampCandidate.toISOString();
 
     const nextSubtask: StoredSubtask = {
       id: crypto.randomUUID(),
@@ -86,8 +85,8 @@ export async function PUT(request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const timestampCandidate = new Date(`${payload.date}T${payload.time}`);
-    if (Number.isNaN(timestampCandidate.getTime())) {
+    const timestampISO = parseDateTime(payload.date, payload.time);
+    if (!timestampISO) {
       return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
     }
 
@@ -105,8 +104,6 @@ export async function PUT(request: Request, context: RouteContext) {
     if (subtaskIndex === -1) {
       return NextResponse.json({ error: "Subtask not found" }, { status: 404 });
     }
-
-    const timestampISO = timestampCandidate.toISOString();
 
     const updatedSubtask: StoredSubtask = {
       id: payload.subtaskId,

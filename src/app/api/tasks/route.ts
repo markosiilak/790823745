@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { formatISODate, parseISODate } from "@/lib/quarter";
+import { createStoredSubtask, normalizeSubtask, validateTaskPayload } from "@/lib/task-utils";
+import type { Subtask } from "@/components/QuarterPlanner/types";
 
 export type StoredSubtask = {
   id?: string;
@@ -49,20 +51,17 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const payload = (await request.json()) as StoredTask;
-    if (
-      typeof payload.name !== "string" ||
-      typeof payload.start !== "string" ||
-      typeof payload.end !== "string"
-    ) {
+    const validated = validateTaskPayload(payload);
+
+    if (!validated) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const startISO = formatISODate(parseISODate(payload.start));
-    const endISO = formatISODate(parseISODate(payload.end));
+    const startISO = formatISODate(parseISODate(validated.start));
+    const endISO = formatISODate(parseISODate(validated.end));
     const tasks = await readTasks();
     const duplicate = tasks.some(
-      (task) =>
-        task.name === payload.name && task.start === startISO && task.end === endISO,
+      (task) => task.name === validated.name && task.start === startISO && task.end === endISO,
     );
 
     if (duplicate) {
@@ -71,17 +70,14 @@ export async function POST(request: Request) {
 
     const newTask: StoredTask = {
       id: payload.id ?? crypto.randomUUID(),
-      name: payload.name.trim(),
+      name: validated.name.trim(),
       start: startISO,
       end: endISO,
       subtasks: Array.isArray(payload.subtasks)
         ? payload.subtasks
-            .filter((subtask) => typeof subtask?.title === "string" && typeof subtask?.timestamp === "string")
-            .map((subtask) => ({
-              id: subtask?.id ?? crypto.randomUUID(),
-              title: subtask?.title?.trim() ?? "",
-              timestamp: subtask?.timestamp ?? "",
-            }))
+            .map(normalizeSubtask)
+            .filter((subtask): subtask is Subtask => subtask !== null)
+            .map((subtask) => createStoredSubtask(subtask))
         : [],
     };
 
@@ -98,39 +94,33 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const payload = (await request.json()) as StoredTask;
-    if (
-      typeof payload.id !== "string" ||
-      typeof payload.name !== "string" ||
-      typeof payload.start !== "string" ||
-      typeof payload.end !== "string"
-    ) {
+    const validated = validateTaskPayload(payload, true);
+
+    if (!validated || !validated.id) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
     const tasks = await readTasks();
-    const taskIndex = tasks.findIndex((task) => task.id === payload.id);
+    const taskIndex = tasks.findIndex((task) => task.id === validated.id);
 
     if (taskIndex === -1) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    const startISO = formatISODate(parseISODate(payload.start));
-    const endISO = formatISODate(parseISODate(payload.end));
+    const startISO = formatISODate(parseISODate(validated.start));
+    const endISO = formatISODate(parseISODate(validated.end));
 
     const updatedTask: StoredTask = {
       ...tasks[taskIndex],
-      id: payload.id,
-      name: payload.name.trim(),
+      id: validated.id,
+      name: validated.name.trim(),
       start: startISO,
       end: endISO,
       subtasks: Array.isArray(payload.subtasks)
         ? payload.subtasks
-            .filter((subtask) => typeof subtask?.title === "string" && typeof subtask?.timestamp === "string")
-            .map((subtask) => ({
-              id: subtask?.id ?? crypto.randomUUID(),
-              title: subtask?.title?.trim() ?? "",
-              timestamp: subtask?.timestamp ?? "",
-            }))
+            .map(normalizeSubtask)
+            .filter((subtask): subtask is Subtask => subtask !== null)
+            .map((subtask) => createStoredSubtask(subtask))
         : Array.isArray(tasks[taskIndex].subtasks)
           ? tasks[taskIndex].subtasks
           : [],
