@@ -10,6 +10,7 @@ import {
   EmptySubtasks,
 } from "@/components/QuarterPlanner/styles/quarterTableStyles";
 import { dateFormatter } from "@/components/QuarterPlanner/QuarterTable/constants";
+import { PlusIcon } from "@/components/icons/PlusIcon";
 import type { WeekInfo } from "@/lib/quarter";
 import type { Subtask } from "@/components/QuarterPlanner/types";
 
@@ -64,7 +65,7 @@ export function WeekCell({
           onClick={() => onAddSubtask(taskId, taskName, week)}
           aria-label={`${t.addSubtaskForTask} ${taskName} ${t.addSubtaskInWeek} ${week.isoWeek}`}
         >
-          +
+          <PlusIcon />
         </AddSubtaskButton>
         {weekSubtasks.length > 0 ? (
           <SubtaskList>

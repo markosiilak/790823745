@@ -219,10 +219,13 @@ export const AddSubtaskButton = styled.button`
   border: none;
   background: rgba(255, 255, 255, 0.65);
   color: ${theme.colors.accentStrong};
-  border-radius: ${theme.radii.input};
-  padding: 0.15rem 0.55rem;
-  font-size: 0.75rem;
-  font-weight: ${theme.typography.fontWeightBold};
+  border-radius: ${theme.radii.button};
+  padding: 0.15rem;
+  width: ${theme.spacing.iconButton};
+  height: ${theme.spacing.iconButton};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: ${theme.transitions.primary}, background-color 0.18s ease;
 

@@ -35,6 +35,7 @@ const theme = {
     pill: "999px",
     input: "12px",
     tooltip: "8px",
+    button: "100%",
   },
   spacing: {
     pagePaddingY: "3rem",
@@ -48,6 +49,7 @@ const theme = {
     iconPadding: "0.5rem",
     tableCellPadding: "1rem",
     tableCellPaddingCompact: "0.65rem 0.75rem",
+    iconButton: "1.2rem",
   },
   sizes: {
     weekCell: "90px",
