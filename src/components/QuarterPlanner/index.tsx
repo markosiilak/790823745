@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { QuarterKey, WeekInfo } from "@/lib/quarter";
 import { buildQuarterStructure } from "@/lib/quarter";
 import { HeaderSection } from "./HeaderSection";
-import { QuarterTable } from "./QuarterTable/index";
+import { Timeline } from "./Timeline/index";
 import { SubtaskDialog } from "./Subtasks/SubtaskDialog";
+import { TaskEditDialog } from "./TaskEditDialog";
 import { PlannerShell, AddTaskButton } from "./styles/quarterPlannerStyles";
 import { useTranslations } from "@/lib/translations";
 import { useTasks } from "./hooks/useTasks";
@@ -23,7 +24,8 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
   const { currentQuarter, handleShiftQuarter, navigateToEditTask, navigateToAddTask } =
     useQuarterNavigation(initialQuarter);
   
-  const { tasks, isLoading, removeTask, updateTaskSubtasks } = useTasks();
+  const { tasks, isLoading, removeTask, updateTaskSubtasks, setTasks } = useTasks();
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const handleSubtaskCreated = useCallback(
     (taskId: string, subtask: Subtask) => {
@@ -73,6 +75,28 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
     [tasks, handleAddSubtaskForWeek],
   );
 
+  const handleEditTask = useCallback((taskId: string) => {
+    setEditingTaskId(taskId);
+  }, []);
+
+  const handleCloseEditDialog = useCallback(() => {
+    setEditingTaskId(null);
+  }, []);
+
+  const handleTaskEditSuccess = useCallback(async () => {
+    // Reload tasks after successful edit
+    try {
+      const response = await fetch("/api/tasks", { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        const { normalizeTasks } = await import("@/lib/task-utils");
+        setTasks(normalizeTasks(payload));
+      }
+    } catch (error) {
+      console.error("Failed to reload tasks", error);
+    }
+  }, [setTasks]);
+
   return (
     <PlannerShell>
       <HeaderSection
@@ -87,12 +111,12 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
         }
       />
 
-      <QuarterTable
+      <Timeline
         structure={structure}
         tasks={tasks}
         isLoading={isLoading}
         onRemoveTask={removeTask}
-        onEditTask={navigateToEditTask}
+        onEditTask={handleEditTask}
         onAddSubtask={handleAddSubtask}
         onAddSubtaskForWeek={handleSubtaskAddForWeekWithTasks}
         onEditSubtask={handleEditSubtask}
@@ -118,6 +142,14 @@ export function QuarterPlanner({ initialQuarter }: QuarterPlannerProps) {
           onSubmit={({ taskId, title, date, time, subtaskId }) =>
             handleSubtaskSubmit(taskId, { title, date, time, subtaskId })
           }
+        />
+      ) : null}
+      {editingTaskId ? (
+        <TaskEditDialog
+          quarter={currentQuarter}
+          taskId={editingTaskId}
+          onDismiss={handleCloseEditDialog}
+          onSuccess={handleTaskEditSuccess}
         />
       ) : null}
     </PlannerShell>
