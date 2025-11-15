@@ -2,7 +2,7 @@ import styled from "styled-components";
 import theme from "@/styles/theme";
 
 export const PlannerShell = styled.div`
-  width: min(1200px, 100%);
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.sectionGap};

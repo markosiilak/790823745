@@ -4,7 +4,7 @@ import theme from "@/styles/theme";
 export const Card = styled.section`
   background: ${theme.colors.backgroundAlt};
   border-radius: ${theme.radii.card};
-  border: 1px solid rgba(31, 41, 51, 0.08);
+  border: 1px solid ${theme.colors.borderSubtle};
   box-shadow: ${theme.shadows.card};
   padding: 2rem;
 `;
@@ -84,12 +84,12 @@ export const WeekRange = styled.span`
 const stickyColumnStyles = css`
   position: sticky;
   background: ${theme.colors.backgroundAlt};
-  box-shadow: 1px 0 0 rgba(31, 41, 51, 0.08);
+  box-shadow: 1px 0 0 ${theme.colors.borderSubtle};
 `;
 
 export const StickyHeaderCell = styled.th<{ $left: number; $width: number; $compact: boolean }>`
   ${stickyColumnStyles};
-  z-index: 3;
+  z-index: ${theme.zIndex.stickyHeader};
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
@@ -102,7 +102,7 @@ export const StickyHeaderCell = styled.th<{ $left: number; $width: number; $comp
 
 export const StickyBodyCell = styled.td<{ $left: number; $width: number; $compact: boolean }>`
   ${stickyColumnStyles};
-  z-index: 1;
+  z-index: ${theme.zIndex.stickyBody};
   left: ${({ $left }) => `${$left}px`};
   width: ${({ $width }) => `${$width}px`};
   min-width: ${({ $width }) => `${$width}px`};
@@ -126,7 +126,7 @@ export const TaskName = styled.span`
 export const ActionGroup = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: ${theme.spacing.gapMedium};
 `;
 
 const iconButtonStyles = css`
@@ -191,11 +191,11 @@ export const WeekCell = styled.td<{
     $active ? `inset 0 0 0 2px ${theme.colors.weekInset}` : "none"};
   border-right-color: ${({ $active }) =>
     $active ? theme.colors.weekBorderActive : theme.colors.tableDivider};
-  padding: 0.45rem;
+  padding: ${theme.spacing.gapMediumLarge};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: ${theme.spacing.gapMedium};
   align-items: stretch;
   overflow: hidden;
 
@@ -217,7 +217,7 @@ export const WeekCell = styled.td<{
 export const AddSubtaskButton = styled.button`
   align-self: flex-end;
   border: none;
-  background: rgba(255, 255, 255, 0.65);
+  background: ${theme.colors.whiteOverlayMedium};
   color: ${theme.colors.accentStrong};
   border-radius: ${theme.radii.button};
   padding: 0.15rem;
@@ -227,11 +227,11 @@ export const AddSubtaskButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: ${theme.transitions.primary}, background-color 0.18s ease;
+  transition: ${theme.transitions.primary}, background-color ${theme.transitions.medium};
 
   &:hover {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.85);
+    background: ${theme.colors.whiteOverlayStrong};
   }
 
   &:focus-visible {
@@ -244,7 +244,7 @@ export const SubtaskList = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: ${theme.spacing.gapSmall};
   margin: 0;
   padding: 0;
   flex: 1;
@@ -252,19 +252,19 @@ export const SubtaskList = styled.ul`
 `;
 
 export const SubtaskItem = styled.li`
-  background: rgba(255, 255, 255, 0.9);
+  background: ${theme.colors.whiteOverlayStronger};
   border-radius: ${theme.radii.input};
-  padding: 0.35rem 0.4rem;
+  padding: ${theme.spacing.gapSmall} ${theme.spacing.gapMedium};
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.06);
+  box-shadow: inset 0 0 0 1px ${theme.colors.borderVerySubtle};
   cursor: pointer;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color ${theme.transitions.fast}, box-shadow ${theme.transitions.fast};
 
   &:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: inset 0 0 0 1px rgba(123, 63, 228, 0.15);
+    background: ${theme.colors.whiteOverlayFull};
+    box-shadow: inset 0 0 0 1px ${theme.colors.accentMuted};
   }
 
   &:focus-visible {
@@ -274,12 +274,12 @@ export const SubtaskItem = styled.li`
 `;
 
 export const SubtaskMeta = styled.span`
-  font-size: 0.65rem;
+  font-size: ${theme.typography.fontSizeSmall};
   color: ${theme.colors.foregroundMuted};
 `;
 
 export const SubtaskTitle = styled.span`
-  font-size: 0.75rem;
+  font-size: ${theme.typography.fontSizeMedium};
   font-weight: ${theme.typography.fontWeightBold};
   color: ${theme.colors.foreground};
   word-break: break-word;
@@ -290,9 +290,9 @@ export const EmptySubtasks = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: ${theme.typography.fontSizeSmall};
   color: ${theme.colors.foregroundMuted};
-  background: rgba(255, 255, 255, 0.6);
+  background: ${theme.colors.whiteOverlayLight};
   border-radius: ${theme.radii.input};
 `;
 
@@ -300,7 +300,7 @@ export const WeekHeaderContent = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: ${theme.spacing.gapSmall};
 `;
 
 export const WeekHeaderLabel = styled.span`
@@ -321,14 +321,14 @@ export const AddWeekButton = styled.button`
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  transition: ${theme.transitions.primary}, border-color 0.18s ease, background-color 0.18s ease;
+  transition: ${theme.transitions.primary}, border-color ${theme.transitions.medium}, background-color ${theme.transitions.medium};
   border: 1px solid transparent;
   padding: 0;
 
   &:hover {
     transform: translateY(-1px);
     border-color: ${theme.colors.accentStrong};
-    background: rgba(255, 255, 255, 0.6);
+    background: ${theme.colors.whiteOverlayLight};
   }
 
   &:focus-visible {
@@ -339,7 +339,7 @@ export const AddWeekButton = styled.button`
 
 export const EmptyCell = styled.td`
   ${stickyColumnStyles};
-  z-index: 1;
+  z-index: ${theme.zIndex.stickyBody};
   text-align: center;
   padding: 2.5rem 1rem;
   color: ${theme.colors.foregroundMuted};

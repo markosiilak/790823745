@@ -7,20 +7,20 @@ export const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(17, 24, 39, 0.35);
+  background: ${theme.colors.overlayBg};
   backdrop-filter: blur(1px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  z-index: 50;
+  z-index: ${theme.zIndex.overlay};
 `;
 
 export const DialogCard = styled.div`
   width: min(420px, 100%);
   background: ${theme.colors.backgroundAlt};
   border-radius: ${theme.radii.card};
-  border: 1px solid rgba(31, 41, 51, 0.08);
+  border: 1px solid ${theme.colors.borderSubtle};
   box-shadow: ${theme.shadows.card};
   padding: 1.75rem;
   display: flex;
@@ -31,12 +31,12 @@ export const DialogCard = styled.div`
 export const Heading = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: ${theme.spacing.gapMediumLarge};
 `;
 
 export const Subtitle = styled.p`
   color: ${theme.colors.foregroundMuted};
-  font-size: 0.9rem;
+  font-size: ${theme.typography.fontSizeLarge};
   margin: 0;
 `;
 
@@ -54,18 +54,18 @@ export const FieldGroup = styled.div`
 
 export const Label = styled.label`
   font-weight: ${theme.typography.fontWeightBold};
-  font-size: 0.85rem;
+  font-size: ${theme.typography.fontSizeMediumLarge};
   color: ${theme.colors.foreground};
 `;
 
 export const TextInput = styled.input`
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.radii.input};
-  padding: 0.65rem 0.85rem;
+  padding: ${theme.spacing.inputPadding};
   font: inherit;
   color: ${theme.colors.foreground};
   background: ${theme.colors.tableCellBg};
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color ${theme.transitions.medium}, box-shadow ${theme.transitions.medium};
 
   &:focus {
     outline: none;
@@ -128,9 +128,9 @@ export const SecondaryButton = styled.button`
 export const ErrorMessage = styled.p`
   color: ${theme.colors.danger};
   background: ${theme.colors.dangerTint};
-  padding: 0.75rem 1rem;
+  padding: ${theme.spacing.errorPadding};
   border-radius: ${theme.radii.input};
   border: 1px solid ${theme.colors.dangerBorder};
-  font-size: 0.85rem;
+  font-size: ${theme.typography.fontSizeMediumLarge};
 `;
 

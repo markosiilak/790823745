@@ -17,16 +17,16 @@ export const Header = styled.header`
 export const TitleGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: ${theme.spacing.gapMedium};
 `;
 
 export const Kicker = styled.p`
-  font-size: 0.85rem;
+  font-size: ${theme.typography.fontSizeMediumLarge};
   letter-spacing: ${theme.typography.kickerLetterSpacing};
   text-transform: uppercase;
   color: ${theme.colors.accentStrong};
   font-weight: 600;
-  margin-bottom: 0.35rem;
+  margin-bottom: ${theme.spacing.gapSmall};
 `;
 
 export const Subtitle = styled.p`
@@ -54,10 +54,10 @@ export const NavButton = styled.button`
   font-weight: 500;
   color: ${theme.colors.foreground};
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform ${theme.transitions.medium}, border-color ${theme.transitions.medium}, box-shadow ${theme.transitions.medium};
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: ${theme.spacing.gapMedium};
 
   &:hover {
     border-color: ${theme.colors.accent};

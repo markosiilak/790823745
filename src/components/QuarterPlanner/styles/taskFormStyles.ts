@@ -4,7 +4,7 @@ import theme from "@/styles/theme";
 export const Card = styled.section`
   background: ${theme.colors.backgroundAlt};
   border-radius: ${theme.radii.card};
-  border: 1px solid rgba(31, 41, 51, 0.08);
+  border: 1px solid ${theme.colors.borderSubtle};
   box-shadow: ${theme.shadows.card};
   padding: 2rem;
 `;
@@ -55,11 +55,11 @@ export const Input = styled.input`
   appearance: none;
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.radii.input};
-  padding: 0.7rem 0.85rem;
+  padding: ${theme.spacing.inputPaddingLarge};
   font: inherit;
   color: ${theme.colors.foreground};
   background: ${theme.colors.tableCellBg};
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color ${theme.transitions.slow}, box-shadow ${theme.transitions.slow};
   width: 100%;
 
   &:focus {
@@ -72,7 +72,7 @@ export const Input = styled.input`
 export const ErrorMessage = styled.p`
   color: ${theme.colors.danger};
   background: ${theme.colors.dangerTint};
-  padding: 0.75rem 1rem;
+  padding: ${theme.spacing.errorPadding};
   border-radius: ${theme.radii.input};
   border: 1px solid ${theme.colors.dangerBorder};
 `;
@@ -126,10 +126,10 @@ export const SecondaryButton = styled.button`
 
 export const LimitBadge = styled.span`
   margin-left: auto;
-  font-size: 0.85rem;
+  font-size: ${theme.typography.fontSizeMediumLarge};
   color: ${theme.colors.foregroundMuted};
   background: ${theme.colors.accentBadge};
-  padding: 0.35rem 0.75rem;
+  padding: ${theme.spacing.gapSmall} 0.75rem;
   border-radius: ${theme.radii.pill};
 `;
 

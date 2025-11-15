@@ -23,6 +23,22 @@ const theme = {
     weekBorderActive: "rgba(123, 63, 228, 0.5)",
     accentBadge: "rgba(123, 63, 228, 0.12)",
     weekInset: "rgba(123, 63, 228, 0.28)",
+    // Repeated border colors
+    borderSubtle: "rgba(31, 41, 51, 0.08)",
+    borderVerySubtle: "rgba(31, 41, 51, 0.06)",
+    borderMedium: "rgba(31, 41, 51, 0.12)",
+    // White overlays
+    whiteOverlayLight: "rgba(255, 255, 255, 0.6)",
+    whiteOverlayMedium: "rgba(255, 255, 255, 0.65)",
+    whiteOverlayStrong: "rgba(255, 255, 255, 0.85)",
+    whiteOverlayStronger: "rgba(255, 255, 255, 0.9)",
+    whiteOverlayFull: "rgba(255, 255, 255, 1)",
+    // Accent overlays
+    accentOverlayLight: "rgba(123, 63, 228, 0.08)",
+    accentOverlayMedium: "rgba(123, 63, 228, 0.2)",
+    accentOverlayStrong: "rgba(123, 63, 228, 0.3)",
+    // Overlay background
+    overlayBg: "rgba(17, 24, 39, 0.35)",
   },
   shadows: {
     card: "0 12px 32px rgba(31, 41, 51, 0.12)",
@@ -31,11 +47,12 @@ const theme = {
     tooltip: "0 10px 24px rgba(31, 41, 51, 0.18)",
   },
   radii: {
-    card: "20px",
+    card: "12px",
     pill: "999px",
     input: "12px",
     tooltip: "8px",
     button: "100%",
+    timelineCard: "8px",
   },
   spacing: {
     pagePaddingY: "3rem",
@@ -50,6 +67,13 @@ const theme = {
     tableCellPadding: "1rem",
     tableCellPaddingCompact: "0.65rem 0.75rem",
     iconButton: "1.2rem",
+    // Repeated spacing values
+    gapSmall: "0.35rem",
+    gapMedium: "0.4rem",
+    gapMediumLarge: "0.45rem",
+    inputPadding: "0.65rem 0.85rem",
+    inputPaddingLarge: "0.7rem 0.85rem",
+    errorPadding: "0.75rem 1rem",
   },
   sizes: {
     weekCell: "90px",
@@ -58,15 +82,31 @@ const theme = {
   typography: {
     kickerLetterSpacing: "0.08em",
     fontWeightBold: 600,
+    // Repeated font sizes
+    fontSizeSmall: "0.65rem",
+    fontSizeMedium: "0.75rem",
+    fontSizeMediumLarge: "0.85rem",
+    fontSizeLarge: "0.9rem",
   },
   transitions: {
     primary: "transform 0.18s ease, box-shadow 0.18s ease",
+    // Repeated transition durations
+    fast: "0.15s ease",
+    medium: "0.18s ease",
+    slow: "0.2s ease",
   },
   tooltip: {
     background: "#1f1636",
     color: "#ffffff",
     padding: "0.35rem 0.6rem",
     offset: 12,
+  },
+  zIndex: {
+    overlay: 50,
+    sidebar: 10,
+    header: 5,
+    stickyHeader: 3,
+    stickyBody: 1,
   },
 } as const;
 
