@@ -5,11 +5,13 @@ A modern, full-stack Next.js application for visualizing and managing tasks acro
 ## Overview
 
 This application provides a comprehensive task management system where users can:
-- Display tasks across quarterly timelines by weeks
+- Display tasks across quarterly timelines in an interactive timeline view
+- Visualize tasks as horizontal bars positioned by their start and end dates
 - Create, edit, and delete tasks with start and end dates
 - Add subtasks to tasks with specific dates and times
 - Seamlessly navigate between quarters
-- Switch between table view and compact view modes
+- Zoom and pan the timeline for better navigation (Ctrl/Cmd/Alt + mouse wheel to zoom, Shift + mouse wheel to pan)
+- Click on task bars to quickly edit task information
 - Multilingual admin interface (English, Estonian)
 
 ## Tech Stack
@@ -53,19 +55,13 @@ This application provides a comprehensive task management system where users can
 │   │   │   ├── index.tsx             # Main planner orchestrator
 │   │   │   ├── types.ts              # TypeScript type definitions
 │   │   │   │
-│   │   │   ├── QuarterTable/         # Table visualization module
-│   │   │   │   ├── index.tsx         # Table container component
-│   │   │   │   ├── constants.ts      # Table constants (widths, formatters)
-│   │   │   │   ├── styles.ts         # Loading indicator styles
-│   │   │   │   ├── LoadingIndicator.tsx
-│   │   │   │   ├── TableHeaderSection.tsx
-│   │   │   │   ├── TableHead.tsx     # Table header (<thead>)
-│   │   │   │   ├── TableBody.tsx     # Table body (<tbody>)
-│   │   │   │   ├── TaskRow.tsx       # Individual task row
-│   │   │   │   ├── WeekCell.tsx      # Week cell with subtasks
-│   │   │   │   └── hooks/
-│   │   │   │       ├── useViewMode.ts       # View mode state (table/compact)
-│   │   │   │       └── useTableData.ts      # Data processing/transformations
+│   │   │   ├── Timeline/             # Timeline visualization module
+│   │   │   │   ├── index.tsx         # Timeline container component
+│   │   │   │   ├── constants.ts      # Timeline constants (formatters)
+│   │   │   │   ├── styles.ts         # Timeline styled components
+│   │   │   │   ├── TimelineTimeHeader.tsx  # Time header with months/weeks
+│   │   │   │   ├── TimelineItems.tsx       # Task items rendered as bars
+│   │   │   │   └── TimelineSidebarContent.tsx # Sidebar with task list
 │   │   │   │
 │   │   │   ├── hooks/                # Custom React hooks
 │   │   │   │   ├── useTasks.ts       # Task CRUD operations
@@ -100,7 +96,8 @@ This application provides a comprehensive task management system where users can
 │   │   │   ├── ChevronRightIcon.tsx
 │   │   │   ├── ChevronDownIcon.tsx
 │   │   │   ├── EditIcon.tsx
-│   │   │   └── RemoveIcon.tsx
+│   │   │   ├── RemoveIcon.tsx
+│   │   │   └── PlusIcon.tsx
 │   │   │
 │   │   └── shared/                   # Shared UI components
 │   │       ├── Button.tsx
@@ -144,18 +141,17 @@ This application provides a comprehensive task management system where users can
 ### Key Architectural Decisions
 
 #### 1. Component Composition and Separation of Concerns
-- **Feature-based organization**: Components are grouped according to their functions (QuarterPlanner, QuarterTable)
+- **Feature-based organization**: Components are grouped according to their functions (QuarterPlanner, Timeline)
 - **Clear responsibility**: Each component or hook has a specific, focused purpose
 - **Separate style management**: All styled-components are placed in separate `styles.ts` files to improve maintainability
 - **Reusable components**: Shared components (Dropdown, DatePicker, Button) for consistency
+- **Timeline-based visualization**: Tasks are displayed as horizontal bars on a timeline, similar to react-calendar-timeline
 
 #### 2. Custom Hooks for State Management
 - **`useTasks`**: Handles task loading, creation, updating, and deletion
 - **`useSubtasks`**: Manages subtask creation and editing with dialog state
 - **`useTaskForm`**: Responsible for form logic, validation, and submission for both create and edit modes
 - **`useQuarterNavigation`**: Manages quarter navigation and URL routing
-- **`useViewMode`**: Manages table view mode (table/compact) and week selection
-- **`useTableData`**: Processes and transforms task data for table rendering
 
 #### 3. Type Safety
 - Comprehensive TypeScript types are documented in `types.ts` file
@@ -180,6 +176,13 @@ This application provides a comprehensive task management system where users can
 - ISO-8601 week calculations (Monday is the first day)
 - DatePicker component for date selection
 
+#### 7. Timeline Visualization
+- **Timeline-based UI**: Tasks displayed as horizontal bars positioned by their start/end dates
+- **Interactive navigation**: Zoom with Ctrl/Cmd/Alt + mouse wheel, pan with Shift + mouse wheel
+- **Synchronized scrolling**: Sidebar and timeline canvas scroll together vertically
+- **Click-to-edit**: Click on any task bar to quickly edit task information
+- **Week-based time units**: Timeline divided into weeks with month groupings
+
 ## How It Works
 
 ### Application Flow
@@ -190,11 +193,13 @@ This application provides a comprehensive task management system where users can
    - Task loading using `useTasks` hook
    - Quarter navigation using `useQuarterNavigation` hook
    - Subtask management using `useSubtasks` hook
-   - Renders `HeaderSection` and `QuarterTable`
-4. **Task Table**: `QuarterTable` displays tasks with weekly dates:
-   - Processes tasks using `useTableData` hook
-   - Dynamically renders tasks, weeks, and dates
-   - Supports table/compact view modes using `useViewMode` hook
+   - Renders `HeaderSection` and `Timeline`
+4. **Timeline Component**: `Timeline` displays tasks as horizontal bars on a timeline:
+   - Calculates task positions based on start/end dates and week boundaries
+   - Renders tasks as bars spanning the weeks they overlap with
+   - Provides interactive zoom and pan controls
+   - Includes a sidebar for task management with synchronized scrolling
+   - Supports clicking on task bars to edit tasks
 
 ### Data Flow Example: Creating a Task
 
@@ -210,7 +215,16 @@ This application provides a comprehensive task management system where users can
 
 - **Server State**: Tasks stored in JSON file, loaded via API URLs
 - **Client State**: Managed via React hooks (useState, useCallback, useMemo)
-- **Optimistic Updates**: When editing or adding subtasks, the table updates immediately for a smoother and more pleasant user experience – saving happens in the background (inline editing)
+- **Optimistic Updates**: When editing or adding subtasks, the timeline updates immediately for a smoother and more pleasant user experience – saving happens in the background (inline editing)
+- **Timeline State**: Zoom level and scroll position managed locally in the Timeline component
+
+### Timeline Interaction
+
+The timeline provides several ways to interact:
+- **Zoom**: Hold Ctrl/Cmd/Alt and scroll mouse wheel to zoom in/out (0.5x to 3x)
+- **Pan**: Hold Shift and scroll mouse wheel to pan horizontally
+- **Edit Task**: Click on any task bar to open the edit dialog
+- **Scroll Sync**: Scrolling the sidebar automatically scrolls the timeline canvas and vice versa
 
 ## Running the Application
 
