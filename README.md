@@ -7,11 +7,13 @@ A modern, full-stack Next.js application for visualizing and managing tasks acro
 This application provides a comprehensive task management system where users can:
 - Display tasks across quarterly timelines in an interactive timeline view
 - Visualize tasks as horizontal bars positioned by their start and end dates
+- View every date in the quarter with individual date columns in the timeline
+- Automatically scroll to the current date when viewing a quarter
 - Create, edit, and delete tasks with start and end dates
 - Add subtasks to tasks with specific dates and times
 - Seamlessly navigate between quarters
 - Zoom and pan the timeline for better navigation (Ctrl/Cmd/Alt + mouse wheel to zoom, Shift + mouse wheel to pan)
-- Click on task bars to quickly edit task information
+- Click on task bars to quickly edit task information in a modal dialog
 - Multilingual admin interface (English, Estonian)
 
 ## Tech Stack
@@ -59,7 +61,7 @@ This application provides a comprehensive task management system where users can
 │   │   │   │   ├── index.tsx         # Timeline container component
 │   │   │   │   ├── constants.ts      # Timeline constants (formatters)
 │   │   │   │   ├── styles.ts         # Timeline styled components
-│   │   │   │   ├── TimelineTimeHeader.tsx  # Time header with months/weeks
+│   │   │   │   ├── TimelineTimeHeader.tsx  # Time header with months/dates
 │   │   │   │   ├── TimelineItems.tsx       # Task items rendered as bars
 │   │   │   │   └── TimelineSidebarContent.tsx # Sidebar with task list
 │   │   │   │
@@ -79,6 +81,7 @@ This application provides a comprehensive task management system where users can
 │   │   │   │
 │   │   │   ├── TaskCreate.tsx        # Task creation page component
 │   │   │   ├── TaskEdit.tsx          # Task editing page component
+│   │   │   ├── TaskEditDialog.tsx    # Task editing modal dialog
 │   │   │   ├── TaskForm.tsx          # Reusable task form component
 │   │   │   ├── HeaderSection.tsx     # Quarter header with navigation
 │   │   │   ├── Dropdown.tsx          # Reusable dropdown component
@@ -91,24 +94,30 @@ This application provides a comprehensive task management system where users can
 │   │   │   ├── index.tsx
 │   │   │   └── styles.ts
 │   │   │
-│   │   ├── icons/                    # SVG icon components
-│   │   │   ├── ChevronLeftIcon.tsx
-│   │   │   ├── ChevronRightIcon.tsx
-│   │   │   ├── ChevronDownIcon.tsx
-│   │   │   ├── EditIcon.tsx
-│   │   │   ├── RemoveIcon.tsx
-│   │   │   └── PlusIcon.tsx
-│   │   │
 │   │   └── shared/                   # Shared UI components
 │   │       ├── Button.tsx
 │   │       ├── Card.tsx
-│   │       └── FormElements.tsx
+│   │       ├── FormElements.tsx
+│   │       ├── ProgressBar/          # Progress bar component
+│   │       │   ├── ProgressBar.tsx
+│   │       │   └── index.ts
+│   │       └── Toast/                # Toast notification system
+│   │           ├── Toast.tsx
+│   │           ├── ToastContext.tsx
+│   │           └── types.ts
 │   │
 │   ├── lib/                          # Utility libraries
 │   │   ├── quarter.ts                # Quarter date calculations
 │   │   ├── task-utils.ts             # Task/subtask normalization & validation
 │   │   ├── translations.ts           # i18n implementation
-│   │   └── styled-components.tsx     # styled-components configuration
+│   │   ├── styled-components.tsx     # styled-components configuration
+│   │   └── icons/                    # SVG icon components
+│   │       ├── ChevronLeftIcon.tsx
+│   │       ├── ChevronRightIcon.tsx
+│   │       ├── ChevronDownIcon.tsx
+│   │       ├── EditIcon.tsx
+│   │       ├── RemoveIcon.tsx
+│   │       └── PlusIcon.tsx
 │   │
 │   ├── locales/                      # Translation files
 │   │   ├── en.json                   # English translations
@@ -178,10 +187,13 @@ This application provides a comprehensive task management system where users can
 
 #### 7. Timeline Visualization
 - **Timeline-based UI**: Tasks displayed as horizontal bars positioned by their start/end dates
+- **Date-based granularity**: Timeline shows every individual date in the quarter (approximately 90 dates per quarter)
+- **Auto-scroll to current date**: Automatically scrolls to and centers today's date when viewing a quarter
 - **Interactive navigation**: Zoom with Ctrl/Cmd/Alt + mouse wheel, pan with Shift + mouse wheel
 - **Synchronized scrolling**: Sidebar and timeline canvas scroll together vertically
-- **Click-to-edit**: Click on any task bar to quickly edit task information
-- **Week-based time units**: Timeline divided into weeks with month groupings
+- **Click-to-edit**: Click on any task bar to quickly edit task information in a modal dialog
+- **Month groupings**: Dates are grouped by month with month headers
+- **Loading states**: Progress bar displayed while timeline data is loading
 
 ## How It Works
 
@@ -195,11 +207,14 @@ This application provides a comprehensive task management system where users can
    - Subtask management using `useSubtasks` hook
    - Renders `HeaderSection` and `Timeline`
 4. **Timeline Component**: `Timeline` displays tasks as horizontal bars on a timeline:
-   - Calculates task positions based on start/end dates and week boundaries
-   - Renders tasks as bars spanning the weeks they overlap with
+   - Shows every date in the quarter as individual columns
+   - Automatically scrolls to the current date on load
+   - Calculates task positions based on start/end dates and date boundaries
+   - Renders tasks as bars spanning the exact dates they cover
    - Provides interactive zoom and pan controls
    - Includes a sidebar for task management with synchronized scrolling
-   - Supports clicking on task bars to edit tasks
+   - Supports clicking on task bars to edit tasks in a modal dialog
+   - Displays a progress bar while loading
 
 ### Data Flow Example: Creating a Task
 
@@ -221,10 +236,12 @@ This application provides a comprehensive task management system where users can
 ### Timeline Interaction
 
 The timeline provides several ways to interact:
+- **Auto-scroll**: Automatically scrolls to and centers today's date when the timeline loads
 - **Zoom**: Hold Ctrl/Cmd/Alt and scroll mouse wheel to zoom in/out (0.5x to 3x)
 - **Pan**: Hold Shift and scroll mouse wheel to pan horizontally
-- **Edit Task**: Click on any task bar to open the edit dialog
+- **Edit Task**: Click on any task bar to open the edit modal dialog
 - **Scroll Sync**: Scrolling the sidebar automatically scrolls the timeline canvas and vice versa
+- **Date Navigation**: Each date in the quarter is visible as a separate column in the timeline
 
 ## Running the Application
 
