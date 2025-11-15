@@ -1,12 +1,11 @@
-import { formatISODate } from '@/lib/quarter';
+import { formatISODate, dateOverlapsRange } from '@/lib/quarter';
 import { useTranslations } from '@/lib/translations';
 import { Tooltip } from '@/components/Tooltip';
 import { TimeHeaderRow, TimeHeaderCell, TimeHeaderMonth } from './styles';
 import { AddWeekButton, WeekHeaderContent, WeekHeaderLabel } from '@/components/QuarterPlanner/styles/quarterTableStyles';
 import { PlusIcon } from '@/lib/icons/PlusIcon';
-import { weekFormatter } from './constants';
-import { weekOverlapsRange } from '@/lib/quarter';
-import type { QuarterStructure, WeekInfo } from '@/lib/quarter';
+import { dateFormatter } from './constants';
+import type { QuarterStructure, WeekInfo, DateInfo } from '@/lib/quarter';
 
 type ParsedTask = {
   id: string;
@@ -16,14 +15,14 @@ type ParsedTask = {
 
 interface TimelineTimeHeaderProps {
   structure: QuarterStructure;
-  weekWidth: number;
+  dateWidth: number;
   onAddSubtaskForWeek?: (week: WeekInfo, candidateTaskIds: string[]) => void;
   parsedTasks: ParsedTask[];
 }
 
 export function TimelineTimeHeader({
   structure,
-  weekWidth,
+  dateWidth,
   onAddSubtaskForWeek,
   parsedTasks,
 }: TimelineTimeHeaderProps) {
@@ -36,38 +35,45 @@ export function TimelineTimeHeader({
         {structure.months.map((month) => (
           <TimeHeaderMonth
             key={month.month}
-            $width={month.weeks.length * weekWidth}
+            $width={month.dates.length * dateWidth}
           >
             {month.name}
           </TimeHeaderMonth>
         ))}
       </TimeHeaderRow>
-      {/* Week header row */}
+      {/* Date header row */}
       <TimeHeaderRow>
-        {structure.weeks.map((week) => {
-          const weekStartKey = formatISODate(week.start);
-          const rangeLabel = `${weekFormatter.format(week.start)} – ${weekFormatter.format(week.end)}`;
-          const weekTasks = parsedTasks.filter((task) =>
-            weekOverlapsRange(week, task.startDate, task.endDate),
+        {structure.dates.map((dateInfo, index) => {
+          const dateKey = `date-${index}-${formatISODate(dateInfo.date)}`;
+          const dateLabel = dateFormatter.format(dateInfo.date);
+          const dateTasks = parsedTasks.filter((task) =>
+            dateOverlapsRange(dateInfo.date, task.startDate, task.endDate),
           );
-          const canAddForWeek = weekTasks.length > 0;
+          const canAddForDate = dateTasks.length > 0;
 
           return (
-            <Tooltip key={weekStartKey} content={rangeLabel}>
-              <TimeHeaderCell $width={weekWidth}>
+            <Tooltip key={dateKey} content={dateLabel}>
+              <TimeHeaderCell $width={dateWidth}>
                 <WeekHeaderContent>
-                  <WeekHeaderLabel>{`W${week.isoWeek}`}</WeekHeaderLabel>
-                  {canAddForWeek ? (
+                  <WeekHeaderLabel>{dateInfo.day}</WeekHeaderLabel>
+                  {canAddForDate ? (
                     <AddWeekButton
                       type="button"
-                      aria-label={`${t.addSubtaskInWeek} ${week.isoWeek}`}
+                      aria-label={`${t.addSubtaskInWeek} ${dateLabel}`}
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
-                        onAddSubtaskForWeek?.(
-                          week,
-                          weekTasks.map((task) => task.id),
+                        // Convert date to week for backward compatibility with onAddSubtaskForWeek
+                        // Find the week that contains this date
+                        const containingWeek = structure.weeks.find((week) =>
+                          dateOverlapsRange(dateInfo.date, week.start, week.end),
                         );
+                        if (containingWeek && onAddSubtaskForWeek) {
+                          onAddSubtaskForWeek?.(
+                            containingWeek,
+                            dateTasks.map((task) => task.id),
+                          );
+                        }
                       }}
                       >
                         <PlusIcon />

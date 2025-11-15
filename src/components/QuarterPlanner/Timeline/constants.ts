@@ -4,8 +4,8 @@ export const weekFormatter = new Intl.DateTimeFormat("et-EE", {
 });
 
 export const dateFormatter = new Intl.DateTimeFormat("et-EE", {
-  day: "2-digit",
-  month: "2-digit",
+  day: "numeric",
+  month: "short",
   year: "numeric",
 });
 

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TimelineRow, TimelineItem, TimelineItemLabel } from './styles';
-import { WeekInfo } from '@/lib/quarter';
+import { WeekInfo, DateInfo } from '@/lib/quarter';
 import type { Task, Subtask } from '@/components/QuarterPlanner/types';
 
 type ParsedTask = Task & {
@@ -10,10 +10,10 @@ type ParsedTask = Task & {
 
 interface TimelineItemsProps {
   tasks: ParsedTask[];
-  structure: { weeks: WeekInfo[] };
+  structure: { dates: DateInfo[] };
   timelineStart: Date;
   timelineEnd: Date;
-  weekWidth: number;
+  dateWidth: number;
   totalWidth: number;
   onEditTask: (taskId: string) => void;
   onAddSubtask: (taskId: string, taskName: string, week: WeekInfo) => void;
@@ -27,66 +27,59 @@ interface TimelineItemsProps {
   ) => void;
 }
 
-// Calculate position and width of a task item on the timeline
+// Calculate position and width of a task item on the timeline based on dates
 function calculateItemPosition(
   task: ParsedTask,
   timelineStart: Date,
-  weekWidth: number,
-  weeks: WeekInfo[],
+  dateWidth: number,
+  dates: DateInfo[],
 ): { left: number; width: number } {
   const taskStart = task.startDate.getTime();
   const taskEnd = task.endDate.getTime() + 24 * 60 * 60 * 1000 - 1; // End of day
   const timelineStartTime = timelineStart.getTime();
 
-  // Find the first week that overlaps with the task
-  let firstWeekIndex = -1;
-  for (let i = 0; i < weeks.length; i++) {
-    const week = weeks[i];
-    const weekStart = week.start.getTime();
-    const weekEnd = week.end.getTime() + 24 * 60 * 60 * 1000 - 1;
-    if (weekEnd >= taskStart && weekStart <= taskEnd) {
-      firstWeekIndex = i;
+  // Find the first date that overlaps with the task
+  let firstDateIndex = -1;
+  for (let i = 0; i < dates.length; i++) {
+    const dateInfo = dates[i];
+    const dateTime = dateInfo.date.getTime();
+    const dateEndTime = dateTime + 24 * 60 * 60 * 1000 - 1;
+    if (dateEndTime >= taskStart && dateTime <= taskEnd) {
+      firstDateIndex = i;
       break;
     }
   }
 
-  if (firstWeekIndex === -1) {
+  if (firstDateIndex === -1) {
     return { left: 0, width: 0 };
   }
 
-  // Calculate left position - where task starts relative to the first week
-  const firstWeek = weeks[firstWeekIndex];
-  const weekStartTime = firstWeek.start.getTime();
-  const weekEndTime = firstWeek.end.getTime() + 24 * 60 * 60 * 1000 - 1;
+  // Calculate left position - where task starts relative to the first date
+  const firstDate = dates[firstDateIndex];
+  const firstDateStartTime = firstDate.date.getTime();
   
-  // Clamp task start to week boundaries
-  const effectiveTaskStart = Math.max(taskStart, weekStartTime);
-  const daysIntoWeek = Math.max(0, (effectiveTaskStart - weekStartTime) / (24 * 60 * 60 * 1000));
-  const left = firstWeekIndex * weekWidth + (daysIntoWeek / 7) * weekWidth;
+  // Clamp task start to date boundaries
+  const effectiveTaskStart = Math.max(taskStart, firstDateStartTime);
+  const left = firstDateIndex * dateWidth;
 
-  // Calculate width - find last week and calculate total duration
-  let lastWeekIndex = firstWeekIndex;
-  for (let i = firstWeekIndex; i < weeks.length; i++) {
-    const week = weeks[i];
-    const weekStart = week.start.getTime();
-    const weekEnd = week.end.getTime() + 24 * 60 * 60 * 1000 - 1;
-    if (weekStart <= taskEnd && weekEnd >= taskStart) {
-      lastWeekIndex = i;
-    } else if (weekStart > taskEnd) {
+  // Calculate width - find last date and calculate total duration
+  let lastDateIndex = firstDateIndex;
+  for (let i = firstDateIndex; i < dates.length; i++) {
+    const dateInfo = dates[i];
+    const dateTime = dateInfo.date.getTime();
+    const dateEndTime = dateTime + 24 * 60 * 60 * 1000 - 1;
+    if (dateTime <= taskEnd && dateEndTime >= taskStart) {
+      lastDateIndex = i;
+    } else if (dateTime > taskEnd) {
       break;
     }
   }
 
-  // Calculate width based on task end relative to last week
-  const lastWeek = weeks[lastWeekIndex];
-  const lastWeekStartTime = lastWeek.start.getTime();
-  const effectiveTaskEnd = Math.min(taskEnd, lastWeek.end.getTime() + 24 * 60 * 60 * 1000 - 1);
-  const daysFromLastWeekStart = Math.max(0, (effectiveTaskEnd - lastWeekStartTime) / (24 * 60 * 60 * 1000));
-  const daysInLastWeek = Math.min(7, daysFromLastWeekStart + 1);
-  
-  const width = (lastWeekIndex - firstWeekIndex) * weekWidth + (daysInLastWeek / 7) * weekWidth;
+  // Calculate width based on number of dates the task spans
+  const dateCount = lastDateIndex - firstDateIndex + 1;
+  const width = dateCount * dateWidth;
 
-  return { left: Math.max(0, left), width: Math.max(weekWidth / 7, width) };
+  return { left: Math.max(0, left), width: Math.max(dateWidth, width) };
 }
 
 export function TimelineItems({
@@ -94,7 +87,7 @@ export function TimelineItems({
   structure,
   timelineStart,
   timelineEnd,
-  weekWidth,
+  dateWidth,
   totalWidth,
   onEditTask,
   onAddSubtask,
@@ -102,13 +95,13 @@ export function TimelineItems({
 }: TimelineItemsProps) {
   const itemsWithPositions = useMemo(() => {
     return tasks.map((task) => {
-      const position = calculateItemPosition(task, timelineStart, weekWidth, structure.weeks);
+      const position = calculateItemPosition(task, timelineStart, dateWidth, structure.dates);
       return {
         task,
         ...position,
       };
     });
-  }, [tasks, timelineStart, weekWidth, structure.weeks]);
+  }, [tasks, timelineStart, dateWidth, structure.dates]);
 
   return (
     <div style={{ position: 'relative', width: `${totalWidth}px`, minHeight: '100%' }}>

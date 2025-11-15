@@ -12,16 +12,24 @@ export type WeekInfo = {
   month: number;
 };
 
+export type DateInfo = {
+  date: Date;
+  month: number;
+  day: number;
+};
+
 export type MonthInfo = {
   month: number;
   name: string;
   weeks: WeekInfo[];
+  dates: DateInfo[];
 };
 
 export type QuarterStructure = QuarterKey & {
   label: string;
   months: MonthInfo[];
   weeks: WeekInfo[];
+  dates: DateInfo[];
 };
 
 const monthFormatter = new Intl.DateTimeFormat("en", { month: "long" });
@@ -48,9 +56,9 @@ export function shiftQuarter({ year, quarter }: QuarterKey, delta: number): Quar
 }
 
 /**
- * Builds a complete quarter structure with all weeks and months.
- * Generates week information following ISO-8601 standard (Monday start, week 1 contains Thursday).
- * Weeks are assigned to the month they mostly occupy.
+ * Builds a complete quarter structure with all dates and months.
+ * Generates date information for every day in the quarter.
+ * Also includes week information for backward compatibility.
  */
 export function buildQuarterStructure(year: number, quarter: number): QuarterStructure {
   const quarterIndex = quarter - 1;
@@ -61,11 +69,20 @@ export function buildQuarterStructure(year: number, quarter: number): QuarterStr
   const quarterEnd = new Date(year, firstMonth + 3, 0);
 
   const weeks = collectWeeksForQuarter(quarterStart, quarterEnd, quarterMonths);
-  const months = quarterMonths.map((month) => ({
-    month,
-    name: monthFormatter.format(new Date(year, month, 1)),
-    weeks: weeks.filter((week) => week.month === month),
-  }));
+  const dates = collectDatesForQuarter(quarterStart, quarterEnd);
+  
+  const months = quarterMonths.map((month) => {
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0);
+    const monthDates = dates.filter((dateInfo) => dateInfo.month === month);
+    
+    return {
+      month,
+      name: monthFormatter.format(new Date(year, month, 1)),
+      weeks: weeks.filter((week) => week.month === month),
+      dates: monthDates,
+    };
+  });
 
   return {
     year,
@@ -73,7 +90,32 @@ export function buildQuarterStructure(year: number, quarter: number): QuarterStr
     label: `Q${quarter} ${year}`,
     months,
     weeks,
+    dates,
   };
+}
+
+/**
+ * Collects all dates in the quarter.
+ * Includes every day from the first day to the last day of the quarter.
+ *
+ * @internal
+ */
+function collectDatesForQuarter(quarterStart: Date, quarterEnd: Date): DateInfo[] {
+  const dates: DateInfo[] = [];
+  const start = new Date(quarterStart);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(quarterEnd);
+  end.setHours(23, 59, 59, 999);
+
+  for (let current = new Date(start); current.getTime() <= end.getTime(); current = addDays(current, 1)) {
+    dates.push({
+      date: new Date(current),
+      month: current.getMonth(),
+      day: current.getDate(),
+    });
+  }
+
+  return dates;
 }
 
 /**
@@ -176,6 +218,17 @@ export function getISOWeekNumber(date: Date): number {
  */
 export function weekOverlapsRange(week: WeekInfo, start: Date, end: Date): boolean {
   return week.end.getTime() >= start.getTime() && week.start.getTime() <= end.getTime();
+}
+
+/**
+ * Checks if a date falls within a given date range.
+ * A date overlaps if it falls within the range (inclusive of boundaries).
+ */
+export function dateOverlapsRange(date: Date, start: Date, end: Date): boolean {
+  const dateTime = date.getTime();
+  const startTime = start.getTime();
+  const endTime = end.getTime() + 24 * 60 * 60 * 1000 - 1; // End of day
+  return dateTime >= startTime && dateTime <= endTime;
 }
 
 /**
