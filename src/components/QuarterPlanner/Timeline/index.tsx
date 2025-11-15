@@ -1,13 +1,15 @@
 'use client';
 
-import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
+import { useMemo, useRef, useState, useCallback } from 'react';
 import { QuarterStructure, WeekInfo } from '@/lib/quarter';
 import { Task } from '@/components/QuarterPlanner/types';
 import { parseISODate, weekOverlapsRange } from '@/lib/quarter';
-import { TimelineWrapper, TimelineContainer, TimelineSidebar, TimelineCanvas, TimelineHeader } from './styles';
+import { useTranslations } from '@/lib/translations';
+import { TimelineWrapper, TimelineContainer, TimelineSidebar, TimelineCanvas, TimelineHeader, TimelineLoadingContainer, TimelineLoadingText } from './styles';
 import { TimelineTimeHeader } from './TimelineTimeHeader';
 import { TimelineItems } from './TimelineItems';
 import { TimelineSidebarContent } from './TimelineSidebarContent';
+import { ProgressBar } from '@/components/shared/ProgressBar';
 
 /**
  * Timeline component displays a timeline view of the quarter structure and tasks.
@@ -52,6 +54,7 @@ export function Timeline({
   onAddSubtaskForWeek,
   onEditSubtask,
 }: TimelineProps) {
+  const t = useTranslations('quarterTable');
   const canvasRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -124,7 +127,14 @@ export function Timeline({
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <TimelineWrapper>
+        <TimelineLoadingContainer>
+          <ProgressBar />
+          <TimelineLoadingText>{t.loadingTimeline}</TimelineLoadingText>
+        </TimelineLoadingContainer>
+      </TimelineWrapper>
+    );
   }
 
   return (

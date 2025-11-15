@@ -7,8 +7,8 @@ import {
   Controls,
   NavButton,
 } from "./styles/headerSectionStyles";
-import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
-import { ChevronRightIcon } from "@/components/icons/ChevronRightIcon";
+import { ChevronLeftIcon } from "@/lib/icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "@/lib/icons/ChevronRightIcon";
 import { useTranslations, useLocale, getAvailableLocales, type Locale } from "@/lib/translations";
 import { Dropdown, type DropdownOption } from "./Dropdown";
 

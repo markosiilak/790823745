@@ -6,11 +6,15 @@ import type { ToastType, ToastContextType, ToastProviderProps } from "./types";
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+function generateToastId(): string {
+  return `toast-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+}
+
 export function ToastProvider({ children }: ToastProviderProps): React.ReactElement {
   const [toasts, setToasts] = useState<readonly ToastType[]>([]);
 
   const showToast = useCallback((message: string, duration?: number) => {
-    const id = crypto.randomUUID();
+    const id = generateToastId();
     setToasts((prev) => [...prev, { id, message, duration }]);
   }, []);
 

@@ -26,7 +26,8 @@
     "tableViewMode": "Tabeli vaate režiim",
     "selectWeek": "Vali kuvatav nädal",
     "noWeeks": "Nädalaid pole",
-    "loading": "Laadimine..."
+    "loading": "Laadimine...",
+    "loadingTimeline": "Ajajoone laadimine..."
   },
   "taskCreate": {
     "title": "Lisa ülesanne",

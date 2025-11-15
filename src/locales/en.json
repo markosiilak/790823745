@@ -26,7 +26,8 @@
     "tableViewMode": "Table view mode",
     "selectWeek": "Select week to display",
     "noWeeks": "No weeks",
-    "loading": "Loading tasks..."
+    "loading": "Loading tasks...",
+    "loadingTimeline": "Loading timeline..."
   },
   "taskCreate": {
     "title": "Add a task",

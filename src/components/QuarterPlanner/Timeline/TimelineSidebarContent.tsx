@@ -1,5 +1,5 @@
-import { EditIcon } from '@/components/icons/EditIcon';
-import { RemoveIcon } from '@/components/icons/RemoveIcon';
+import { EditIcon } from '@/lib/icons/EditIcon';
+import { RemoveIcon } from '@/lib/icons/RemoveIcon';
 import { SidebarRow, SidebarTaskName, SidebarActions } from './styles';
 import { EditButton, RemoveButton } from '@/components/QuarterPlanner/styles/quarterTableStyles';
 import type { Task } from '@/components/QuarterPlanner/types';

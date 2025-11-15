@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDownIcon } from "@/components/icons/ChevronDownIcon";
+import { ChevronDownIcon } from "@/lib/icons/ChevronDownIcon";
 import { useTranslations } from "@/lib/translations";
 import {
   Wrapper,

@@ -148,3 +148,19 @@ export const TimeHeaderMonth = styled.div<{ $width: number }>`
   padding: 0.5rem;
 `;
 
+export const TimelineLoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 200px;
+  gap: ${theme.spacing.controlGap};
+`;
+
+export const TimelineLoadingText = styled.p`
+  color: ${theme.colors.foregroundMuted};
+  font-size: ${theme.typography.fontSizeMediumLarge};
+  margin: 0;
+`;
+

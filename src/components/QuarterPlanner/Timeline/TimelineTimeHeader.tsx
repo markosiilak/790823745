@@ -3,7 +3,7 @@ import { useTranslations } from '@/lib/translations';
 import { Tooltip } from '@/components/Tooltip';
 import { TimeHeaderRow, TimeHeaderCell, TimeHeaderMonth } from './styles';
 import { AddWeekButton, WeekHeaderContent, WeekHeaderLabel } from '@/components/QuarterPlanner/styles/quarterTableStyles';
-import { PlusIcon } from '@/components/icons/PlusIcon';
+import { PlusIcon } from '@/lib/icons/PlusIcon';
 import { weekFormatter } from './constants';
 import { weekOverlapsRange } from '@/lib/quarter';
 import type { QuarterStructure, WeekInfo } from '@/lib/quarter';

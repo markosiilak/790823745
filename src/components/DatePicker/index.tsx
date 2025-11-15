@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { formatISODate, parseISODate } from "@/lib/quarter";
 import { useTranslations } from "@/lib/translations";
-import { ChevronLeftIcon } from "@/components/icons/ChevronLeftIcon";
-import { ChevronRightIcon } from "@/components/icons/ChevronRightIcon";
+import { ChevronLeftIcon } from "@/lib/icons/ChevronLeftIcon";
+import { ChevronRightIcon } from "@/lib/icons/ChevronRightIcon";
 import {
   Container,
   TriggerButton,
